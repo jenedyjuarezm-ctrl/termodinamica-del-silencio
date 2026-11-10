@@ -1,1 +1,0 @@
-# termodin-mica-del-silencio
