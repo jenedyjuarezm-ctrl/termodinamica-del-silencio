@@ -1,15 +1,21 @@
 {
-  "paradoja": {
-    "labels": ["2020", "2021", "2022"],
-    "capacidad": [0, 9.3, 18.7],
-    "generacion": [0, -3.7, -7.4]
+  "metodologia": {
+    "total_encuestados": 32,
+    "solicitudes_estatales": 10,
+    "solicitudes_negadas": 9,
+    "porcentaje_negativa": 90
   },
-  "transparencia": {
-    "estatales_negados": 90,
-    "privados_abiertos": 100
+  "paradoja": {
+    "labels": ["2020", "2021", "2022", "2023", "2024", "2025", "2026"],
+    "capacidad": [0, 3.2, 7.5, 11.1, 14.5, 16.8, 18.7],
+    "generacion": [0, -1.2, -2.5, -4.1, -5.8, -6.5, -7.4]
+  },
+  "infraestructura": {
+    "granja_kwp": 40,
+    "hogar_kwp": 2,
+    "hogares_equivalentes": 20
   },
   "supervivencia": {
-    "total_encuestados": 32,
     "motivo_supervivencia": 100,
     "motivo_ahorro": 0
   }
