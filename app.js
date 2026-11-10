@@ -29,19 +29,18 @@ async function fetchData() {
     }
 }
 
-// ==========================================================================
-// 3. REPRODUCTOR DE MÚSICA (Sintetizador Lofi en tiempo real)
-// ==========================================================================
+
+// --- 1. REPRODUCTOR DE MÚSICA (Sintetizador Lofi en tiempo real) ---
+// En lugar de depender de un MP3 que falle, creamos un acorde lofi infinito.
 const musicBtn = document.getElementById('music-toggle');
 let audioCtx, isPlaying = false, intervalId;
 
 function playLofi() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    // Acordes relajantes (Do mayor, Re menor, La menor)
     const chords = [
-        [130.81, 164.81, 196.00], 
-        [146.83, 174.61, 220.00], 
-        [110.00, 130.81, 164.81]  
+        [130.81, 164.81, 196.00], // C mayor
+        [146.83, 174.61, 220.00], // D menor
+        [110.00, 130.81, 164.81]  // A menor
     ];
     let chordIndex = 0;
 
@@ -53,6 +52,7 @@ function playLofi() {
             osc.type = 'sine';
             osc.frequency.value = freq;
             
+            // Envolvente suave para que suene a "piano lofi"
             gain.gain.setValueAtTime(0, now);
             gain.gain.linearRampToValueAtTime(0.05, now + 1);
             gain.gain.exponentialRampToValueAtTime(0.001, now + 4);
@@ -66,26 +66,24 @@ function playLofi() {
     };
 
     playChord();
-    intervalId = setInterval(playChord, 4000);
+    intervalId = setInterval(playChord, 4000); // Cambia de acorde cada 4 segundos
 }
 
-if (musicBtn) {
-    musicBtn.addEventListener('click', () => {
-        if (!audioCtx) {
-            playLofi();
-            isPlaying = true;
-            musicBtn.classList.add('playing');
-        } else if (isPlaying) {
-            audioCtx.suspend();
-            isPlaying = false;
-            musicBtn.classList.remove('playing');
-        } else {
-            audioCtx.resume();
-            isPlaying = true;
-            musicBtn.classList.add('playing');
-        }
-    });
-}
+musicBtn.addEventListener('click', () => {
+    if (!audioCtx) {
+        playLofi();
+        isPlaying = true;
+        musicBtn.classList.add('playing');
+    } else if (isPlaying) {
+        audioCtx.suspend();
+        isPlaying = false;
+        musicBtn.classList.remove('playing');
+    } else {
+        audioCtx.resume();
+        isPlaying = true;
+        musicBtn.classList.add('playing');
+    }
+});
 
 // ==========================================================================
 // 4. BARRA DE PROGRESO DE LECTURA
