@@ -30,60 +30,99 @@ async function fetchData() {
 }
 
 
-// --- 1. REPRODUCTOR DE MÚSICA (Sintetizador Lofi en tiempo real) ---
-// En lugar de depender de un MP3 que falle, creamos un acorde lofi infinito.
+// ==========================================================================
+// 3. REPRODUCTOR DE MÚSICA (Sintetizador Lofi Avanzado)
+// ==========================================================================
 const musicBtn = document.getElementById('music-toggle');
-let audioCtx, isPlaying = false, intervalId;
+let audioCtx, isPlaying = false;
+let lofiInterval;
 
 function playLofi() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const chords = [
-        [130.81, 164.81, 196.00], // C mayor
-        [146.83, 174.61, 220.00], // D menor
-        [110.00, 130.81, 164.81]  // A menor
-    ];
-    let chordIndex = 0;
+    
+    // Escala Pentatónica de Do Mayor (Suena bien en cualquier orden)
+    const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25]; 
+    let step = 0;
 
-    const playChord = () => {
-        const now = audioCtx.currentTime;
-        chords[chordIndex].forEach(freq => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.value = freq;
-            
-            // Envolvente suave para que suene a "piano lofi"
-            gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.05, now + 1);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 4);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + 4);
-        });
-        chordIndex = (chordIndex + 1) % chords.length;
+    const playNote = (freq, time, duration, volume) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        // Onda triangular suena más cálida y analógica que la senoidal
+        osc.type = 'triangle'; 
+        osc.frequency.setValueAtTime(freq, time);
+        
+        // Envolvente suave (ataque y caída lenta)
+        gain.gain.setValueAtTime(0, time);
+        gain.gain.linearRampToValueAtTime(volume, time + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.start(time);
+        osc.stop(time + duration);
     };
 
-    playChord();
-    intervalId = setInterval(playChord, 4000); // Cambia de acorde cada 4 segundos
+    const playDrum = (time) => {
+        // Un "kick" suave simulando el ritmo lofi
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, time);
+        osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.1);
+        gain.gain.setValueAtTime(0.2, time);
+        gain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(time);
+        osc.stop(time + 0.2);
+    };
+
+    const loop = () => {
+        const now = audioCtx.currentTime;
+        
+        // Tocar acorde base (Bajo)
+        playNote(130.81, now, 2.0, 0.04); // Do grave
+        
+        // Tocar notas aleatorias de la escala (Melodía)
+        const randomNote = scale[Math.floor(Math.random() * scale.length)];
+        playNote(randomNote, now + 0.5, 1.5, 0.03);
+        
+        // Tocar un segundo acompañamiento
+        const randomNote2 = scale[Math.floor(Math.random() * scale.length)];
+        playNote(randomNote2, now + 1.2, 1.0, 0.02);
+
+        // Ritmo de batería
+        if (step % 2 === 0) playDrum(now);
+        if (step % 4 === 0) playDrum(now + 1.5);
+
+        step++;
+    };
+
+    // Ejecutar el bucle cada 2 segundos
+    loop();
+    lofiInterval = setInterval(loop, 2000);
 }
 
-musicBtn.addEventListener('click', () => {
-    if (!audioCtx) {
-        playLofi();
-        isPlaying = true;
-        musicBtn.classList.add('playing');
-    } else if (isPlaying) {
-        audioCtx.suspend();
-        isPlaying = false;
-        musicBtn.classList.remove('playing');
-    } else {
-        audioCtx.resume();
-        isPlaying = true;
-        musicBtn.classList.add('playing');
-    }
-});
+if (musicBtn) {
+    musicBtn.addEventListener('click', () => {
+        if (!audioCtx) {
+            playLofi();
+            isPlaying = true;
+            musicBtn.classList.add('playing');
+        } else if (isPlaying) {
+            audioCtx.suspend();
+            isPlaying = false;
+            musicBtn.classList.remove('playing');
+        } else {
+            audioCtx.resume();
+            isPlaying = true;
+            musicBtn.classList.add('playing');
+        }
+    });
+}
+
 
 // ==========================================================================
 // 4. BARRA DE PROGRESO DE LECTURA
