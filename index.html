@@ -1,200 +1,97 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>La Resistencia de los Vatios | Transición Energética</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-:root{--bg:#070709;--txt:#e8e8e8;--mut:#88888c;--warm:#ff8c00;--cyan:#00e5ff;--danger:#ff3333;--grid:rgba(255,255,255,0.08)}
-*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--txt);font-family:'Crimson Pro',serif;overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased}
-body::after{content:"";position:fixed;top:0;left:0;width:100vw;height:100vh;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:0.04;pointer-events:none;z-index:100}
-#canvas-container{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;background:radial-gradient(circle at center,#111116 0%,var(--bg) 100%)}
-.container{max-width:900px;margin:0 auto;padding:0 25px;position:relative;z-index:10}
-.data-font{font-family:'Space Mono',monospace}
-.hero{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
-.hero h1{font-size:clamp(2.5rem,8vw,4.5rem);font-weight:700;line-height:1.05;margin-bottom:20px;text-shadow:0 0 30px rgba(255,140,0,0.2)}
-.hero p{font-size:clamp(1.1rem,3vw,1.5rem);color:var(--mut);max-width:600px;font-style:italic}
-.scroll-hint{position:absolute;bottom:40px;font-family:'Space Mono',monospace;font-size:0.8rem;color:var(--warm);animation:pulse 2s infinite}
-.scroll-section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 0}
-.data-card{background:rgba(15,15,20,0.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--grid);border-left:4px solid var(--cyan);padding:clamp(20px,5vw,40px);border-radius:8px;box-shadow:0 30px 60px rgba(0,0,0,0.6);transform:translateZ(0)}
-.stat-number{font-family:'Space Mono',monospace;font-size:clamp(3rem,10vw,4.5rem);font-weight:700;color:var(--cyan);display:block;margin:10px 0;line-height:1}
-.stat-number.negative{color:var(--danger)}.stat-context{font-size:clamp(1rem,2.5vw,1.2rem);color:var(--mut)}
-.quote{font-size:clamp(1.4rem,4vw,2rem);font-style:italic;color:var(--txt);border-left:3px solid var(--warm);padding-left:20px;margin:40px 0}
-.chart-container{width:100%;max-width:700px;height:300px;margin:30px auto;opacity:0;visibility:hidden;transition:opacity 0.8s ease,visibility 0.8s}
-.chart-container.show{opacity:1;visibility:visible}
-.interactive-panel{display:flex;flex-direction:column;align-items:center;text-align:center;background:#0a0a0f;border:1px solid #222;padding:clamp(20px,5vw,40px);border-radius:12px;box-shadow:inset 0 0 30px rgba(0,0,0,0.8)}
-.switch-container{margin:30px 0;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}
-.switch-bg{width:110px;height:55px;background:#151515;border-radius:30px;border:2px solid #333;transition:all 0.3s}
-.switch-circle{width:45px;height:45px;background:#444;border-radius:50%;position:absolute;top:5px;left:5px;transition:all 0.4s cubic-bezier(0.68,-0.55,0.265,1.55);box-shadow:0 0 10px rgba(0,0,0,0.5)}
-.switch-container.active .switch-bg{border-color:var(--warm);box-shadow:0 0 20px rgba(255,140,0,0.4)}
-.switch-container.active .switch-circle{left:60px;background:var(--warm);box-shadow:0 0 25px var(--warm)}
-@keyframes pulse{0%{opacity:0.5}50%{opacity:1}100%{opacity:0.5}}
-.reveal{opacity:0;transform:translateY(40px);transition:opacity 1s cubic-bezier(0.2,0.8,0.2,1),transform 1s cubic-bezier(0.2,0.8,0.2,1);will-change:transform,opacity}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.footer{text-align:center;padding:60px 20px;border-top:1px solid var(--grid);font-family:'Space Mono',monospace;font-size:0.8rem;color:var(--mut)}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}.reveal{opacity:1;transform:none}#canvas-container{display:none}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Resistencia de los Vatios | Transición Solar en Cuba</title>
+    <meta name="description" content="Análisis de datos sobre la paradoja energética en Cuba (2020-2026).">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="app.js"></script>
 </head>
 <body>
-<div id="canvas-container" aria-hidden="true"></div>
-<main class="container">
-    <section class="hero">
-        <h1>La Resistencia<br>de los Vatios</h1>
-        <p>Una historia de datos sobre la paradoja energética en Cuba (2020-2026).</p>
-        <div class="scroll-hint">[ DESLIZA PARA EXPLORAR EL SISTEMA ]</div>
-    </section>
-    <section class="scroll-section">
-        <div class="data-card reveal">
-            <p class="data-font" style="color:var(--cyan);font-size:0.9rem">// REPORTE OFICIAL ONEI 2026</p>
-            <h2>Aumento de la Capacidad Instalada</h2>
-            <span class="stat-number" id="stat-1">+18.7%</span>
-            <p class="stat-context">El país ha multiplicado la instalación de paneles solares y granjas fotovoltaicas (de 2 kWp en casas a 40 kWp en solineras).</p>
-        </div>
-    </section>
-    <section class="scroll-section">
-        <div class="data-card reveal" style="border-left-color:var(--danger)">
-            <p class="data-font" style="color:var(--danger);font-size:0.9rem">// ANÁLISIS DE DATOS REALES</p>
-            <h2>Pero la Generación Neta Cayó</h2>
-            <span class="stat-number negative" id="stat-2">-7.4%</span>
-            <p class="stat-context">A pesar de tener más paneles, la energía real que llega al sistema eléctrico es menor. La macroeconomía choca con la realidad del apagón.</p>
-            <div class="chart-container reveal" id="paradox-chart-wrapper"><canvas id="paradoxChart"></canvas></div>
-        </div>
-    </section>
-    <section class="scroll-section">
-        <div class="data-card reveal" style="border-left-color:#555">
-            <p class="data-font">// OPACIDAD INSTITUCIONAL</p>
-            <h2>El 90% de las solicitudes de datos fueron denegadas.</h2>
-            <p class="stat-context">Las cifras macro no explican el día a día. La falta de transparencia nos obliga a mirar hacia otro lado: hacia la calle, hacia las casas.</p>
-        </div>
-    </section>
-    <section class="scroll-section">
-        <div class="interactive-panel reveal">
-            <h2>Los 2 kWp de la Supervivencia</h2>
-            <p style="margin-bottom:20px;color:var(--mut);max-width:600px">El 100% de los 32 residentes encuestados no compró paneles por ecología.<br><strong>Pulsa el interruptor para ver la verdadera razón:</strong></p>
-            <div class="switch-container" id="survival-switch" role="button" tabindex="0">
-                <div class="switch-bg"></div><div class="switch-circle"></div>
+    <div id="canvas-container" aria-hidden="true"></div>
+
+    <main class="container">
+        <!-- HERO -->
+        <section class="hero">
+            <h1 class="hero-title">La Resistencia<br>de los Vatios</h1>
+            <p class="hero-subtitle">Una historia de datos sobre la paradoja energética en Cuba (2020-2026).</p>
+            <div class="scroll-hint data-font">[ DESLIZA PARA EXPLORAR EL SISTEMA ]</div>
+        </section>
+
+        <!-- LA PROMESA (DATO 1) -->
+        <section class="scroll-section">
+            <div class="data-card reveal">
+                <p class="data-font label-cyan">// REPORTE OFICIAL ONEI</p>
+                <h2>Aumento de la Capacidad Instalada</h2>
+                <span class="stat-number" id="stat-1">+18.7%</span>
+                <p class="stat-context">El país ha multiplicado la instalación de paneles solares. Las solineras de 40 kWp y las casas de 2 kWp han crecido exponencialmente.</p>
             </div>
-            <div id="survival-text" style="height:60px;font-size:clamp(1.2rem,4vw,1.6rem);font-style:italic;transition:opacity 0.3s;color:var(--mut)">Esperando conexión al sistema...</div>
-            <div class="chart-container" id="survival-chart-wrapper"><canvas id="survivalChart"></canvas></div>
-        </div>
-    </section>
-    <section class="scroll-section">
-        <blockquote class="quote reveal">"La belleza de lo gastado, lo reparado y lo que sigue funcionando. La resiliencia no es una estadística, es un acto diario de reparación."</blockquote>
-        <div class="reveal" style="text-align:center;color:var(--mut)"><p>Granjas de 40 kWp que alimentan barrios enteros. Casas con 2 kWp que mantienen los alimentos fríos un día más.</p></div>
-    </section>
-</main>
-<footer class="footer">
-    <p>FUENTES: ONEI / Encuesta de campo (N=32) / Análisis propio.</p>
-    <p>Investigación de Ciencia de Datos | 2026</p>
-</footer>
-<script>
-window.addEventListener('load', () => {
-    // 1. THREE.JS (Fondo 3D)
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5)); renderer.setSize(innerWidth, innerHeight);
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
-        
-        const geo = new THREE.BufferGeometry(), pos = new Float32Array(5400);
-        for(let i=0; i<5400; i++) pos[i] = (Math.random() - 0.5) * 25;
-        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        
-        const mat = new THREE.PointsMaterial({ size: 0.04, color: 0xff8c00, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending });
-        const mesh = new THREE.Points(geo, mat); scene.add(mesh); camera.position.z = 5;
-        
-        let mx = 0, my = 0, active = true;
-        addEventListener('mousemove', e => { mx = (e.clientX/innerWidth)-0.5; my = (e.clientY/innerHeight)-0.5; });
-        document.addEventListener('visibilitychange', () => { active = !document.hidden; if(active) animate(); });
-        
-        const clock = new THREE.Clock();
-        function animate() {
-            if(!active) return; requestAnimationFrame(animate);
-            const t = clock.getElapsedTime();
-            mesh.rotation.y = t*0.03 + mx*0.3; mesh.rotation.x = t*0.015 + my*0.3;
-            mat.opacity = 0.4 + Math.sin(t*1.5)*0.2; renderer.render(scene, camera);
-        }
-        animate(); addEventListener('resize', () => { camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
-    }
+        </section>
 
-    // 2. AUDIO SENSORIAL
-    let audioCtx, osc, gain;
-    document.body.addEventListener('click', () => {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            osc = audioCtx.createOscillator(); gain = audioCtx.createGain();
-            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(50, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start();
-        }
-    }, { once: true });
-    document.addEventListener('visibilitychange', () => { if(audioCtx) document.hidden ? audioCtx.suspend() : audioCtx.resume(); });
+        <!-- LA PARADOJA (DATO 2 Y GRÁFICA) -->
+        <section class="scroll-section">
+            <div class="data-card reveal border-danger">
+                <p class="data-font label-danger">// ANÁLISIS DE DATOS REALES</p>
+                <h2>Pero la Generación Neta Cayó</h2>
+                <span class="stat-number negative" id="stat-2">-7.4%</span>
+                <p class="stat-context">A pesar de tener más paneles, la energía real que llega al sistema eléctrico es menor. La macroeconomía choca con la realidad del apagón.</p>
+                <div class="chart-container" id="paradox-chart-wrapper">
+                    <canvas id="paradoxChart"></canvas>
+                </div>
+            </div>
+        </section>
 
-    // 3. GSAP Y SCROLL
-    gsap.registerPlugin(ScrollTrigger);
-    document.querySelectorAll('.reveal').forEach(el => {
-        ScrollTrigger.create({ trigger: el, start: "top 85%", onEnter: () => el.classList.add('visible'), once: true });
-    });
-    
-    gsap.from(document.getElementById('stat-1'), { textContent: 0, duration: 2, snap: { textContent: 1 }, ease: "power3.out", scrollTrigger: { trigger: "#stat-1", start: "top 85%" } });
-    gsap.fromTo(document.getElementById('stat-2'), { textContent: 0 }, { textContent: -7.4, duration: 2, snap: { textContent: 0.1 }, ease: "power3.out", scrollTrigger: { trigger: "#stat-2", start: "top 85%", onEnter: () => { if(gain) gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.5); } } });
+        <!-- EL VACÍO (TRANSPARENCIA) -->
+        <section class="scroll-section">
+            <div class="data-card reveal border-muted">
+                <p class="data-font label-muted">// OPACIDAD INSTITUCIONAL</p>
+                <h2>El 90% de las solicitudes de datos fueron denegadas.</h2>
+                <p class="stat-context">Las cifras macro no explican el día a día. La falta de transparencia nos obliga a mirar hacia otro lado: hacia la calle, hacia las casas.</p>
+            </div>
+        </section>
 
-    // 4. GRÁFICAS
-    let chart1, chart2;
-    ScrollTrigger.create({
-        trigger: "#paradox-chart-wrapper", start: "top 85%",
-        onEnter: () => {
-            document.getElementById("paradox-chart-wrapper").classList.add('show');
-            if(!chart1) {
-                chart1 = new Chart(document.getElementById('paradoxChart').getContext('2d'), {
-                    type: 'line', data: {
-                        labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026'],
-                        datasets: [
-                            { label: 'Capacidad Instalada (%)', data: [0, 3.2, 7.5, 11.1, 14.5, 16.8, 18.7], borderColor: '#00e5ff', backgroundColor: 'rgba(0,229,255,0.1)', borderWidth: 3, tension: 0.4, fill: true },
-                            { label: 'Generación Real (%)', data: [0, -1.2, -2.5, -4.1, -5.8, -6.5, -7.4], borderColor: '#ff3333', backgroundColor: 'rgba(255,51,51,0.1)', borderWidth: 3, borderDash: [5, 5], tension: 0.4, fill: true }
-                        ]
-                    }, options: { responsive: true, maintainAspectRatio: false, animation: { duration: 2000 }, plugins: { legend: { labels: { color: '#e8e8e8', font: { family: 'Space Mono', size: 10 } } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#88888c', font: { family: 'Space Mono' } } }, x: { grid: { display: false }, ticks: { color: '#88888c', font: { family: 'Space Mono' } } } } }
-                });
-            }
-        }
-    });
+        <!-- EL GIRO HUMANO (INTERACTIVO) -->
+        <section class="scroll-section">
+            <div class="interactive-panel reveal">
+                <h2>Los 2 kWp de la Supervivencia</h2>
+                <p class="interactive-desc">El 100% de los 32 residentes encuestados no compró paneles por ecología.<br><strong>Pulsa el interruptor para ver la verdadera razón:</strong></p>
+                
+                <div class="switch-container" id="survival-switch" role="button" tabindex="0" aria-label="Encender interruptor de supervivencia">
+                    <div class="switch-bg"></div>
+                    <div class="switch-circle"></div>
+                </div>
 
-    const switchEl = document.getElementById('survival-switch'), textEl = document.getElementById('survival-text'), survivalWrapper = document.getElementById('survival-chart-wrapper');
-    let active = false;
-    
-    const toggleSwitch = () => {
-        active = !active; switchEl.classList.toggle('active');
-        if (active) {
-            if(audioCtx) {
-                const cOsc = audioCtx.createOscillator(), cGain = audioCtx.createGain();
-                cOsc.type = 'sine'; cOsc.frequency.setValueAtTime(800, audioCtx.currentTime); cOsc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
-                cGain.gain.setValueAtTime(0.1, audioCtx.currentTime); cGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                cOsc.connect(cGain); cGain.connect(audioCtx.destination); cOsc.start(); cOsc.stop(audioCtx.currentTime + 0.1);
-            }
-            textEl.textContent = "“Para que no se dañe la comida en el apagón.”"; textEl.style.color = "var(--warm)";
-            survivalWrapper.classList.add('show');
-            if (!chart2) {
-                chart2 = new Chart(document.getElementById('survivalChart').getContext('2d'), {
-                    type: 'bar', data: {
-                        labels: ['Moda/Ambiente', 'Supervivencia'],
-                        datasets: [{ label: 'N=32', data: [0, 32], backgroundColor: ['rgba(255,255,255,0.1)', 'rgba(255,140,0,0.8)'], borderColor: ['rgba(255,255,255,0.2)', 'rgba(255,140,0,1)'], borderWidth: 2, borderRadius: 6 }]
-                    }, options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1500, easing: 'easeOutBounce' }, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 32, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#88888c', font: { family: 'Space Mono' } } }, x: { grid: { display: false }, ticks: { color: '#e8e8e8', font: { family: 'Crimson Pro', size: 14 } } } } }
-                });
-            }
-        } else {
-            textEl.textContent = "Esperando conexión al sistema..."; textEl.style.color = "var(--mut)"; survivalWrapper.classList.remove('show');
-        }
-    };
-    switchEl.addEventListener('click', toggleSwitch);
-    switchEl.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSwitch(); } });
-});
-</script>
+                <div id="survival-text" class="survival-text">Esperando conexión al sistema...</div>
+
+                <div class="chart-container" id="survival-chart-wrapper">
+                    <canvas id="survivalChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONCLUSIÓN -->
+        <section class="scroll-section">
+            <blockquote class="quote reveal">"La belleza de lo gastado, lo reparado y lo que sigue funcionando. La resiliencia no es una estadística, es un acto diario de reparación."</blockquote>
+            <div class="conclusion-text reveal">
+                <p>Granjas de 40 kWp que alimentan barrios enteros. Casas con 2 kWp que mantienen los alimentos fríos un día más.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer data-font">
+        <p>FUENTES: ONEI / Encuesta de campo (N=32) / Análisis propio.</p>
+        <p>Investigación de Ciencia de Datos | 2026</p>
+    </footer>
 </body>
 </html>
