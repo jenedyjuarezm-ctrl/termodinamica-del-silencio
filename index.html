@@ -6,7 +6,6 @@
     <title>La Resistencia de los Vatios | Transición Energética en Cuba</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Fuentes: Una para datos, una para narrativa humana -->
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- Librerías -->
@@ -22,14 +21,11 @@
             --text-muted: #8a8a8a;
             --accent-warm: #ff9f1c; /* Ámbar cálido */
             --accent-cyan: #00f0ff; /* Luz de panel */
+            --accent-red: #ff4d4d;
             --grid-line: rgba(255, 255, 255, 0.05);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background-color: var(--bg-dark);
@@ -39,257 +35,195 @@
             line-height: 1.6;
         }
 
-        /* Textura de grano analógico */
+        /* Textura de grano analógico (Wabi-Sabi) */
         body::after {
             content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: 0.05;
-            pointer-events: none;
-            z-index: 100;
+            opacity: 0.05; pointer-events: none; z-index: 100;
         }
 
         #canvas-container {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1;
             background: radial-gradient(circle at center, #15151a 0%, var(--bg-dark) 100%);
         }
 
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 20px;
-            position: relative;
-            z-index: 10;
+            max-width: 1000px; margin: 0 auto; padding: 0 20px;
+            position: relative; z-index: 10;
         }
 
-        /* Tipografía de Datos */
-        .data-font {
-            font-family: 'Space Mono', monospace;
-        }
+        .data-font { font-family: 'Space Mono', monospace; }
 
-        /* HERO SECTION */
+        /* HERO */
         .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+            height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
         }
-
         .hero h1 {
-            font-size: 4rem;
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 20px;
-            text-shadow: 0 0 20px rgba(255, 159, 28, 0.3);
+            font-size: 4.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255, 159, 28, 0.4);
         }
-
-        .hero p {
-            font-size: 1.5rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            font-style: italic;
-        }
-
+        .hero p { font-size: 1.5rem; color: var(--text-muted); max-width: 700px; font-style: italic; }
         .scroll-hint {
-            position: absolute;
-            bottom: 40px;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--accent-warm);
-            animation: pulse 2s infinite;
+            position: absolute; bottom: 40px;
+            font-family: 'Space Mono', monospace; font-size: 0.8rem;
+            color: var(--accent-warm); animation: pulse 2s infinite;
         }
 
-        /* SECCIONES DE SCROLL */
-        .scroll-section {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 100px 0;
-        }
-
+        /* SECCIONES */
+        .scroll-section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 80px 0; }
+        
         .data-card {
-            background: rgba(10, 10, 12, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--grid-line);
-            border-left: 3px solid var(--accent-cyan);
-            padding: 40px;
-            border-radius: 4px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: rgba(10, 10, 12, 0.85); backdrop-filter: blur(10px);
+            border: 1px solid var(--grid-line); border-left: 3px solid var(--accent-cyan);
+            padding: 40px; border-radius: 4px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
         }
+        .data-card.alert { border-left-color: var(--accent-red); }
+        .data-card.warm { border-left-color: var(--accent-warm); }
 
         .stat-number {
-            font-family: 'Space Mono', monospace;
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: var(--accent-cyan);
-            display: block;
-            margin: 10px 0;
-            line-height: 1;
+            font-family: 'Space Mono', monospace; font-size: 4rem; font-weight: 700;
+            color: var(--accent-cyan); display: block; margin: 10px 0; line-height: 1;
         }
+        .stat-number.negative { color: var(--accent-red); }
+        .stat-context { font-size: 1.2rem; color: var(--text-muted); }
 
-        .stat-number.negative {
-            color: #ff4d4d; /* Rojo apagado */
-        }
-
-        .stat-context {
-            font-size: 1.2rem;
-            color: var(--text-muted);
+        /* GRÁFICAS */
+        .chart-box {
+            background: rgba(0,0,0,0.4); border: 1px solid var(--grid-line);
+            padding: 20px; border-radius: 8px; margin-top: 20px;
+            position: relative; height: 350px;
         }
 
         .quote {
-            font-size: 2rem;
-            font-style: italic;
-            color: var(--text-main);
-            border-left: 3px solid var(--accent-warm);
-            padding-left: 20px;
-            margin: 40px 0;
+            font-size: 2.2rem; font-style: italic; color: var(--text-main);
+            border-left: 3px solid var(--accent-warm); padding-left: 25px; margin: 40px 0;
         }
 
-        /* INTERACTIVO: El Interruptor de Supervivencia */
+        /* INTERACTIVO */
         .interactive-panel {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            background: #111;
-            border: 1px solid #333;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,1);
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            background: #111; border: 1px solid #333; padding: 50px;
+            border-radius: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,1);
         }
-
-        .switch-container {
-            margin: 30px 0;
-            cursor: pointer;
-            position: relative;
-        }
-
+        .switch-container { margin: 30px 0; cursor: pointer; position: relative; }
         .switch-bg {
-            width: 100px;
-            height: 50px;
-            background: #222;
-            border-radius: 25px;
-            border: 2px solid #444;
-            transition: all 0.3s;
+            width: 100px; height: 50px; background: #222; border-radius: 25px;
+            border: 2px solid #444; transition: all 0.3s;
         }
-
         .switch-circle {
-            width: 40px;
-            height: 40px;
-            background: #555;
-            border-radius: 50%;
-            position: absolute;
-            top: 5px;
-            left: 5px;
+            width: 40px; height: 40px; background: #555; border-radius: 50%;
+            position: absolute; top: 5px; left: 5px;
             transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
+        .switch-container.active .switch-bg { border-color: var(--accent-warm); box-shadow: 0 0 15px rgba(255, 159, 28, 0.3); }
+        .switch-container.active .switch-circle { left: 55px; background: var(--accent-warm); box-shadow: 0 0 20px var(--accent-warm); }
 
-        /* Estado activo */
-        .switch-container.active .switch-bg {
-            border-color: var(--accent-warm);
-            box-shadow: 0 0 15px rgba(255, 159, 28, 0.3);
+        /* BOTONES / ENLACES */
+        .btn-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+        .btn {
+            display: inline-block; padding: 12px 24px; border: 1px solid var(--accent-warm);
+            color: var(--accent-warm); text-decoration: none; font-family: 'Space Mono', monospace;
+            font-size: 0.9rem; border-radius: 4px; transition: all 0.3s;
         }
-        .switch-container.active .switch-circle {
-            left: 55px;
-            background: var(--accent-warm);
-            box-shadow: 0 0 20px var(--accent-warm);
-        }
-
-        .chart-container {
-            width: 100%;
-            max-width: 600px;
-            height: 300px;
-            margin: 30px auto;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        .chart-container.show {
-            opacity: 1;
-        }
+        .btn:hover { background: var(--accent-warm); color: #000; }
+        .btn.solid { background: var(--accent-warm); color: #000; }
+        .btn.solid:hover { background: #fff; border-color: #fff; }
 
         /* FOOTER */
         .footer {
-            text-align: center;
-            padding: 50px 20px;
-            border-top: 1px solid var(--grid-line);
-            font-family: 'Space Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--text-muted);
+            text-align: center; padding: 60px 20px; border-top: 1px solid var(--grid-line);
+            font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--text-muted);
         }
 
-        /* Animaciones */
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
-        }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
-        /* Elementos que aparecen en scroll */
-        .reveal {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 1s ease-out;
-        }
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 1s ease-out; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
 
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.8rem; }
+            .stat-number { font-size: 3rem; }
+            .quote { font-size: 1.5rem; }
+            .chart-box { height: 280px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Fondo 3D generativo -->
     <div id="canvas-container"></div>
 
     <div class="container">
         
-        <!-- SECCIÓN 1: HERO -->
+        <!-- 1. HERO -->
         <section class="hero">
             <h1>La Resistencia<br>de los Vatios</h1>
             <p>Una historia de datos sobre la paradoja energética en Cuba (2020-2026).</p>
             <div class="scroll-hint">[ DESLIZA PARA EXPLORAR EL SISTEMA ]</div>
         </section>
 
-        <!-- SECCIÓN 2: LA PROMESA (El dato macro) -->
+        <!-- 2. LA PROMESA (ONEI) -->
         <section class="scroll-section">
             <div class="data-card reveal">
                 <p class="data-font" style="color: var(--accent-cyan); font-size: 0.9rem;">// REPORTE OFICIAL ONEI 2026</p>
                 <h2>Aumento de la Capacidad Instalada</h2>
                 <span class="stat-number" id="stat-1">+18.7%</span>
-                <p class="stat-context">El país ha multiplicado la instalación de paneles solares y granjas fotovoltaicas en los últimos 6 años.</p>
+                <p class="stat-context">La potencia de parques fotovoltaicos creció de 221.5 MW a 263 MW entre 2020 y 2022.</p>
             </div>
         </section>
 
-        <!-- SECCIÓN 3: LA PARADOJA (El dato micro) -->
+        <!-- 3. LA PARADOJA (Generación FV) -->
         <section class="scroll-section">
-            <div class="data-card reveal" style="border-left-color: #ff4d4d;">
-                <p class="data-font" style="color: #ff4d4d; font-size: 0.9rem;">// ANÁLISIS DE DATOS REALES</p>
+            <div class="data-card alert reveal">
+                <p class="data-font" style="color: var(--accent-red); font-size: 0.9rem;">// ANÁLISIS DE DATOS REALES</p>
                 <h2>Pero la Generación Neta Cayó</h2>
                 <span class="stat-number negative" id="stat-2">-7.4%</span>
-                <p class="stat-context">A pesar de tener más paneles, la energía real que llega al sistema eléctrico nacional es menor. ¿Por qué?</p>
+                <p class="stat-context">A pesar de tener más paneles, la energía real generada cayó de 260.8 a 241.5 GW·h. El sol está ahí, pero la eficiencia no.</p>
+                <div class="chart-box">
+                    <canvas id="chartOnei"></canvas>
+                </div>
             </div>
         </section>
 
-        <!-- SECCIÓN 4: EL VACÍO (La opacidad del estado) -->
+        <!-- 4. EL VACÍO (Sesgo del Estado) -->
         <section class="scroll-section">
             <div class="data-card reveal" style="border-left-color: #555;">
                 <p class="data-font">// OPACIDAD INSTITUCIONAL</p>
                 <h2>El 90% de las solicitudes de datos fueron denegadas.</h2>
-                <p class="stat-context">Las cifras macro no explican el día a día. La falta de transparencia nos obliga a mirar hacia otro lado: hacia la calle, hacia las casas.</p>
+                <p class="stat-context">De 20 centros estatales abordados, solo 2 accedieron a dar información (por contacto personal). El Estado oculta su crisis. Pero el sector privado y los residentes abrieron sus puertas.</p>
             </div>
         </section>
 
-        <!-- SECCIÓN 5: EL GIRO HUMANO (Interactivo) -->
+        <!-- 5. LA RESPUESTA (Inversión por Sector) -->
+        <section class="scroll-section">
+            <div class="data-card warm reveal">
+                <p class="data-font" style="color: var(--accent-warm); font-size: 0.9rem;">// DATOS PRIMARIOS Y OSINT</p>
+                <h2>El Ciudadano Tomó el Control</h2>
+                <p class="stat-context">Los locales privados instalan el doble de potencia que las casas. Las solineras estatales, aunque grandes, no cubren la demanda.</p>
+                <div class="chart-box">
+                    <canvas id="chartPotencia"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. EL CLIMA (NASA POWER) -->
+        <section class="scroll-section">
+            <div class="data-card reveal" style="border-left-color: #bcbd22;">
+                <p class="data-font" style="color: #bcbd22; font-size: 0.9rem;">// NASA POWER</p>
+                <h2>La Paradoja del Verano</h2>
+                <p class="stat-context">Cuba tiene una irradiancia excelente, pero las temperaturas de 30°C en verano y la humedad superior al 80% degradan la eficiencia de los paneles.</p>
+                <div class="chart-box">
+                    <canvas id="chartNasa"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. EL GIRO HUMANO (Interactivo) -->
         <section class="scroll-section">
             <div class="interactive-panel reveal">
                 <h2>Los 2 kWp de la Supervivencia</h2>
@@ -300,38 +234,45 @@
                     <div class="switch-circle"></div>
                 </div>
 
-                <div id="survival-text" style="height: 60px; font-size: 1.5rem; font-style: italic; transition: opacity 0.3s;">
+                <div id="survival-text" style="height: 60px; font-size: 1.6rem; font-style: italic; transition: opacity 0.3s; margin-bottom: 20px;">
                     Esperando conexión al sistema...
                 </div>
 
-                <div class="chart-container" id="chart-wrapper">
+                <div class="chart-box" id="chart-wrapper" style="width: 100%; max-width: 600px; opacity: 0; transition: opacity 0.5s;">
                     <canvas id="survivalChart"></canvas>
                 </div>
             </div>
         </section>
 
-        <!-- SECCIÓN 6: CONCLUSIÓN -->
+        <!-- 8. CONCLUSIONES Y RECURSOS -->
         <section class="scroll-section">
             <blockquote class="quote reveal">
                 "La belleza de lo gastado, lo reparado y lo que sigue funcionando. La resiliencia no es una estadística, es un acto diario de reparación."
             </blockquote>
-            <div class="reveal" style="text-align: center; color: var(--text-muted);">
-                <p>Granjas de 40 kWp que alimentan barrios enteros. Casas con 2 kWp que mantienen los alimentos fríos un día más.</p>
-                <p style="margin-top: 20px;" class="data-font">Investigación de Ciencia de Datos | 2026</p>
+            
+            <div class="reveal" style="text-align: center; margin-top: 40px;">
+                <h3>Explora la Investigación Completa</h3>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Accede al informe técnico, al código fuente y a las visualizaciones interactivas.</p>
+                
+                <div class="btn-group">
+                    <!-- CAMBIA LOS ENLACES POR LOS DE TU GITHUB -->
+                    <a href="docs/Informe_Tecnico_Final_Cuba_Solar_2026.pdf" class="btn solid" target="_blank">📄 Leer Informe PDF</a>
+                    <a href="https://github.com/TU-USUARIO/TU-REPO" class="btn" target="_blank">💻 Ver en GitHub</a>
+                    <a href="https://github.com/TU-USUARIO/TU-REPO/tree/main/data/clean" class="btn" target="_blank">📊 Descargar Datos CSV</a>
+                </div>
             </div>
         </section>
 
     </div>
 
     <footer class="footer">
-        <p>FUENTES: ONEI (Oficina Nacional de Estadística e Información) / Encuesta de campo (N=32) / Análisis propio.</p>
-        <p>Diseño de información: [Tu Nombre]</p>
+        <p>FUENTES: ONEI / NASA POWER / Encuesta de campo (N=32) / OSINT (N=64).</p>
+        <p>Diseño de información: [Tu Nombre] | Análisis de Datos 2026</p>
     </footer>
 
-    <!-- SCRIPTS -->
     <script>
         // ==========================================
-        // 1. THREE.JS - FONDO 3D (SISTEMA ELÉCTRICO)
+        // 1. THREE.JS - FONDO 3D (PARTÍCULAS)
         // ==========================================
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -341,181 +282,149 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
 
-        // Crear partículas (representando electrones/vatios)
         const particlesGeometry = new THREE.BufferGeometry();
         const particlesCount = 2000;
         const posArray = new Float32Array(particlesCount * 3);
 
         for(let i = 0; i < particlesCount * 3; i++) {
-            // Distribuir en una cuadrícula amplia
             posArray[i] = (Math.random() - 0.5) * 20;
         }
 
         particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-        
-        // Material de las partículas (color ámbar/cobre)
         const particlesMaterial = new THREE.PointsMaterial({
-            size: 0.03,
-            color: 0xff9f1c, // Color cálido
-            transparent: true,
-            opacity: 0.8,
-            blending: THREE.AdditiveBlending
+            size: 0.03, color: 0xff9f1c, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending
         });
-
         const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
         scene.add(particlesMesh);
-
         camera.position.z = 5;
 
-        // Animación del fondo
-        let mouseX = 0;
-        let mouseY = 0;
-
+        let mouseX = 0, mouseY = 0;
         document.addEventListener('mousemove', (event) => {
             mouseX = (event.clientX / window.innerWidth) - 0.5;
             mouseY = (event.clientY / window.innerHeight) - 0.5;
         });
 
         const clock = new THREE.Clock();
-
         function animate() {
             requestAnimationFrame(animate);
             const elapsedTime = clock.getElapsedTime();
-
-            // Rotación suave basada en el tiempo y el ratón
             particlesMesh.rotation.y = elapsedTime * 0.05 + mouseX * 0.5;
             particlesMesh.rotation.x = elapsedTime * 0.02 + mouseY * 0.5;
-
-            // Efecto de "respiración" (los vatios fluctúan)
             particlesMaterial.opacity = 0.5 + Math.sin(elapsedTime * 2) * 0.3;
-
             renderer.render(scene, camera);
         }
         animate();
 
-        // Responsive
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-
         // ==========================================
-        // 2. GSAP - ANIMACIONES AL HACER SCROLL
+        // 2. GSAP - ANIMACIONES
         // ==========================================
         gsap.registerPlugin(ScrollTrigger);
-
-        // Revelar elementos al hacer scroll
-        const reveals = document.querySelectorAll('.reveal');
-        reveals.forEach((el) => {
+        document.querySelectorAll('.reveal').forEach((el) => {
             ScrollTrigger.create({
-                trigger: el,
-                start: "top 85%",
-                onEnter: () => el.classList.add('visible'),
-                once: true
+                trigger: el, start: "top 85%", onEnter: () => el.classList.add('visible'), once: true
             });
         });
 
-        // Animar los números de las estadísticas
-        const stat1 = document.getElementById('stat-1');
-        ScrollTrigger.create({
-            trigger: stat1,
-            start: "top 80%",
-            onEnter: () => {
-                gsap.from(stat1, { textContent: 0, duration: 2, snap: { textContent: 1 }, ease: "power2.out" });
-            }
-        });
-
-        const stat2 = document.getElementById('stat-2');
-        ScrollTrigger.create({
-            trigger: stat2,
-            start: "top 80%",
-            onEnter: () => {
-                // Animación para negativo
-                gsap.fromTo(stat2, 
-                    { textContent: 0 }, 
-                    { textContent: -7.4, duration: 2, snap: { textContent: 0.1 }, ease: "power2.out" }
-                );
-            }
-        });
-
-
         // ==========================================
-        // 3. INTERACTIVIDAD - EL INTERRUPTOR HUMANO
+        // 3. CHART.JS - GRÁFICAS DE DATOS REALES
         // ==========================================
-        const switchEl = document.getElementById('survival-switch');
-        const textEl = document.getElementById('survival-text');
-        const chartWrapper = document.getElementById('chart-wrapper');
-        let isActive = false;
-        let myChart = null;
+        
+        // Configuración global de estilo para Chart.js
+        Chart.defaults.color = '#8a8a8a';
+        Chart.defaults.font.family = "'Space Mono', monospace";
+        Chart.defaults.font.size = 10;
+        Chart.defaults.plugins.legend.labels.boxWidth = 12;
 
-        // Datos simulados para el gráfico interactivo
-        const chartData = {
-            labels: ['Para la Moda/Ambiente', 'Para Supervivencia (Comida/Agua)'],
-            datasets: [{
-                label: 'Razones de compra (N=32)',
-                data: [0, 32], // 0% moda, 100% supervivencia
-                backgroundColor: [
-                    'rgba(255, 255, 255, 0.1)', // Gris apagado
-                    'rgba(255, 159, 28, 0.8)'   // Ámbar cálido
-                ],
-                borderColor: [
-                    'rgba(255, 255, 255, 0.2)',
-                    'rgba(255, 159, 28, 1)'
-                ],
-                borderWidth: 2,
-                borderRadius: 5
-            }]
-        };
+        const gridColor = 'rgba(255, 255, 255, 0.05)';
 
-        switchEl.addEventListener('click', () => {
-            isActive = !isActive;
-            switchEl.classList.toggle('active');
-
-            if (isActive) {
-                // Encendido
-                textEl.textContent = "“Para que no se dañe la comida en el apagón.”";
-                textEl.style.color = "var(--accent-warm)";
-                chartWrapper.classList.add('show');
-                
-                if (!myChart) {
-                    const ctx = document.getElementById('survivalChart').getContext('2d');
-                    myChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: chartData,
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            animation: {
-                                duration: 2000,
-                                easing: 'easeOutQuart'
-                            },
-                            plugins: {
-                                legend: { display: false }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    max: 32,
-                                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                                    ticks: { color: '#8a8a8a', font: { family: 'Space Mono' } }
-                                },
-                                x: {
-                                    grid: { display: false },
-                                    ticks: { color: '#e0e0e0', font: { family: 'Crimson Pro' } }
-                                }
-                            }
-                        }
-                    });
+        // Gráfica 1: ONEI (Doble Eje)
+        const ctxOnei = document.getElementById('chartOnei').getContext('2d');
+        new Chart(ctxOnei, {
+            type: 'line',
+            data: {
+                labels: ['2020', '2021', '2022'],
+                datasets: [
+                    {
+                        label: 'Gen. Total (GW·h)',
+                        data: [19070.9, 17965.5, 15732.1],
+                        borderColor: '#1f77b4',
+                        backgroundColor: 'rgba(31, 119, 180, 0.1)',
+                        yAxisID: 'y',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Gen. FV (GW·h)',
+                        data: [260.8, 265.0, 241.5],
+                        borderColor: '#2ca02c',
+                        yAxisID: 'y1',
+                        tension: 0.3,
+                        borderDash: [5, 5]
+                    },
+                    {
+                        label: 'Potencia FV (MW)',
+                        data: [221.5, 241.8, 263.0],
+                        borderColor: '#d62728',
+                        yAxisID: 'y1',
+                        tension: 0.3,
+                        borderDash: [2, 2]
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    x: { grid: { color: gridColor } },
+                    y: { type: 'linear', display: true, position: 'left', grid: { color: gridColor }, title: { display: true, text: 'Gen. Total' } },
+                    y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'FV / Potencia' } }
                 }
-            } else {
-                // Apagado
-                textEl.textContent = "Esperando conexión al sistema...";
-                textEl.style.color = "var(--text-muted)";
-                chartWrapper.classList.remove('show');
             }
         });
-    </script>
-</body>
-</html>
+
+        // Gráfica 2: Potencia por Sector (Barras)
+        const ctxPotencia = document.getElementById('chartPotencia').getContext('2d');
+        new Chart(ctxPotencia, {
+            type: 'bar',
+            data: {
+                labels: ['Residencias (Primario)', 'Centros Privados (Web)', 'Solineras (Web)'],
+                datasets: [{
+                    label: 'Potencia Mediana (kWp)',
+                    data: [2.0, 4.5, 40.0],
+                    backgroundColor: ['rgba(44, 160, 44, 0.7)', 'rgba(214, 39, 40, 0.7)', 'rgba(148, 103, 189, 0.7)'],
+                    borderColor: ['#2ca02c', '#d62728', '#9467bd'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { beginAtZero: true, grid: { color: gridColor } }
+                }
+            }
+        });
+
+        // Gráfica 3: NASA Clima (Barras y Línea)
+        const ctxNasa = document.getElementById('chartNasa').getContext('2d');
+        new Chart(ctxNasa, {
+            type: 'bar',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                datasets: [
+                    {
+                        type: 'line',
+                        label: 'Temperatura (°C)',
+                        data: [23.2, 24.0, 25.6, 27.1, 28.1, 28.2, 28.6, 28.5, 28.1, 26.8, 24.8, 23.3],
+                        borderColor: '#e377c2',
+                        backgroundColor: '#e377c2',
+                        yAxisID: 'y1',
+                        tension: 0.3
+ 
