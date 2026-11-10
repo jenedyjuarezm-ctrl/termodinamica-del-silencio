@@ -150,3 +150,40 @@ async function initCharts() {
 }
 
 initCharts();
+// ==========================================================================
+// 6. CONTADOR DE VISITAS EN TIEMPO REAL (SUPABASE)
+// ==========================================================================
+const SUPABASE_URL = 'https://jntyotrddlrzccoauram.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_H8uhN5DbCWLslwo4uJlDuw_jdAjE67K';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function registrarYContarVisitas() {
+    const countElement = document.getElementById('view-count');
+    if (!countElement) return;
+
+    try {
+        // 1. Registrar la visita actual
+        const { error: insertError } = await supabaseClient
+            .from('page_views')
+            .insert([{}]);
+        
+        if (insertError) throw insertError;
+
+        // 2. Contar cuántas visitas hay en total
+        const { count, error: countError } = await supabaseClient
+            .from('page_views')
+            .select('*', { count: 'exact', head: true });
+
+        if (countError) throw countError;
+
+        // 3. Mostrar el número en la pantalla con formato (ej: 1,245)
+        countElement.textContent = count.toLocaleString('es-ES');
+
+    } catch (error) {
+        console.error('Error al contar visitas:', error);
+        countElement.textContent = "N/A";
+    }
+}
+
+// Ejecutar al cargar la página
+window.addEventListener('DOMContentLoaded', registrarYContarVisitas);
