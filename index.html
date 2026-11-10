@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Resistencia de los Vatios | Transición Solar en Cuba</title>
-    <meta name="description" content="Análisis de datos sobre la paradoja energética en Cuba (2020-2026).">
+    <meta name="description" content="Análisis inmersivo sobre la paradoja energética en Cuba (2020-2026).">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,6 +19,21 @@
     <script defer src="app.js"></script>
 </head>
 <body>
+    <!-- Barra de progreso de lectura -->
+    <div id="scroll-progress"></div>
+
+    <!-- Reproductor de Música Lofi -->
+    <audio id="lofi-audio" loop>
+        <!-- Puse un enlace de un track Lofi libre de derechos. Puedes cambiarlo por tu propio MP3 -->
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+    </audio>
+    <button id="music-toggle" aria-label="Activar música de fondo">
+        <span class="icon">🎵</span>
+        <div class="waves">
+            <div class="wave"></div><div class="wave"></div><div class="wave"></div>
+        </div>
+    </button>
+
     <div id="canvas-container" aria-hidden="true"></div>
 
     <main class="container">
@@ -29,20 +44,40 @@
             <div class="scroll-hint data-font">[ DESLIZA PARA EXPLORAR EL SISTEMA ]</div>
         </section>
 
+        <!-- SECCIÓN: METODOLOGÍA (El rigor académico) -->
+        <section class="scroll-section">
+            <div class="data-card reveal border-muted">
+                <p class="data-font label-muted">// CAPA 1: METODOLOGÍA Y OPACIDAD</p>
+                <h2>El desafío de investigar en el vacío</h2>
+                <p class="stat-context">Para entender la transición energética, no basta con leer reportes oficiales. Se realizaron 10 solicitudes formales de información al Estado. El resultado fue una negativa sistemática.</p>
+                
+                <div class="methodology-grid">
+                    <div class="method-item">
+                        <span class="method-num">90%</span>
+                        <span class="method-desc">De solicitudes denegadas por el Estado.</span>
+                    </div>
+                    <div class="method-item">
+                        <span class="method-num">N=32</span>
+                        <span class="method-desc">Encuestas de campo realizadas a residentes.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- LA PROMESA (DATO 1) -->
         <section class="scroll-section">
             <div class="data-card reveal">
-                <p class="data-font label-cyan">// REPORTE OFICIAL ONEI</p>
+                <p class="data-font label-cyan">// CAPA 2: EL DISCURSO OFICIAL (ONEI)</p>
                 <h2>Aumento de la Capacidad Instalada</h2>
                 <span class="stat-number" id="stat-1">+18.7%</span>
-                <p class="stat-context">El país ha multiplicado la instalación de paneles solares. Las solineras de 40 kWp y las casas de 2 kWp han crecido exponencialmente.</p>
+                <p class="stat-context">Las cifras oficiales muestran un crecimiento exponencial en la importación e instalación de paneles solares y granjas fotovoltaicas.</p>
             </div>
         </section>
 
         <!-- LA PARADOJA (DATO 2 Y GRÁFICA) -->
         <section class="scroll-section">
             <div class="data-card reveal border-danger">
-                <p class="data-font label-danger">// ANÁLISIS DE DATOS REALES</p>
+                <p class="data-font label-danger">// CAPA 3: LA PARADOJA MACROECONÓMICA</p>
                 <h2>Pero la Generación Neta Cayó</h2>
                 <span class="stat-number negative" id="stat-2">-7.4%</span>
                 <p class="stat-context">A pesar de tener más paneles, la energía real que llega al sistema eléctrico es menor. La macroeconomía choca con la realidad del apagón.</p>
@@ -52,20 +87,35 @@
             </div>
         </section>
 
-        <!-- EL VACÍO (TRANSPARENCIA) -->
+        <!-- SECCIÓN: INFRAESTRUCTURA (Contexto técnico) -->
         <section class="scroll-section">
-            <div class="data-card reveal border-muted">
-                <p class="data-font label-muted">// OPACIDAD INSTITUCIONAL</p>
-                <h2>El 90% de las solicitudes de datos fueron denegadas.</h2>
-                <p class="stat-context">Las cifras macro no explican el día a día. La falta de transparencia nos obliga a mirar hacia otro lado: hacia la calle, hacia las casas.</p>
+            <div class="data-card reveal">
+                <p class="data-font label-cyan">// CAPA 4: LA ESCALA DE LA INFRAESTRUCTURA</p>
+                <h2>De lo macro a lo micro</h2>
+                <p class="stat-context">El sistema se sostiene en dos extremos: grandes solineras estatales y pequeños paneles individuales en los techos.</p>
+                
+                <div class="infra-comparison">
+                    <div class="infra-box">
+                        <h3>Solineras Estatales</h3>
+                        <span class="infra-num data-font">40 kWp</span>
+                        <p>Capacidad por granja. Diseñadas para alimentar comunidades, pero dependientes de la red nacional.</p>
+                    </div>
+                    <div class="infra-vs data-font">VS</div>
+                    <div class="infra-box">
+                        <h3>Hogares Privados</h3>
+                        <span class="infra-num data-font" style="color: var(--accent-warm);">2 kWp</span>
+                        <p>Paneles individuales. 1 granja equivale a la energía instalada de 20 hogares.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- EL GIRO HUMANO (INTERACTIVO) -->
         <section class="scroll-section">
             <div class="interactive-panel reveal">
+                <p class="data-font label-muted" style="align-self: flex-start; margin-bottom: 15px;">// CAPA 5: EL FACTOR HUMANO</p>
                 <h2>Los 2 kWp de la Supervivencia</h2>
-                <p class="interactive-desc">El 100% de los 32 residentes encuestados no compró paneles por ecología.<br><strong>Pulsa el interruptor para ver la verdadera razón:</strong></p>
+                <p class="interactive-desc">¿Por qué las personas invierten en paneles solares? El 100% de los encuestados coincidió en una razón que no tiene nada que ver con el cambio climático.<br><strong>Pulsa el interruptor para ver la verdadera razón:</strong></p>
                 
                 <div class="switch-container" id="survival-switch" role="button" tabindex="0" aria-label="Encender interruptor de supervivencia">
                     <div class="switch-bg"></div>
@@ -80,11 +130,12 @@
             </div>
         </section>
 
-        <!-- CONCLUSIÓN -->
+        <!-- CONCLUSIÓN Y FUTURO -->
         <section class="scroll-section">
+            <p class="data-font label-cyan" style="text-align: center; margin-bottom: 20px;">// CAPA 6: EL FUTURO Y LA RESILIENCIA</p>
             <blockquote class="quote reveal">"La belleza de lo gastado, lo reparado y lo que sigue funcionando. La resiliencia no es una estadística, es un acto diario de reparación."</blockquote>
             <div class="conclusion-text reveal">
-                <p>Granjas de 40 kWp que alimentan barrios enteros. Casas con 2 kWp que mantienen los alimentos fríos un día más.</p>
+                <p>Mientras el Estado enfrenta una crisis de generación y opacidad, la sociedad cubana se adapta. Los 2 kWp en los techos no son una revolución verde, son un escudo contra la vulnerabilidad energética. La transición real no está en los grandes parques solares, sino en la micro-generación doméstica que mantiene la comida fría un día más.</p>
             </div>
         </section>
     </main>
