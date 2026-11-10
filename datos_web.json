@@ -1,0 +1,16 @@
+{
+  "paradoja": {
+    "labels": ["2020", "2021", "2022"],
+    "capacidad": [0, 9.3, 18.7],
+    "generacion": [0, -3.7, -7.4]
+  },
+  "transparencia": {
+    "estatales_negados": 90,
+    "privados_abiertos": 100
+  },
+  "supervivencia": {
+    "total_encuestados": 32,
+    "motivo_supervivencia": 100,
+    "motivo_ahorro": 0
+  }
+}
