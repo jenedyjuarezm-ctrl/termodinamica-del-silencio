@@ -31,98 +31,33 @@ async function fetchData() {
 
 
 // ==========================================================================
-// 3. REPRODUCTOR DE MÚSICA (Sintetizador Lofi Avanzado)
+// 3. REPRODUCTOR DE MÚSICA LOFI (MP3 REAL)
 // ==========================================================================
 const musicBtn = document.getElementById('music-toggle');
-let audioCtx, isPlaying = false;
-let lofiInterval;
+const lofiAudio = document.getElementById('lofi-audio');
 
-function playLofi() {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    // Escala Pentatónica de Do Mayor (Suena bien en cualquier orden)
-    const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25]; 
-    let step = 0;
+if (musicBtn && lofiAudio) {
+    // Ajustar el volumen a un nivel suave de fondo (30%)
+    lofiAudio.volume = 0.3;
 
-    const playNote = (freq, time, duration, volume) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        
-        // Onda triangular suena más cálida y analógica que la senoidal
-        osc.type = 'triangle'; 
-        osc.frequency.setValueAtTime(freq, time);
-        
-        // Envolvente suave (ataque y caída lenta)
-        gain.gain.setValueAtTime(0, time);
-        gain.gain.linearRampToValueAtTime(volume, time + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
-        
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        
-        osc.start(time);
-        osc.stop(time + duration);
-    };
-
-    const playDrum = (time) => {
-        // Un "kick" suave simulando el ritmo lofi
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(150, time);
-        osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.1);
-        gain.gain.setValueAtTime(0.2, time);
-        gain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(time);
-        osc.stop(time + 0.2);
-    };
-
-    const loop = () => {
-        const now = audioCtx.currentTime;
-        
-        // Tocar acorde base (Bajo)
-        playNote(130.81, now, 2.0, 0.04); // Do grave
-        
-        // Tocar notas aleatorias de la escala (Melodía)
-        const randomNote = scale[Math.floor(Math.random() * scale.length)];
-        playNote(randomNote, now + 0.5, 1.5, 0.03);
-        
-        // Tocar un segundo acompañamiento
-        const randomNote2 = scale[Math.floor(Math.random() * scale.length)];
-        playNote(randomNote2, now + 1.2, 1.0, 0.02);
-
-        // Ritmo de batería
-        if (step % 2 === 0) playDrum(now);
-        if (step % 4 === 0) playDrum(now + 1.5);
-
-        step++;
-    };
-
-    // Ejecutar el bucle cada 2 segundos
-    loop();
-    lofiInterval = setInterval(loop, 2000);
-}
-
-if (musicBtn) {
     musicBtn.addEventListener('click', () => {
-        if (!audioCtx) {
-            playLofi();
-            isPlaying = true;
-            musicBtn.classList.add('playing');
-        } else if (isPlaying) {
-            audioCtx.suspend();
-            isPlaying = false;
-            musicBtn.classList.remove('playing');
+        if (lofiAudio.paused) {
+            // Intentar reproducir
+            lofiAudio.play().then(() => {
+                musicBtn.classList.add('playing');
+                musicBtn.innerHTML = '<div class="waves"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>';
+            }).catch(error => {
+                console.error("El navegador bloqueó el audio:", error);
+                alert("Toca la pantalla una vez más para permitir el audio.");
+            });
         } else {
-            audioCtx.resume();
-            isPlaying = true;
-            musicBtn.classList.add('playing');
+            // Pausar
+            lofiAudio.pause();
+            musicBtn.classList.remove('playing');
+            musicBtn.innerHTML = '<span class="icon">🔊</span>';
         }
     });
 }
-
 
 // ==========================================================================
 // 4. BARRA DE PROGRESO DE LECTURA
