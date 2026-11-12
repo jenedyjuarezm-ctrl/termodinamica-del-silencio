@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     
-    <!-- Librerías principales -->
+    <!-- Librerías -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -35,7 +35,7 @@
         <span class="radar-icon">📡</span> <span id="view-count">...</span> VISTAS
     </div>
 
-    <!-- OVERLAY DEL APAGÓN (Oculto por defecto) -->
+    <!-- OVERLAY DEL APAGÓN -->
     <div id="blackout-overlay" class="hidden">
         <div class="blackout-content">
             <h2 class="glitch-text" style="color: #333;">SISTEMA CAÍDO</h2>
@@ -53,7 +53,7 @@
                 <h1 class="hero-title glitch" data-text="DE LOS VATIOS">DE LOS VATIOS</h1>
             </div>
             <p class="hero-subtitle">Termodinámica del Silencio: Un viaje inmersivo por la crisis y la resiliencia energética en Cuba (2020-2026).</p>
-            <div class="scroll-hint data-font">[ INICIAR PROTOCOLO DE EXPLORACIÓN ]</div>
+            <div class="scroll-hint data-font">[ INICIAR PROTOCOLO ]</div>
         </section>
 
         <!-- 2. EL COLAPSO -->
@@ -95,18 +95,17 @@
             </div>
         </section>
 
-        <!-- 5. RADAR OSINT -->
+        <!-- 5. HOLOGRAMA OSINT -->
         <section class="scroll-section">
             <div class="data-card border-cyan">
                 <p class="data-font label-cyan">// CAPA 5: LOS INVISIBLES (OSINT)</p>
-                <h2>El radar de la resistencia</h2>
-                <p class="stat-context">Ante la negativa del Estado, la prensa reveló 64 puntos de generación. Toca los destellos en el radar para inspeccionar los datos:</p>
+                <h2>El holograma de la resistencia</h2>
+                <p class="stat-context">Ante la negativa del Estado, la prensa reveló 64 puntos de generación. Toca los nodos brillantes para inspeccionar los datos:</p>
                 
-                <div class="radar-container" id="radar-container">
-                    <div class="radar-sweep"></div>
-                    <!-- Los nodos se inyectan vía JS -->
+                <div class="hologram-container" id="hologram-container">
+                    <div class="hologram-lines"></div>
                 </div>
-                <div id="osint-info" class="osint-info data-font">Esperando señal...</div>
+                <div id="osint-info" class="osint-info data-font">SISTEMA EN ESPERA...</div>
             </div>
         </section>
 
@@ -149,7 +148,7 @@
                     <div class="timeline-item">
                         <div class="timeline-dot"></div>
                         <h3>Fase 4: Ingeniería de Software</h3>
-                        <p>Pipeline en Python. Resolución de conflictos de dependencias binarias garantizando la estabilidad del entorno virtual.</p>
+                        <p>Pipeline en Python. Resolución de conflictos de dependencias binarias garantizando la estabilidad.</p>
                     </div>
                 </div>
             </div>
@@ -185,7 +184,7 @@
             <div class="data-card border-muted" style="background: #000; border: 1px solid #333; border-left: 4px solid #00ff00;">
                 <p class="data-font" style="color: #00ff00;">// CAPA 9: TERMINAL DE ACCESO OSINT</p>
                 <h2 style="font-family: monospace; color: #00ff00;">root@cuba-solar:~#</h2>
-                <p class="stat-context" style="color: #888;">Ante la censura estatal, el analista debe hackear la información. Escribe <strong style="color: #00ff00;">help</strong> para ver los comandos disponibles.</p>
+                <p class="stat-context" style="color: #888;">Iniciando protocolo de extracción. Escribe <strong style="color: #00ff00;">help</strong> para ver los comandos.</p>
                 
                 <div class="terminal-container" onclick="document.getElementById('terminal-input').focus()">
                     <div id="terminal-output"></div>
@@ -197,7 +196,7 @@
             </div>
         </section>
 
-        <!-- 10. BÓVEDA Y FOOTER ÉPICO -->
+        <!-- 10. BÓVEDA Y FOOTER -->
         <section class="scroll-section">
             <div class="data-card border-muted">
                 <p class="data-font label-muted">// CAPA 10: BÓVEDA DE DATOS</p>
@@ -215,7 +214,7 @@
             <div class="epic-footer reveal">
                 <p class="data-font" style="color: var(--accent-cyan); margin-bottom: 20px;">// PROYECTO FINALIZADO</p>
                 <h2>Explora el código fuente</h2>
-                <p>Esta experiencia web consume los datos procesados del repositorio original. Si eres un reclutador, profesor o analista, puedes auditar todo el pipeline de Python, los datos crudos y la lógica de este sitio.</p>
+                <p>Esta experiencia web consume los datos procesados del repositorio original. Audita el pipeline de Python y la lógica de este sitio.</p>
                 <a href="https://github.com/jenedyjuarezm-ctrl/termodinamica-del-silencio" target="_blank" class="btn-github">
                     <span class="icon">📁</span> Ir al repositorio en GitHub
                 </a>
