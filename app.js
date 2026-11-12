@@ -1,221 +1,193 @@
-// ==========================================================================
-// 1. CONFIGURACIÓN INICIAL Y VARIABLES GLOBALES
-// ==========================================================================
-const GITHUB_USER = 'jenedyjuarezm-ctrl';
-const REPO_NAME = 'termodinamica-del-silencio'; 
-const DATA_FILE = 'data/datos_web.json'; 
-const DATA_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/main/${DATA_FILE}`;
-
-// Credenciales de Supabase (Para el contador de visitas)
+const DATA_URL = `https://raw.githubusercontent.com/jenedyjuarezm-ctrl/termodinamica-del-silencio/main/data/datos_web.json`;
 const SUPABASE_URL = 'https://jntyotrddlrzccoauram.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_H8uhN5DbCWLslwo4uJlDuw_jdAjE67K';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==========================================================================
-// 2. DATOS SEGUROS (Respaldo si el JSON falla)
-// ==========================================================================
-async function fetchData() {
-    try {
-        const res = await fetch(DATA_URL);
-        if (!res.ok) throw new Error('Fallo al cargar JSON');
-        return await res.json();
-    } catch (e) {
-        console.warn(' Usando datos locales. Verifica la ruta del JSON en GitHub.');
-        return {
-            paradoja: { labels: ["2020", "2021", "2022", "2023", "2024", "2025", "2026"], capacidad: [0, 3.2, 7.5, 11.1, 14.5, 16.8, 18.7], generacion: [0, -1.2, -2.5, -4.1, -5.8, -6.5, -7.4] },
-            supervivencia: { motivo_supervivencia: 100, motivo_ahorro: 0 },
-            metodologia: { total_encuestados: 32 }
-        };
-    }
-}
-
-
-// ==========================================================================
-// 3. REPRODUCTOR DE MÚSICA LOFI (MP3 REAL)
-// ==========================================================================
+// --- 1. AUDIO (Sintetizador Lofi) ---
 const musicBtn = document.getElementById('music-toggle');
-const lofiAudio = document.getElementById('lofi-audio');
-
-if (musicBtn && lofiAudio) {
-    // Ajustar el volumen a un nivel suave de fondo (30%)
-    lofiAudio.volume = 0.3;
-
+let audioCtx, isPlaying = false, lofiInterval;
+function playLofi() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25]; 
+    const playNote = (freq, time, duration, volume) => {
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+        osc.type = 'triangle'; osc.frequency.setValueAtTime(freq, time);
+        gain.gain.setValueAtTime(0, time); gain.gain.linearRampToValueAtTime(volume, time + 0.05); gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(time); osc.stop(time + duration);
+    };
+    const playDrum = (time) => {
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+        osc.type = 'sine'; osc.frequency.setValueAtTime(150, time); osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.1);
+        gain.gain.setValueAtTime(0.1, time); gain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(time); osc.stop(time + 0.2);
+    };
+    const loop = () => {
+        const now = audioCtx.currentTime;
+        playNote(130.81, now, 2.0, 0.03); 
+        playNote(scale[Math.floor(Math.random() * scale.length)], now + 0.5, 1.5, 0.02);
+        playDrum(now); playDrum(now + 1.0);
+    };
+    loop(); lofiInterval = setInterval(loop, 2000);
+}
+if (musicBtn) {
     musicBtn.addEventListener('click', () => {
-        if (lofiAudio.paused) {
-            // Intentar reproducir
-            lofiAudio.play().then(() => {
-                musicBtn.classList.add('playing');
-                musicBtn.innerHTML = '<div class="waves"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>';
-            }).catch(error => {
-                console.error("El navegador bloqueó el audio:", error);
-                alert("Toca la pantalla una vez más para permitir el audio.");
-            });
-        } else {
-            // Pausar
-            lofiAudio.pause();
-            musicBtn.classList.remove('playing');
-            musicBtn.innerHTML = '<span class="icon">🔊</span>';
-        }
+        if (!audioCtx) { playLofi(); isPlaying = true; musicBtn.classList.add('playing'); }
+        else if (isPlaying) { audioCtx.suspend(); isPlaying = false; musicBtn.classList.remove('playing'); }
+        else { audioCtx.resume(); isPlaying = true; musicBtn.classList.add('playing'); }
     });
 }
 
-// ==========================================================================
-// 4. BARRA DE PROGRESO DE LECTURA
-// ==========================================================================
+// --- 2. CONTADOR Y PROGRESO ---
 window.addEventListener('scroll', () => {
-    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const scrollTop = document.documentElement.scrollTop;
     const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const progress = (scrollTop / scrollHeight) * 100;
-    const progressBar = document.getElementById('scroll-progress');
-    if (progressBar) progressBar.style.width = `${progress}%`;
+    document.getElementById('scroll-progress').style.width = `${(scrollTop / scrollHeight) * 100}%`;
 });
-
-// ==========================================================================
-// 5. CONTADOR DE VISITAS (Supabase)
-// ==========================================================================
 async function registrarYContarVisitas() {
     const countElement = document.getElementById('view-count');
     if (!countElement) return;
-
     try {
-        // Sumar visita
-        const { error: insertError } = await supabaseClient.from('page_views').insert([{}]);
-        if (insertError) throw insertError;
-
-        // Contar total
-        const { count, error: countError } = await supabaseClient.from('page_views').select('*', { count: 'exact', head: true });
-        if (countError) throw countError;
-
+        await supabaseClient.from('page_views').insert([{}]);
+        const { count, error } = await supabaseClient.from('page_views').select('*', { count: 'exact', head: true });
+        if (error) throw error;
         countElement.textContent = count.toLocaleString('es-ES');
-    } catch (error) {
-        console.error('Error al contar visitas:', error);
-        countElement.textContent = "N/A";
-    }
+    } catch (error) { countElement.textContent = "N/A"; }
 }
-
 window.addEventListener('DOMContentLoaded', registrarYContarVisitas);
 
-// ==========================================================================
-// 6. FONDO 3D (Three.js)
-// ==========================================================================
+// --- 3. FONDO 3D ---
 window.addEventListener('load', () => {
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
+        const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        
-        renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-        renderer.setSize(innerWidth, innerHeight);
-        
-        const container = document.getElementById('canvas-container');
-        if (container) container.appendChild(renderer.domElement);
-
-        const geo = new THREE.BufferGeometry();
-        const pos = new Float32Array(2000 * 3);
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5)); renderer.setSize(innerWidth, innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+        const geo = new THREE.BufferGeometry(), pos = new Float32Array(2000 * 3);
         for (let i = 0; i < pos.length; i++) pos[i] = (Math.random() - 0.5) * 25;
         geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-
         const mat = new THREE.PointsMaterial({ size: 0.04, color: 0xff8c00, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending });
-        const mesh = new THREE.Points(geo, mat);
-        scene.add(mesh);
-        camera.position.z = 5;
-
-        let mx = 0, my = 0;
-        document.addEventListener('mousemove', e => { mx = (e.clientX / innerWidth) - 0.5; my = (e.clientY / innerHeight) - 0.5; });
-
+        const mesh = new THREE.Points(geo, mat); scene.add(mesh); camera.position.z = 5;
+        let mx = 0, my = 0; document.addEventListener('mousemove', e => { mx = (e.clientX / innerWidth) - 0.5; my = (e.clientY / innerHeight) - 0.5; });
         const clock = new THREE.Clock();
-        
-        let active = true;
-        document.addEventListener('visibilitychange', () => { active = !document.hidden; if(active) animate(); });
-
         function animate() {
-            if(!active) return;
-            requestAnimationFrame(animate);
-            const t = clock.getElapsedTime();
-            mesh.rotation.y = t * 0.03 + mx * 0.3;
-            mesh.rotation.x = t * 0.015 + my * 0.3;
-            mat.opacity = 0.4 + Math.sin(t * 1.5) * 0.2;
+            requestAnimationFrame(animate); const t = clock.getElapsedTime();
+            mesh.rotation.y = t * 0.03 + mx * 0.3; mesh.rotation.x = t * 0.015 + my * 0.3; mat.opacity = 0.4 + Math.sin(t * 1.5) * 0.2;
             renderer.render(scene, camera);
         }
         animate();
     }
 });
 
-// ==========================================================================
-// 7. ANIMACIONES Y GRÁFICAS (GSAP + Chart.js)
-// ==========================================================================
+// --- 4. GRÁFICAS (GSAP + Chart.js) ---
 gsap.registerPlugin(ScrollTrigger);
-
-// Revelar secciones
 document.querySelectorAll('.reveal').forEach(el => {
     ScrollTrigger.create({ trigger: el, start: "top 85%", onEnter: () => el.classList.add('visible'), once: true });
 });
 
-// Animar números gigantes
-if(document.getElementById('stat-1')) {
-    gsap.from("#stat-1", { textContent: 0, duration: 2, snap: { textContent: 1 }, scrollTrigger: { trigger: "#stat-1", start: "top 85%" } });
-}
-if(document.getElementById('stat-2')) {
-    gsap.fromTo("#stat-2", { textContent: 0 }, { textContent: -7.4, duration: 2, snap: { textContent: 0.1 }, scrollTrigger: { trigger: "#stat-2", start: "top 85%" } });
-}
+// Datos estáticos basados en tu informe
+function crearGraficas() {
+    // 1. Gráfica de Metodología (Torta)
+    const ctxMet = document.getElementById('metodologiaChart');
+    if(ctxMet) {
+        new Chart(ctxMet, {
+            type: 'doughnut',
+            data: {
+                labels: ['Residentes (Primario)', 'Centros Web (OSINT)', 'Solineras Web (OSINT)'],
+                datasets: [{ data: [32, 32, 32], backgroundColor: ['#10b981', '#f59e0b', '#3b82f6'], borderWidth: 0 }]
+            },
+            options: { cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: '#888' } } } }
+        });
+    }
 
-async function initCharts() {
-    const data = await fetchData();
-    let c1, c2;
-
-    // Gráfica 1: La Paradoja
-    const paradoxWrapper = document.getElementById("paradox-chart-wrapper");
-    if (paradoxWrapper) {
-        ScrollTrigger.create({
-            trigger: paradoxWrapper, start: "top 85%",
-            onEnter: () => {
-                paradoxWrapper.classList.add('show');
-                if (!c1) {
-                    c1 = new Chart(document.getElementById('paradoxChart').getContext('2d'), {
-                        type: 'line',
-                        data: {
-                            labels: data.paradoja.labels,
-                            datasets: [
-                                { label: 'Capacidad Instalada (%)', data: data.paradoja.capacidad, borderColor: '#00e5ff', backgroundColor: 'rgba(0,229,255,0.1)', borderWidth: 3, fill: true },
-                                { label: 'Generación Real (%)', data: data.paradoja.generacion, borderColor: '#ff3333', backgroundColor: 'rgba(255,51,51,0.1)', borderWidth: 3, borderDash: [5,5], fill: true }
-                            ]
-                        },
-                        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 2000 }, plugins: { legend: { labels: { color: '#e8e8e8', font: { family: 'Space Mono' } } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#88888c' } }, x: { ticks: { color: '#88888c' } } } }
-                    });
+    // 2. Gráfica Paradoja (ONEI)
+    const ctxPara = document.getElementById('paradoxChart');
+    if(ctxPara) {
+        new Chart(ctxPara, {
+            type: 'line',
+            data: {
+                labels: ['2020', '2021', '2022'],
+                datasets: [
+                    { label: 'Generación Total (GW·h)', data: [19070, 17950, 15732], borderColor: '#3b82f6', yAxisID: 'y' },
+                    { label: 'Generación FV (GW·h)', data: [260.8, 258.4, 241.5], borderColor: '#10b981', yAxisID: 'y1' },
+                    { label: 'Potencia Instalada (MW)', data: [221.5, 240.0, 263.0], borderColor: '#ef4444', borderDash: [5,5], yAxisID: 'y1' }
+                ]
+            },
+            options: { 
+                responsive: true, maintainAspectRatio: false,
+                scales: { 
+                    y: { type: 'linear', position: 'left', title: { display: true, text: 'Generación Total', color: '#3b82f6' } },
+                    y1: { type: 'linear', position: 'right', title: { display: true, text: 'FV / Potencia', color: '#ef4444' } }
                 }
             }
         });
     }
 
-    // Gráfica 2: Interruptor de Supervivencia
+    // 3. Gráfica Clima (NASA)
+    const ctxNasa = document.getElementById('nasaChart');
+    if(ctxNasa) {
+        new Chart(ctxNasa, {
+            type: 'bar',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                datasets: [
+                    { type: 'bar', label: 'Irradiancia (kWh/m²/día)', data: [3.8, 4.8, 5.8, 6.5, 6.7, 6.2, 6.7, 6.1, 5.6, 4.6, 3.8, 3.3], backgroundColor: '#eab308', yAxisID: 'y' },
+                    { type: 'line', label: 'Temperatura (°C)', data: [23.2, 24.0, 25.1, 26.3, 27.5, 28.1, 28.4, 28.3, 27.8, 26.8, 25.4, 23.6], borderColor: '#ec4899', borderWidth: 3, yAxisID: 'y1' }
+                ]
+            },
+            options: { 
+                responsive: true, maintainAspectRatio: false,
+                scales: { 
+                    y: { title: { display: true, text: 'Irradiancia' } },
+                    y1: { type: 'linear', position: 'right', title: { display: true, text: 'Temperatura' } }
+                }
+            }
+        });
+    }
+
+    // 4. Gráfica Escala (Barras)
+    const ctxScale = document.getElementById('scaleChart');
+    if(ctxScale) {
+        new Chart(ctxScale, {
+            type: 'bar',
+            data: {
+                labels: ['Residencias (Primarias)', 'Centros / Locales', 'Solineras (Web)'],
+                datasets: [{ label: 'Potencia Mediana (kWp)', data: [2.0, 4.5, 40.0], backgroundColor: ['#10b981', '#ef4444', '#8b5cf6'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+    }
+
+    // 5. Gráfica Supervivencia (Interactiva)
     const switchEl = document.getElementById('survival-switch');
     const textEl = document.getElementById('survival-text');
     const survivalWrapper = document.getElementById('survival-chart-wrapper');
     let isActive = false;
+    let chartSurvival = null;
 
     if (switchEl) {
-        const toggle = () => {
+        switchEl.addEventListener('click', () => {
             isActive = !isActive; switchEl.classList.toggle('active');
             if (isActive) {
                 textEl.textContent = "“Para que no se dañe la comida en el apagón.”"; textEl.style.color = "var(--accent-warm)";
                 survivalWrapper.classList.add('show');
-                if (!c2) {
-                    c2 = new Chart(document.getElementById('survivalChart').getContext('2d'), {
+                if (!chartSurvival) {
+                    chartSurvival = new Chart(document.getElementById('survivalChart').getContext('2d'), {
                         type: 'bar',
                         data: {
-                            labels: ['Moda/Ambiente', 'Supervivencia'],
-                            datasets: [{ label: `N=${data.metodologia.total_encuestados}`, data: [data.supervivencia.motivo_ahorro, data.supervivencia.motivo_supervivencia], backgroundColor: ['rgba(255,255,255,0.1)', 'rgba(255,140,0,0.8)'], borderWidth: 2, borderRadius: 6 }]
+                            labels: ['Cortes de Energía', 'Ahorro Económico', 'Conciencia Ambiental'],
+                            datasets: [{ label: 'Menciones (N=32)', data: [32, 5, 2], backgroundColor: ['#ef4444', '#3b82f6', '#10b981'] }]
                         },
-                        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1500, easing: 'easeOutBounce' }, plugins: { legend: { display: false } }, scales: { y: { max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#88888c' } }, x: { ticks: { color: '#e8e8e8', font: { family: 'Crimson Pro', size: 14 } } } } }
+                        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
                     });
                 }
             } else {
                 textEl.textContent = "Esperando conexión..."; textEl.style.color = "var(--text-muted)"; survivalWrapper.classList.remove('show');
             }
-        };
-        switchEl.addEventListener('click', toggle);
-        switchEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') toggle(); });
+        });
     }
 }
 
-initCharts();
+// Iniciar gráficas
+window.addEventListener('load', () => {
+    setTimeout(crearGraficas, 500); // Pequeño delay para asegurar carga
+});
