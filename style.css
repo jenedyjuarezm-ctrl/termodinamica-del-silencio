@@ -57,3 +57,125 @@ details p { padding: 0 15px 15px; color: var(--text-muted); font-size: 0.9rem; }
 #view-count { color: var(--accent-cyan); font-weight: bold; }
 @media (max-width: 768px) { .osint-grid { grid-template-columns: repeat(5, 1fr); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } .reveal { opacity: 1; transform: none; } #canvas-container { display: none; } }
+
+
+
+
+/* NUEVA SECCIÓN: TESTIMONIOS (Typewriter) */
+.testimonial-carousel {
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    padding: 20px;
+    border-left: 2px solid var(--accent-warm);
+    background: rgba(255, 140, 0, 0.05);
+}
+.testimonial-text {
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    color: var(--accent-warm);
+    line-height: 1.4;
+    text-align: left;
+}
+.testimonial-text::after {
+    content: '|';
+    animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* NUEVA SECCIÓN: LÍNEA DE TIEMPO (Timeline) */
+.timeline { position: relative; margin-top: 40px; padding-left: 30px; }
+.timeline::before {
+    content: ''; position: absolute; top: 0; left: 10px; height: 100%; width: 2px;
+    background: rgba(0, 229, 255, 0.2);
+}
+.timeline-item { position: relative; margin-bottom: 30px; }
+.timeline-dot {
+    position: absolute; left: -26px; top: 5px; width: 14px; height: 14px;
+    background: var(--bg-dark); border: 3px solid var(--accent-cyan); border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-cyan);
+}
+.timeline-item h3 { font-size: 1.1rem; color: #fff; margin-bottom: 5px; font-family: 'Space Mono', monospace; }
+.timeline-item p { font-size: 0.95rem; color: var(--text-muted); }
+
+/* FOOTER ÉPICO Y BOTÓN GITHUB */
+.epic-footer {
+    text-align: center;
+    margin-top: 60px;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 229, 255, 0.05) 100%);
+    border-top: 1px solid var(--accent-cyan);
+    border-radius: 12px;
+}
+.epic-footer h2 { color: #fff; font-size: 2rem; margin-bottom: 15px; text-shadow: 0 0 20px rgba(0, 229, 255, 0.3); }
+.epic-footer p { color: var(--text-muted); max-width: 600px; margin: 0 auto 30px auto; }
+.btn-github {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #000; color: var(--accent-cyan);
+    padding: 15px 30px; border-radius: 8px; text-decoration: none;
+    font-family: 'Space Mono', monospace; font-size: 1.1rem; font-weight: bold;
+    border: 1px solid var(--accent-cyan); transition: all 0.3s;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+}
+.btn-github:hover {
+    background: var(--accent-cyan); color: #000;
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.6); transform: translateY(-3px);
+}
+.author-credits { margin-top: 40px; font-size: 0.85rem; color: #555; }
+.author-credits strong { color: #fff; }
+
+/* --- TERMINAL OSINT --- */
+.terminal-container {
+    background-color: #050505;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 15px;
+    font-family: 'Space Mono', monospace;
+    color: #00ff00;
+    height: 250px;
+    overflow-y: auto;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    cursor: text;
+}
+#terminal-output { margin-bottom: 10px; white-space: pre-wrap; line-height: 1.4; }
+.terminal-input-line { display: flex; }
+.terminal-input-line .prompt { margin-right: 10px; }
+#terminal-input { 
+    background: transparent; border: none; outline: none; 
+    color: #00ff00; font-family: 'Space Mono', monospace; 
+    font-size: 0.9rem; flex: 1; 
+}
+.terminal-error { color: #ff3333; }
+.terminal-success { color: #00e5ff; }
+
+/* --- BOTÓN Y OVERLAY DEL APAGÓN --- */
+#blackout-btn {
+    position: fixed; top: 20px; left: 20px; z-index: 1000;
+    background: rgba(255, 51, 51, 0.1); border: 1px solid var(--accent-danger);
+    color: var(--accent-danger); padding: 8px 15px; border-radius: 4px;
+    cursor: pointer; font-size: 0.75rem; transition: 0.3s; backdrop-filter: blur(5px);
+}
+#blackout-btn:hover { background: var(--accent-danger); color: #fff; box-shadow: 0 0 15px rgba(255,51,51,0.5); }
+
+#blackout-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #000; z-index: 9999; display: flex;
+    justify-content: center; align-items: center; text-align: center;
+    transition: opacity 0.5s;
+}
+#blackout-overlay.hidden { opacity: 0; pointer-events: none; }
+.blackout-content h2 { font-size: 3rem; font-family: 'Space Mono', monospace; letter-spacing: 5px; margin-bottom: 10px; }
+.blackout-content p { color: #444; font-family: 'Space Mono', monospace; }
+
+/* Interruptor de energía (El salvavidas) */
+.power-switch {
+    width: 40px; height: 40px; background: #111; border-radius: 50%;
+    margin: 40px auto; cursor: pointer; box-shadow: 0 0 5px #111;
+    transition: all 0.3s; border: 2px solid #333;
+}
+.power-switch:hover {
+    background: var(--accent-cyan); box-shadow: 0 0 30px var(--accent-cyan), inset 0 0 10px #fff;
+    border-color: #fff;
+}
