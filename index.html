@@ -23,34 +23,37 @@
     <main class="container">
         <!-- 1. HERO -->
         <section class="hero">
-            <h1 class="hero-title">La Resistencia<br>de los Vatios</h1>
+            <div class="glitch-wrapper">
+                <h1 class="hero-title glitch" data-text="LA RESISTENCIA">LA RESISTENCIA</h1>
+                <h1 class="hero-title glitch" data-text="DE LOS VATIOS">DE LOS VATIOS</h1>
+            </div>
             <p class="hero-subtitle">Termodinámica del Silencio: Un viaje inmersivo por la crisis y la resiliencia energética en Cuba (2020-2026).</p>
             <div class="scroll-hint data-font">[ INICIAR PROTOCOLO DE EXPLORACIÓN ]</div>
         </section>
 
-        <!-- 2. EL APAGÓN (El problema) -->
-        <section class="scroll-section" data-bgcolor="#1a0505">
-            <div class="data-card reveal border-danger">
-                <p class="data-font label-danger">// CAPA 1: EL COLAPSO SILENCIOSO</p>
+        <!-- 2. EL COLAPSO -->
+        <section class="scroll-section">
+            <div class="data-card border-danger">
+                <p class="data-font label-danger">// CAPA 2: EL COLAPSO SILENCIOSO</p>
                 <h2>12 horas al día sin electricidad.</h2>
-                <p class="stat-context">La matriz termoeléctrica de Cuba ha colapsado. Mientras el Estado reporta una caída del <strong>17.5%</strong> en la generación total, la vida cotidiana se paraliza. Los apagones no son un evento, son la línea base de la existencia.</p>
+                <p class="stat-context">La matriz termoeléctrica de Cuba ha colapsado. Mientras el Estado reporta una caída del <strong>17.5%</strong> en la generación total, la vida cotidiana se paraliza. Pero hay una historia que los números macro no cuentan.</p>
             </div>
         </section>
 
         <!-- 3. LA PARADOJA (ONEI) -->
-        <section class="scroll-section" data-bgcolor="#050510">
-            <div class="data-card reveal border-cyan">
-                <p class="data-font label-cyan">// CAPA 2: LA PARADOJA DE LA EFICIENCIA</p>
+        <section class="scroll-section">
+            <div class="data-card border-cyan">
+                <p class="data-font label-cyan">// CAPA 3: LA PARADOJA DE LA EFICIENCIA</p>
                 <h2>El Estado instala, pero no genera</h2>
-                <p class="stat-context">Una contradicción técnica documentada en los Anuarios de la ONEI. La potencia instalada (paneles comprados) creció un <strong>+18.7%</strong>, pero la generación real cayó un <strong>-7.4%</strong>.</p>
-                <div class="chart-container" id="paradox-wrapper"><canvas id="paradoxChart"></canvas></div>
+                <p class="stat-context">La potencia instalada creció un <strong>+18.7%</strong>, pero la generación real cayó un <strong>-7.4%</strong>. Una contradicción técnica documentada en los Anuarios de la ONEI.</p>
+                <div class="chart-wrapper"><canvas id="paradoxChart"></canvas></div>
             </div>
         </section>
 
-        <!-- 4. EL CLIMA (NASA - Interactivo) -->
-        <section class="scroll-section" data-bgcolor="#1a1505">
-            <div class="data-card reveal border-warm">
-                <p class="data-font label-warm">// CAPA 3: LA TRAMPA TERMODINÁMICA (NASA)</p>
+        <!-- 4. EL CLIMA (NASA) -->
+        <section class="scroll-section">
+            <div class="data-card border-warm">
+                <p class="data-font label-warm">// CAPA 4: LA TRAMPA TERMODINÁMICA (NASA)</p>
                 <h2>Sol de sobra, calor letal</h2>
                 <p class="stat-context">Cuba recibe hasta 6.7 kWh/m²/día. Pero el calor extremo degrada los semiconductores. <strong>Mueve el control para simular el año:</strong></p>
                 
@@ -63,27 +66,73 @@
                         <span>Pérdida de eficiencia: <strong id="eff-loss" style="color: var(--accent-danger)">-15%</strong></span>
                     </div>
                 </div>
-                <div class="chart-container show" style="height: 150px; margin-top: 10px;"><canvas id="nasaChart"></canvas></div>
+                <div class="chart-wrapper" style="height: 150px; margin-top: 10px;"><canvas id="nasaChart"></canvas></div>
             </div>
         </section>
 
-        <!-- 5. MAPA OSINT (Los Invisibles) -->
-        <section class="scroll-section" data-bgcolor="#050a15">
-            <div class="data-card reveal">
-                <p class="data-font label-cyan">// CAPA 4: LOS INVISIBLES (OSINT)</p>
-                <h2>El mapa que el Estado no muestra</h2>
-                <p class="stat-context">Ante la negativa del 90% de las instituciones, se rastrearon 64 puntos de generación en la prensa. Pasa el cursor por los nodos:</p>
-                <div class="osint-grid" id="osint-grid">
-                    <!-- JS insertará los nodos aquí -->
+        <!-- 5. RADAR OSINT -->
+        <section class="scroll-section">
+            <div class="data-card border-cyan">
+                <p class="data-font label-cyan">// CAPA 5: LOS INVISIBLES (OSINT)</p>
+                <h2>El radar de la resistencia</h2>
+                <p class="stat-context">Ante la negativa del Estado, la prensa reveló 64 puntos de generación. Toca los destellos en el radar para inspeccionar los datos:</p>
+                
+                <div class="radar-container" id="radar-container">
+                    <div class="radar-sweep"></div>
                 </div>
-                <div id="osint-info" class="osint-info data-font">Selecciona un nodo para ver los datos.</div>
+                <div id="osint-info" class="osint-info data-font">Esperando señal...</div>
             </div>
         </section>
 
-        <!-- 6. EL SIMULADOR (Producto Interactivo) -->
-        <section class="scroll-section" data-bgcolor="#051505">
-            <div class="data-card reveal border-cyan">
-                <p class="data-font label-cyan">// CAPA 5: SIMULADOR DE RESILIENCIA</p>
+        <!-- 6. NUEVA SECCIÓN: LAS VOCES (Testimonios) -->
+        <section class="scroll-section" id="testimonios-section">
+            <div class="data-card border-muted" style="text-align: center;">
+                <p class="data-font label-muted">// CAPA 6: EL FACTOR HUMANO (N=32)</p>
+                <h2>Las voces detrás del dato</h2>
+                <p class="stat-context">El 100% de los encuestados compró paneles solares para la supervivencia. Estas son sus palabras, extraídas del pipeline de NLP:</p>
+                
+                <div class="testimonial-carousel">
+                    <div class="testimonial-text data-font" id="typewriter-text"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. NUEVA SECCIÓN: INGENIERÍA DE DATOS (La historia del código) -->
+        <section class="scroll-section" id="engineering-section">
+            <div class="data-card border-cyan">
+                <p class="data-font label-cyan">// CAPA 7: EL DETRÁS DE ESCENA</p>
+                <h2>La ingeniería del silencio</h2>
+                <p class="stat-context">Detrás de cada gráfico hay un proceso de resiliencia técnica. Un viaje de 4 fases para hacer visible lo invisible.</p>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3>Fase 1: Recolección Primaria</h3>
+                        <p>32 encuestas presenciales. Validación técnica con inspección fotográfica de inversores y baterías (EcoFlow, Bluetti, Felicity).</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3>Fase 2: Inteligencia OSINT</h3>
+                        <p>Ante un 90% de negativa estatal, se pivotó al rastreo de prensa oficial e independiente para documentar 64 registros.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3>Fase 3: Datos Satelitales</h3>
+                        <p>Procesamiento de Anuarios ONEI (Excel con celdas combinadas) y API de la NASA POWER (CSV).</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3>Fase 4: Ingeniería de Software</h3>
+                        <p>Pipeline en Python. Resolución de conflictos de dependencias binarias (migración a CSV) garantizando la estabilidad del entorno virtual.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. SIMULADOR -->
+        <section class="scroll-section">
+            <div class="data-card border-cyan">
+                <p class="data-font label-cyan">// CAPA 8: SIMULADOR DE RESILIENCIA</p>
                 <h2>Diseña tu propio sistema</h2>
                 <p class="stat-context">¿Qué necesita una casa promedio (2.0 kWp) para sobrevivir a un apagón de 12 horas? Ajusta las variables:</p>
                 
@@ -105,31 +154,35 @@
             </div>
         </section>
 
-        <!-- 7. BÓVEDA DE DATOS -->
-        <section class="scroll-section" data-bgcolor="#050505">
-            <div class="data-card reveal border-muted">
-                <p class="data-font label-muted">// CAPA 6: BÓVEDA DE DATOS</p>
+        <!-- 9. BÓVEDA Y FOOTER ÉPICO -->
+        <section class="scroll-section">
+            <div class="data-card border-muted">
+                <p class="data-font label-muted">// BÓVEDA DE DATOS</p>
                 <h2>Trazabilidad Absoluta</h2>
                 <div class="data-vault">
                     <details><summary>📊 Datos Macro (ONEI & IRENA)</summary><p>Anuarios Estadísticos de Cuba (2023). Capítulo 10: Minería y Energía.</p></details>
                     <details><summary>🛰️ Datos Satelitales (NASA POWER)</summary><p>Parámetros: ALLSKY_SFC_SW_DWN, T2M, RH2M. Coordenadas: 23.13N, -82.38W.</p></details>
-                    <details><summary>📰 Fuentes OSINT (Prensa)</summary><p>CiberCuba, Trabajadores, Granma, EFE, pv magazine, ACN, entre otros. 64 registros.</p></details>
-                    <details><summary>🛠️ Ingeniería de Datos</summary><p>Pipeline ETL en Python. Resolución de conflictos de dependencias binarias (migración a CSV).</p></details>
+                    <details><summary>📰 Fuentes OSINT (Prensa)</summary><p>CiberCuba, Trabajadores, Granma, EFE, pv magazine, ACN. 64 registros.</p></details>
+                    <details><summary>🛠️ Ingeniería de Datos</summary><p>Pipeline ETL en Python. Resolución de dependencias binarias.</p></details>
+                </div>
+            </div>
+            
+            <blockquote class="quote">"La ciencia de datos en Cuba es, ante todo, un ejercicio de resiliencia."</blockquote>
+            
+            <!-- NUEVO FOOTER ÉPICO -->
+            <div class="epic-footer reveal">
+                <p class="data-font" style="color: var(--accent-cyan); margin-bottom: 20px;">// PROYECTO FINALIZADO</p>
+                <h2>Explora el código fuente</h2>
+                <p>Esta experiencia web consume los datos procesados del repositorio original. Si eres un reclutador, profesor o analista, puedes auditar todo el pipeline de Python, los datos crudos y la lógica de este sitio.</p>
+                <a href="https://github.com/jenedyjuarezm-ctrl/termodinamica-del-silencio" target="_blank" class="btn-github">
+                    <span class="icon">📁</span> Ir al repositorio en GitHub
+                </a>
+                <div class="author-credits">
+                    <p>Investigación y Data Storytelling por <strong>Jenedy Juárez</strong></p>
+                    <p>© 2026 | Ciencia de Datos Aplicada</p>
                 </div>
             </div>
         </section>
-
-        <!-- 8. CONCLUSIÓN -->
-        <section class="scroll-section">
-            <blockquote class="quote reveal">"La resiliencia no es una estadística, es un acto diario de reparación. La verdadera transición está en los techos de la gente."</blockquote>
-            <div class="thanks-section reveal">
-                <p class="data-font" style="color: var(--accent-cyan); margin-bottom: 10px;">// FIN DEL PROTOCOLO</p>
-                <p>Investigación realizada por <strong>Jenedy Juárez</strong></p>
-                <p style="font-size: 0.8rem; margin-top: 10px; color: var(--text-muted);">Ciencia de Datos Aplicada | 2026</p>
-            </div>
-        </section>
     </main>
-
-    <footer class="footer data-font"><p>FUENTES: ONEI / NASA / OSINT / Encuesta (N=32)</p></footer>
 </body>
 </html>
