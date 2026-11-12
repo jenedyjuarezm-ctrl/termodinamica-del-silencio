@@ -182,3 +182,160 @@ function initInteractivity() {
 }
 
 window.addEventListener('load', () => setTimeout(initInteractivity, 500));
+
+
+// Añade esto al FINAL de tu app.js (después de la función initCharts)
+
+// ==========================================================================
+// 8. NUEVOS EFECTOS: TYPEWRITER Y TIMELINE
+// ==========================================================================
+
+function initExtendedNarrative() {
+    // 1. Efecto Máquina de Escribir (Testimonios)
+    const testimonials = [
+        "“No lo compré por el medio ambiente. Lo compré para que no se me dañe la carne en la nevera.”",
+        "“El panel me costó más que mi sueldo de un año, pero al menos tengo un ventilador en la noche.”",
+        "“El Estado dice que hay energía, pero mi casa pasa 12 horas a oscuras. El sol es lo único gratis.”",
+        "“Aprendí a instalar el inversor viendo videos en YouTube. Nadie me enseñó, la necesidad obliga.”"
+    ];
+    
+    const textEl = document.getElementById('typewriter-text');
+    let tIndex = 0;
+    let cIndex = 0;
+    let isDeleting = false;
+
+    function typeWriter() {
+        if(!textEl) return;
+        const currentText = testimonials[tIndex];
+        
+        if (isDeleting) {
+            textEl.textContent = currentText.substring(0, cIndex - 1);
+            cIndex--;
+        } else {
+            textEl.textContent = currentText.substring(0, cIndex + 1);
+            cIndex++;
+        }
+
+        let typeSpeed = isDeleting ? 30 : 50;
+
+        if (!isDeleting && cIndex === currentText.length) {
+            typeSpeed = 3000; // Pausa al terminar de escribir
+            isDeleting = true;
+        } else if (isDeleting && cIndex === 0) {
+            isDeleting = false;
+            tIndex = (tIndex + 1) % testimonials.length;
+            typeSpeed = 500;
+        }
+
+        setTimeout(typeWriter, typeSpeed);
+    }
+    
+    // Iniciar solo cuando la sección esté visible
+    ScrollTrigger.create({
+        trigger: "#testimonios-section",
+        start: "top 80%",
+        onEnter: () => { if(cIndex === 0 && !isDeleting) typeWriter(); },
+        once: true
+    });
+
+    // 2. Animación de la Línea de Tiempo (El trazo se dibuja al hacer scroll)
+    gsap.from(".timeline::before", { height: 0, duration: 2, scrollTrigger: { trigger: "#engineering-section", start: "top 70%" } });
+    
+    gsap.utils.toArray('.timeline-item').forEach(item => {
+        gsap.from(item, {
+            opacity: 0, x: -30, duration: 1,
+            scrollTrigger: { trigger: item, start: "top 85%" }
+        });
+    });
+
+    // 3. Animación del Footer Épico
+    gsap.from(".epic-footer", {
+        opacity: 0, y: 50, duration: 1.5,
+        scrollTrigger: { trigger: ".epic-footer", start: "top 90%" }
+    });
+}
+
+// Ejecutar al cargar
+window.addEventListener('load', () => setTimeout(initExtendedNarrative, 500));
+
+
+// ==========================================================================
+// 9. TERMINAL OSINT INTERACTIVA
+// ==========================================================================
+const termInput = document.getElementById('terminal-input');
+const termOutput = document.getElementById('terminal-output');
+
+// Mensaje de bienvenida
+if (termOutput) {
+    termOutput.innerHTML = "SISTEMA OPERATIVO CUBA-SOLAR v2.0\nConexión establecida con el servidor NASA.\nEscribe 'help' para comenzar.\n\n";
+}
+
+const commands = {
+    help: "Comandos disponibles:\n- status: Estado de la red eléctrica.\n- desclasificar: Extraer datos ocultos por el Estado.\n- nasa: Obtener datos satelitales.\n- clear: Limpiar terminal.",
+    status: "<span class='terminal-error'>ALERTA: Generación nacional al 17.5%. Apagones de 12h activos.</span>",
+    desclasificar: "Buscando en servidores del MINEM...\n<span class='terminal-success'>ACCESO CONCEDIDO.</span> 64 registros OSINT encontrados en prensa. 32 residencias encuestadas. El Estado niega el 90% de la información, pero la resiliencia ciudadana ha instalado 2.0 kWp por hogar.",
+    nasa: "Consultando API NASA POWER...\nTemperatura promedio: 30°C.\nIrradiancia: 6.7 kWh/m²/día.\n<span class='terminal-success'>Conclusión: El calor extremo reduce la eficiencia fotovoltaica un 15%.</span>",
+    clear: "CLEAR"
+};
+
+if (termInput) {
+    termInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            const cmd = this.value.trim().toLowerCase();
+            this.value = '';
+            
+            // Imprimir el comando ingresado
+            termOutput.innerHTML += `<div><span class="prompt">root@cuba-solar:~#</span> ${cmd}</div>`;
+
+            if (cmd === 'clear') {
+                termOutput.innerHTML = '';
+            } else if (commands[cmd]) {
+                termOutput.innerHTML += `<div>${commands[cmd]}</div><br>`;
+            } else if (cmd !== '') {
+                termOutput.innerHTML += `<div class="terminal-error">Comando no reconocido: '${cmd}'. Escribe 'help'.</div><br>`;
+            }
+            
+            // Auto-scroll al final
+            const termContainer = document.querySelector('.terminal-container');
+            termContainer.scrollTop = termContainer.scrollHeight;
+        }
+    });
+}
+
+// ==========================================================================
+// 10. EL APAGÓN (SENSORY SHOCK)
+// ==========================================================================
+const blackoutBtn = document.getElementById('blackout-btn');
+const blackoutOverlay = document.getElementById('blackout-overlay');
+const powerSwitch = document.getElementById('power-switch');
+
+if (blackoutBtn) {
+    blackoutBtn.addEventListener('click', () => {
+        blackoutOverlay.classList.remove('hidden');
+        // Si la música está sonando, la apagamos
+        if (isPlaying) {
+            audioCtx.suspend();
+            musicBtn.classList.remove('playing');
+        }
+    });
+}
+
+if (powerSwitch) {
+    powerSwitch.addEventListener('click', () => {
+        // Parpadeo de encendido
+        blackoutOverlay.style.opacity = '0.5';
+        setTimeout(() => {
+            blackoutOverlay.style.opacity = '0';
+            setTimeout(() => {
+                blackoutOverlay.classList.add('hidden');
+                blackoutOverlay.style.opacity = '1';
+                // Reanudar música si estaba activa
+                if (audioCtx && !isPlaying) {
+                    audioCtx.resume();
+                    musicBtn.classList.add('playing');
+                    isPlaying = true;
+                }
+            }, 200);
+        }, 100);
+    });
+}
