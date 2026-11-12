@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Resistencia de los Vatios | Transición Solar en Cuba</title>
-    <meta name="description" content="Análisis inmersivo sobre la paradoja energética en Cuba (2020-2026).">
-    
+    <title>La Resistencia de los Vatios | Termodinámica del Silencio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="style.css">
-    
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -20,136 +15,133 @@
     <script defer src="app.js"></script>
 </head>
 <body>
-    <!-- Barra de progreso de lectura -->
+    <!-- Elementos Globales -->
     <div id="scroll-progress"></div>
-
-    <!-- Reproductor de Música Lofi -->
-    <audio id="lofi-audio" loop>
-        <!-- Puse un enlace de un track Lofi libre de derechos. Puedes cambiarlo por tu propio MP3 -->
-        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
-    </audio>
-    <button id="music-toggle" aria-label="Activar música de fondo">
-        <span class="icon">🎵</span>
-        <div class="waves">
-            <div class="wave"></div><div class="wave"></div><div class="wave"></div>
-        </div>
+    <button id="music-toggle" aria-label="Activar sonido ambiental">
+        <span class="icon">🔊</span>
+        <div class="waves"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>
     </button>
-
     <div id="canvas-container" aria-hidden="true"></div>
+    
+    <!-- Contador de Visitas -->
+    <div id="visitor-counter" class="data-font" title="Agentes conectados">
+        <span class="radar-icon">📡</span> <span id="view-count">...</span> VISTAS
+    </div>
 
     <main class="container">
-        <!-- HERO -->
+        <!-- 1. HERO -->
         <section class="hero">
             <h1 class="hero-title">La Resistencia<br>de los Vatios</h1>
-            <p class="hero-subtitle">Una historia de datos sobre la paradoja energética en Cuba (2020-2026).</p>
+            <p class="hero-subtitle">Termodinámica del Silencio: Un diagnóstico de la transición energética y resiliencia ciudadana en Cuba.</p>
             <div class="scroll-hint data-font">[ DESLIZA PARA EXPLORAR EL SISTEMA ]</div>
         </section>
 
-        <!-- SECCIÓN: METODOLOGÍA (El rigor académico) -->
+        <!-- 2. METODOLOGÍA (El rigor) -->
         <section class="scroll-section">
             <div class="data-card reveal border-muted">
-                <p class="data-font label-muted">// CAPA 1: METODOLOGÍA Y OPACIDAD</p>
-                <h2>El desafío de investigar en el vacío</h2>
-                <p class="stat-context">Para entender la transición energética, no basta con leer reportes oficiales. Se realizaron 10 solicitudes formales de información al Estado. El resultado fue una negativa sistemática.</p>
-                
-                <div class="methodology-grid">
-                    <div class="method-item">
-                        <span class="method-num">90%</span>
-                        <span class="method-desc">De solicitudes denegadas por el Estado.</span>
-                    </div>
-                    <div class="method-item">
-                        <span class="method-num">N=32</span>
-                        <span class="method-desc">Encuestas de campo realizadas a residentes.</span>
-                    </div>
+                <p class="data-font label-muted">// CAPA 1: EL DESAFÍO METODOLÓGICO</p>
+                <h2>96 Registros. 4 Fuentes. 1 Verdad.</h2>
+                <p class="stat-context">Para diagnosticar la crisis, se trianguló información macro (ONEI), satelital (NASA), documental (OSINT) y primaria. Ante un 90% de negativa estatal a dar datos, la ciencia ciudadana tomó el control.</p>
+                <div class="chart-container show" style="height: 250px; margin-top: 20px;">
+                    <canvas id="metodologiaChart"></canvas>
                 </div>
             </div>
         </section>
 
-        <!-- LA PROMESA (DATO 1) -->
-        <section class="scroll-section">
-            <div class="data-card reveal">
-                <p class="data-font label-cyan">// CAPA 2: EL DISCURSO OFICIAL (ONEI)</p>
-                <h2>Aumento de la Capacidad Instalada</h2>
-                <span class="stat-number" id="stat-1">+18.7%</span>
-                <p class="stat-context">Las cifras oficiales muestran un crecimiento exponencial en la importación e instalación de paneles solares y granjas fotovoltaicas.</p>
-            </div>
-        </section>
-
-        <!-- LA PARADOJA (DATO 2 Y GRÁFICA) -->
+        <!-- 3. LA PARADOJA MACRO (ONEI) -->
         <section class="scroll-section">
             <div class="data-card reveal border-danger">
-                <p class="data-font label-danger">// CAPA 3: LA PARADOJA MACROECONÓMICA</p>
-                <h2>Pero la Generación Neta Cayó</h2>
-                <span class="stat-number negative" id="stat-2">-7.4%</span>
-                <p class="stat-context">A pesar de tener más paneles, la energía real que llega al sistema eléctrico es menor. La macroeconomía choca con la realidad del apagón.</p>
+                <p class="data-font label-danger">// CAPA 2: LA PARADOJA DE LA EFICIENCIA (ONEI 2020-2022)</p>
+                <h2>El Estado instala, pero no genera</h2>
+                <p class="stat-context">Mientras la potencia instalada creció un <strong>+18.7%</strong>, la generación real cayó un <strong>-7.4%</strong>. La infraestructura crece, pero el mantenimiento falla.</p>
                 <div class="chart-container" id="paradox-chart-wrapper">
                     <canvas id="paradoxChart"></canvas>
                 </div>
             </div>
         </section>
 
-        <!-- SECCIÓN: INFRAESTRUCTURA (Contexto técnico) -->
+        <!-- 4. LA PARADOJA DEL CLIMA (NASA) -->
         <section class="scroll-section">
-            <div class="data-card reveal">
-                <p class="data-font label-cyan">// CAPA 4: LA ESCALA DE LA INFRAESTRUCTURA</p>
-                <h2>De lo macro a lo micro</h2>
-                <p class="stat-context">El sistema se sostiene en dos extremos: grandes solineras estatales y pequeños paneles individuales en los techos.</p>
-                
-                <div class="infra-comparison">
-                    <div class="infra-box">
-                        <h3>Solineras Estatales</h3>
-                        <span class="infra-num data-font">40 kWp</span>
-                        <p>Capacidad por granja. Diseñadas para alimentar comunidades, pero dependientes de la red nacional.</p>
-                    </div>
-                    <div class="infra-vs data-font">VS</div>
-                    <div class="infra-box">
-                        <h3>Hogares Privados</h3>
-                        <span class="infra-num data-font" style="color: var(--accent-warm);">2 kWp</span>
-                        <p>Paneles individuales. 1 granja equivale a la energía instalada de 20 hogares.</p>
-                    </div>
+            <div class="data-card reveal border-cyan">
+                <p class="data-font label-cyan">// CAPA 3: EL FACTOR CLIMÁTICO (NASA POWER)</p>
+                <h2>Sol de sobra, calor letal</h2>
+                <p class="stat-context">Cuba recibe hasta 6.7 kWh/m²/día. Pero las temperaturas de 30°C degradan los semiconductores. El sol que debería salvarnos, sobrecalienta los paneles.</p>
+                <div class="chart-container" id="nasa-chart-wrapper">
+                    <canvas id="nasaChart"></canvas>
                 </div>
             </div>
         </section>
 
-        <!-- EL GIRO HUMANO (INTERACTIVO) -->
+        <!-- 5. LA ESCALA (MICRO VS MACRO) -->
+        <section class="scroll-section">
+            <div class="data-card reveal">
+                <p class="data-font label-cyan">// CAPA 4: LA ESCALA DE LA RESPUESTA</p>
+                <h2>El esfuerzo ciudadano vs. la infraestructura</h2>
+                <p class="stat-context">El sector privado está invirtiendo el doble que los hogares para proteger sus negocios. Las solineras estatales palidecen frente a la magnitud de la crisis.</p>
+                <div class="chart-container" id="scale-chart-wrapper">
+                    <canvas id="scaleChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. EL GIRO HUMANO (INTERACTIVO) -->
         <section class="scroll-section">
             <div class="interactive-panel reveal">
-                <p class="data-font label-muted" style="align-self: flex-start; margin-bottom: 15px;">// CAPA 5: EL FACTOR HUMANO</p>
-                <h2>Los 2 kWp de la Supervivencia</h2>
-                <p class="interactive-desc">¿Por qué las personas invierten en paneles solares? El 100% de los encuestados coincidió en una razón que no tiene nada que ver con el cambio climático.<br><strong>Pulsa el interruptor para ver la verdadera razón:</strong></p>
-                
-                <div class="switch-container" id="survival-switch" role="button" tabindex="0" aria-label="Encender interruptor de supervivencia">
-                    <div class="switch-bg"></div>
-                    <div class="switch-circle"></div>
+                <p class="data-font label-muted" style="align-self: flex-start;">// CAPA 5: LA MOTIVACIÓN REAL</p>
+                <h2>La supervivencia no es "verde"</h2>
+                <p class="interactive-desc">El 100% de los encuestados compró paneles para evitar que la comida se dañara.<br><strong>Pulsa el interruptor para encender la verdad:</strong></p>
+                <div class="switch-container" id="survival-switch" role="button" tabindex="0">
+                    <div class="switch-bg"></div><div class="switch-circle"></div>
                 </div>
-
                 <div id="survival-text" class="survival-text">Esperando conexión al sistema...</div>
-
                 <div class="chart-container" id="survival-chart-wrapper">
                     <canvas id="survivalChart"></canvas>
                 </div>
             </div>
         </section>
 
-        <!-- CONCLUSIÓN Y FUTURO -->
+        <!-- 7. LA BÓVEDA DE DATOS (Fuentes) -->
         <section class="scroll-section">
-            <p class="data-font label-cyan" style="text-align: center; margin-bottom: 20px;">// CAPA 6: EL FUTURO Y LA RESILIENCIA</p>
-            <blockquote class="quote reveal">"La belleza de lo gastado, lo reparado y lo que sigue funcionando. La resiliencia no es una estadística, es un acto diario de reparación."</blockquote>
-            <div class="conclusion-text reveal">
-                <p>Mientras el Estado enfrenta una crisis de generación y opacidad, la sociedad cubana se adapta. Los 2 kWp en los techos no son una revolución verde, son un escudo contra la vulnerabilidad energética. La transición real no está en los grandes parques solares, sino en la micro-generación doméstica que mantiene la comida fría un día más.</p>
+            <div class="data-card reveal border-muted">
+                <p class="data-font label-muted">// CAPA 6: BÓVEDA DE DATOS (TRAZABILIDAD)</p>
+                <h2>Explora las fuentes</h2>
+                <p class="stat-context">La transparencia es un acto de resistencia. Haz clic en cada categoría para auditar los datos originales.</p>
+                
+                <div class="data-vault">
+                    <details>
+                        <summary>📊 Datos Macro (ONEI & IRENA)</summary>
+                        <p>Anuarios Estadísticos de Cuba (2023). Capítulo 10: Minería y Energía (Generación, Consumo, Pérdidas). IRENA (Capacidad Solar).</p>
+                    </details>
+                    <details>
+                        <summary>🛰️ Datos Satelitales (NASA POWER)</summary>
+                        <p>Parámetros extraídos vía API: ALLSKY_SFC_SW_DWN (Irradiancia), T2M (Temperatura), RH2M (Humedad). Coordenadas: 23.13N, -82.38W.</p>
+                    </details>
+                    <details>
+                        <summary>📰 Fuentes OSINT (Prensa)</summary>
+                        <p>Extracción de datos de 32 solineras y 32 centros desde: CiberCuba, Trabajadores, Granma, EFE, pv magazine, ACN, Juventud Rebelde y Cubadebate.</p>
+                    </details>
+                    <details>
+                        <summary>🛠️ Stack Tecnológico</summary>
+                        <p>Python 3.12 (Pandas, Matplotlib, Seaborn, Scikit-learn), VS Code, Google Colab y GitHub. Pipeline ETL reproducible.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. CONCLUSIÓN Y GRACIAS -->
+        <section class="scroll-section">
+            <blockquote class="quote reveal">"No existe la 'data limpia y perfecta' de los libros de texto. Existen los formularios arrugados, los Excel con celdas combinadas y las instituciones que te dicen 'no'."</blockquote>
+            <div class="thanks-section reveal">
+                <p class="data-font" style="color: var(--accent-cyan); margin-bottom: 10px;">// GRACIAS POR EXPLORAR LOS DATOS</p>
+                <p>Investigación realizada por <strong>Jenedy Juárez</strong></p>
+                <p style="font-size: 0.8rem; margin-top: 10px; color: var(--text-muted);">Proyecto de Ciencia de Datos Aplicada | Noviembre 2026</p>
             </div>
         </section>
     </main>
 
     <footer class="footer data-font">
-        <p>FUENTES: ONEI / Encuesta de campo (N=32) / Análisis propio.</p>
-        <p>Investigación de Ciencia de Datos | 2026</p>
+        <p>FUENTES: ONEI / NASA / OSINT / Encuesta (N=32)</p>
+        <p>La información energética es un acto de resistencia.</p>
     </footer>
 </body>
-    <!-- Reproductor de Música Lofi -->
-<audio id="lofi-audio" loop>
-    <!-- Este es un enlace directo a una canción Lofi real y gratuita -->
-    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
-</audio>
-    
 </html>
