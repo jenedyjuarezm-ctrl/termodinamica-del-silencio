@@ -3,145 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Resistencia de los Vatios | Termodinámica del Silencio</title>
-    <meta name="description" content="Análisis interactivo de la transición energética en Cuba, la paradoja solar y la resiliencia ciudadana.">
-    
+    <title>La Resistencia de los Vatios | Experiencia de Datos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    
-    <!-- Librerías (Carga diferida para máximo rendimiento) -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script defer src="app.js"></script>
 </head>
 <body>
-    <!-- UI Global -->
-    <div id="scroll-progress" aria-hidden="true"></div>
-    
-    <button id="music-toggle" aria-label="Activar o desactivar música ambiental">
-        <span class="icon">🔊</span>
-        <div class="waves" aria-hidden="true"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>
-    </button>
-    
+    <div id="scroll-progress"></div>
+    <button id="music-toggle" aria-label="Sonido"><span class="icon">🔊</span><div class="waves"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div></button>
     <div id="canvas-container" aria-hidden="true"></div>
-    
-    <div id="visitor-counter" class="data-font" title="Analistas conectados">
-        <span class="radar-icon">📡</span> <span id="view-count">...</span> VISTAS
-    </div>
+    <div id="visitor-counter" class="data-font"><span class="radar-icon">📡</span> <span id="view-count">...</span> VISTAS</div>
 
     <main class="container">
-        <!-- Hero -->
-        <header class="hero">
+        <!-- 1. HERO -->
+        <section class="hero">
             <h1 class="hero-title">La Resistencia<br>de los Vatios</h1>
-            <p class="hero-subtitle">Termodinámica del Silencio: Un diagnóstico de la transición energética y resiliencia ciudadana en Cuba.</p>
-            <div class="scroll-hint data-font" aria-hidden="true">[ DESLIZA PARA EXPLORAR EL SISTEMA ]</div>
-        </header>
-
-        <!-- Capa 1: Metodología -->
-        <section class="scroll-section">
-            <div class="data-card reveal border-muted">
-                <p class="data-font label-muted">// CAPA 1: EL DESAFÍO METODOLÓGICO</p>
-                <h2>96 Registros. 4 Fuentes. 1 Verdad.</h2>
-                <p class="stat-context">Para diagnosticar la crisis, se trianguló información macro (ONEI), satelital (NASA), documental (OSINT) y primaria. Ante un 90% de negativa estatal, la ciencia ciudadana tomó el control.</p>
-                <div class="img-container reveal">
-                    <img src="img/metodologia.png" alt="Gráfico de la composición del dataset consolidado" loading="lazy">
-                </div>
-            </div>
+            <p class="hero-subtitle">Termodinámica del Silencio: Un viaje inmersivo por la crisis y la resiliencia energética en Cuba (2020-2026).</p>
+            <div class="scroll-hint data-font">[ INICIAR PROTOCOLO DE EXPLORACIÓN ]</div>
         </section>
 
-        <!-- Capa 2: La Paradoja -->
-        <section class="scroll-section">
+        <!-- 2. EL APAGÓN (El problema) -->
+        <section class="scroll-section" data-bgcolor="#1a0505">
             <div class="data-card reveal border-danger">
-                <p class="data-font label-danger">// CAPA 2: LA PARADOJA DE LA EFICIENCIA (ONEI 2020-2022)</p>
-                <h2>El Estado instala, pero no genera</h2>
-                <p class="stat-context">Mientras la potencia instalada creció un <strong>+18.7%</strong>, la generación real cayó un <strong>-7.4%</strong>. La infraestructura crece, pero el mantenimiento falla.</p>
-                <div class="img-container reveal">
-                    <img src="img/paradoja.png" alt="Gráfico de líneas que muestra la caída de generación vs el aumento de potencia" loading="lazy">
-                </div>
+                <p class="data-font label-danger">// CAPA 1: EL COLAPSO SILENCIOSO</p>
+                <h2>12 horas al día sin electricidad.</h2>
+                <p class="stat-context">La matriz termoeléctrica de Cuba ha colapsado. Mientras el Estado reporta una caída del <strong>17.5%</strong> en la generación total, la vida cotidiana se paraliza. Los apagones no son un evento, son la línea base de la existencia.</p>
             </div>
         </section>
 
-        <!-- Capa 3: Clima -->
-        <section class="scroll-section">
+        <!-- 3. LA PARADOJA (ONEI) -->
+        <section class="scroll-section" data-bgcolor="#050510">
             <div class="data-card reveal border-cyan">
-                <p class="data-font label-cyan">// CAPA 3: EL FACTOR CLIMÁTICO (NASA POWER)</p>
+                <p class="data-font label-cyan">// CAPA 2: LA PARADOJA DE LA EFICIENCIA</p>
+                <h2>El Estado instala, pero no genera</h2>
+                <p class="stat-context">Una contradicción técnica documentada en los Anuarios de la ONEI. La potencia instalada (paneles comprados) creció un <strong>+18.7%</strong>, pero la generación real cayó un <strong>-7.4%</strong>.</p>
+                <div class="chart-container" id="paradox-wrapper"><canvas id="paradoxChart"></canvas></div>
+            </div>
+        </section>
+
+        <!-- 4. EL CLIMA (NASA - Interactivo) -->
+        <section class="scroll-section" data-bgcolor="#1a1505">
+            <div class="data-card reveal border-warm">
+                <p class="data-font label-warm">// CAPA 3: LA TRAMPA TERMODINÁMICA (NASA)</p>
                 <h2>Sol de sobra, calor letal</h2>
-                <p class="stat-context">Cuba recibe hasta 6.7 kWh/m²/día. Pero las temperaturas de 30°C degradan los semiconductores. El sol que debería salvarnos, sobrecalienta los paneles.</p>
-                <div class="img-container reveal">
-                    <img src="img/clima.png" alt="Gráfico de barras y líneas mostrando irradiancia vs temperatura" loading="lazy">
+                <p class="stat-context">Cuba recibe hasta 6.7 kWh/m²/día. Pero el calor extremo degrada los semiconductores. <strong>Mueve el control para simular el año:</strong></p>
+                
+                <div class="climate-slider-container">
+                    <input type="range" id="month-slider" min="0" max="11" value="6">
+                    <div class="climate-readout">
+                        <span id="month-label" class="data-font">Julio</span>
+                        <span>Irradiancia: <strong id="irr-val">6.7</strong> kWh/m²</span>
+                        <span>Temperatura: <strong id="temp-val-climate" style="color: var(--accent-danger)">28.4</strong> °C</span>
+                        <span>Pérdida de eficiencia: <strong id="eff-loss" style="color: var(--accent-danger)">-15%</strong></span>
+                    </div>
                 </div>
+                <div class="chart-container show" style="height: 150px; margin-top: 10px;"><canvas id="nasaChart"></canvas></div>
             </div>
         </section>
 
-        <!-- Capa 4: Escala -->
-        <section class="scroll-section">
+        <!-- 5. MAPA OSINT (Los Invisibles) -->
+        <section class="scroll-section" data-bgcolor="#050a15">
             <div class="data-card reveal">
-                <p class="data-font label-cyan">// CAPA 4: LA ESCALA DE LA RESPUESTA</p>
-                <h2>El esfuerzo ciudadano vs. la infraestructura</h2>
-                <p class="stat-context">El sector privado (4.5 kWp) está invirtiendo el doble que los hogares (2.0 kWp) para proteger sus negocios, mientras las solineras estatales (40 kWp) no cubren la demanda.</p>
-                <div class="img-container reveal">
-                    <img src="img/escala.png" alt="Gráfico de barras comparando residencias, centros y solineras" loading="lazy">
+                <p class="data-font label-cyan">// CAPA 4: LOS INVISIBLES (OSINT)</p>
+                <h2>El mapa que el Estado no muestra</h2>
+                <p class="stat-context">Ante la negativa del 90% de las instituciones, se rastrearon 64 puntos de generación en la prensa. Pasa el cursor por los nodos:</p>
+                <div class="osint-grid" id="osint-grid">
+                    <!-- JS insertará los nodos aquí -->
+                </div>
+                <div id="osint-info" class="osint-info data-font">Selecciona un nodo para ver los datos.</div>
+            </div>
+        </section>
+
+        <!-- 6. EL SIMULADOR (Producto Interactivo) -->
+        <section class="scroll-section" data-bgcolor="#051505">
+            <div class="data-card reveal border-cyan">
+                <p class="data-font label-cyan">// CAPA 5: SIMULADOR DE RESILIENCIA</p>
+                <h2>Diseña tu propio sistema</h2>
+                <p class="stat-context">¿Qué necesita una casa promedio (2.0 kWp) para sobrevivir a un apagón de 12 horas? Ajusta las variables:</p>
+                
+                <div class="simulator-controls">
+                    <div class="control-group">
+                        <label>Paneles Solares: <span id="sim-kwp-text" class="data-font">2.0 kWp</span></label>
+                        <input type="range" id="sim-kwp" min="1" max="10" step="0.5" value="2">
+                    </div>
+                    <div class="control-group">
+                        <label>Baterías (Litio): <span id="sim-bat-text" class="data-font">5 kWh</span></label>
+                        <input type="range" id="sim-bat" min="0" max="20" step="1" value="5">
+                    </div>
+                </div>
+
+                <div class="sim-result-panel">
+                    <h3 id="sim-status" style="color: var(--accent-danger);">SISTEMA INSUFICIENTE</h3>
+                    <p id="sim-desc">No podrás mantener la nevera encendida durante la noche.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Capa 5: Supervivencia -->
-        <section class="scroll-section">
-            <div class="interactive-panel reveal">
-                <p class="data-font label-muted" style="align-self: flex-start;">// CAPA 5: LA MOTIVACIÓN REAL</p>
-                <h2>La supervivencia no es "verde"</h2>
-                <p class="interactive-desc">El 100% de los 32 residentes encuestados compró paneles no por conciencia ambiental, sino por una razón mucho más vital.</p>
-                <div class="img-container reveal" style="margin-top: 20px; border-color: var(--accent-warm);">
-                    <img src="img/supervivencia.png" alt="Gráfico de barras horizontales mostrando los cortes de energía como principal motivación" loading="lazy">
-                </div>
-            </div>
-        </section>
-
-        <!-- Capa 6: Bóveda de Datos -->
-        <section class="scroll-section">
+        <!-- 7. BÓVEDA DE DATOS -->
+        <section class="scroll-section" data-bgcolor="#050505">
             <div class="data-card reveal border-muted">
-                <p class="data-font label-muted">// CAPA 6: BÓVEDA DE DATOS (TRAZABILIDAD)</p>
-                <h2>Explora las fuentes</h2>
-                <p class="stat-context">La transparencia es un acto de resistencia. Haz clic en cada categoría para auditar los datos originales.</p>
+                <p class="data-font label-muted">// CAPA 6: BÓVEDA DE DATOS</p>
+                <h2>Trazabilidad Absoluta</h2>
                 <div class="data-vault">
-                    <details>
-                        <summary>📊 Datos Macro (ONEI & IRENA)</summary>
-                        <p>Anuarios Estadísticos de Cuba (2023). Capítulo 10: Minería y Energía. Datos contrastados con IRENA.</p>
-                    </details>
-                    <details>
-                        <summary>🛰️ Datos Satelitales (NASA POWER)</summary>
-                        <p>Parámetros extraídos vía API: ALLSKY_SFC_SW_DWN (Irradiancia), T2M (Temperatura), RH2M (Humedad). Coordenadas: 23.13N, -82.38W.</p>
-                    </details>
-                    <details>
-                        <summary>📰 Fuentes OSINT (Prensa)</summary>
-                        <p>Extracción de datos de 32 solineras y 32 centros desde: CiberCuba, Trabajadores, Granma, EFE, pv magazine, ACN, Juventud Rebelde y Cubadebate.</p>
-                    </details>
-                    <details>
-                        <summary>🛠️ Stack Tecnológico e Ingeniería</summary>
-                        <p>Python 3.12 (Pandas, Matplotlib, Scikit-learn), Google Colab, GitHub. Pipeline ETL reproducible con resolución de conflictos de dependencias binarias en Windows.</p>
-                    </details>
+                    <details><summary>📊 Datos Macro (ONEI & IRENA)</summary><p>Anuarios Estadísticos de Cuba (2023). Capítulo 10: Minería y Energía.</p></details>
+                    <details><summary>🛰️ Datos Satelitales (NASA POWER)</summary><p>Parámetros: ALLSKY_SFC_SW_DWN, T2M, RH2M. Coordenadas: 23.13N, -82.38W.</p></details>
+                    <details><summary>📰 Fuentes OSINT (Prensa)</summary><p>CiberCuba, Trabajadores, Granma, EFE, pv magazine, ACN, entre otros. 64 registros.</p></details>
+                    <details><summary>🛠️ Ingeniería de Datos</summary><p>Pipeline ETL en Python. Resolución de conflictos de dependencias binarias (migración a CSV).</p></details>
                 </div>
             </div>
         </section>
 
-        <!-- Conclusión y Gracias -->
+        <!-- 8. CONCLUSIÓN -->
         <section class="scroll-section">
-            <blockquote class="quote reveal">"No existe la 'data limpia y perfecta' de los libros de texto. Existen los formularios arrugados, los Excel con celdas combinadas y las instituciones que te dicen 'no'."</blockquote>
+            <blockquote class="quote reveal">"La resiliencia no es una estadística, es un acto diario de reparación. La verdadera transición está en los techos de la gente."</blockquote>
             <div class="thanks-section reveal">
-                <p class="data-font" style="color: var(--accent-cyan); margin-bottom: 10px;">// GRACIAS POR EXPLORAR LOS DATOS</p>
+                <p class="data-font" style="color: var(--accent-cyan); margin-bottom: 10px;">// FIN DEL PROTOCOLO</p>
                 <p>Investigación realizada por <strong>Jenedy Juárez</strong></p>
-                <p style="font-size: 0.8rem; margin-top: 10px; color: var(--text-muted);">Proyecto de Ciencia de Datos Aplicada | Noviembre 2026</p>
+                <p style="font-size: 0.8rem; margin-top: 10px; color: var(--text-muted);">Ciencia de Datos Aplicada | 2026</p>
             </div>
         </section>
     </main>
 
-    <footer class="footer data-font">
-        <p>FUENTES: ONEI / NASA / OSINT / Encuesta (N=32)</p>
-        <p>La información energética es un acto de resistencia.</p>
-    </footer>
+    <footer class="footer data-font"><p>FUENTES: ONEI / NASA / OSINT / Encuesta (N=32)</p></footer>
 </body>
 </html>
