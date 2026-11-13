@@ -163,23 +163,60 @@ if (termInput) {
     });
 }
 
-// --- 6. APAGÓN ---
-const blackoutBtn = document.getElementById('blackout-btn'), blackoutOverlay = document.getElementById('blackout-overlay'), powerSwitch = document.getElementById('power-switch');
+// --- 6. APAGÓN (CORREGIDO) ---
+const blackoutBtn = document.getElementById('blackout-btn');
+const blackoutOverlay = document.getElementById('blackout-overlay');
+const powerSwitch = document.getElementById('power-switch');
+
 if (blackoutBtn) {
     blackoutBtn.addEventListener('click', () => {
-        blackoutOverlay.classList.remove('hidden'); blackoutOverlay.classList.add('flicker');
+        // Mostrar la pantalla negra y activar el parpadeo
+        blackoutOverlay.classList.remove('hidden'); 
+        blackoutOverlay.classList.add('flicker');
+        
+        // Sonido de error (BEEP)
         if (audioCtx) {
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'square'; osc.frequency.setValueAtTime(200, audioCtx.currentTime); gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            const osc = audioCtx.createOscillator(); 
+            const gain = audioCtx.createGain();
+            osc.type = 'square'; 
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime); 
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.connect(gain); 
+            gain.connect(audioCtx.destination); 
+            osc.start(); 
+            osc.stop(audioCtx.currentTime + 0.3);
         }
-        setTimeout(() => { blackoutOverlay.classList.remove('flicker'); if (isPlaying) { audioCtx.suspend(); musicBtn.classList.remove('playing'); } }, 1000);
+
+        // Quitar el parpadeo después de 1 segundo para que quede oscuro total
+        setTimeout(() => { 
+            blackoutOverlay.classList.remove('flicker'); 
+            // Apagar música
+            if (isPlaying) { 
+                audioCtx.suspend(); 
+                musicBtn.classList.remove('playing'); 
+            } 
+        }, 1000);
     });
 }
+
 if (powerSwitch) {
     powerSwitch.addEventListener('click', () => {
-        blackoutOverlay.style.opacity = '0.8'; setTimeout(() => { blackoutOverlay.style.opacity = '1'; }, 100);
-        setTimeout(() => { blackoutOverlay.style.opacity = '0.2'; }, 200); setTimeout(() => { blackoutOverlay.style.opacity = '1'; }, 300);
-        setTimeout(() => { blackoutOverlay.classList.add('hidden'); blackoutOverlay.style.opacity = '1'; if (audioCtx && !isPlaying) { audioCtx.resume(); musicBtn.classList.add('playing'); isPlaying = true; } }, 600);
+        // Efecto de encendido (parpadeo rápido)
+        blackoutOverlay.style.opacity = '0.5';
+        setTimeout(() => { blackoutOverlay.style.opacity = '1'; }, 150);
+        setTimeout(() => { blackoutOverlay.style.opacity = '0.3'; }, 300);
+        
+        // Desaparecer completamente
+        setTimeout(() => { 
+            blackoutOverlay.classList.add('hidden'); 
+            blackoutOverlay.style.opacity = '1'; // Restaurar opacidad por defecto
+            
+            // Reanudar música si el usuario la tenía activa
+            if (audioCtx && !isPlaying) { 
+                audioCtx.resume(); 
+                musicBtn.classList.add('playing'); 
+                isPlaying = true; 
+            } 
+        }, 500);
     });
-    }
+}
