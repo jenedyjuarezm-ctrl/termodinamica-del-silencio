@@ -126,42 +126,41 @@
         </section>
 
         <!-- 4. EL CLIMA -->
-        <section class="scroll-section">
-            <div class="data-card border-warm">
-                <p class="data-font label-warm">// CAPA 3: LA TRAMPA TERMODINÁMICA (NASA)</p>
-                <h2>Sol de sobra, calor letal</h2>
-                
-                <div class="data-grid">
-                    <div class="data-block">
-                        <span class="data-num" style="color:var(--accent-warm)">6.7</span>
-                        <span class="data-label">kWh/m²/día de Irradiancia Máxima</span>
-                    </div>
-                    <div class="data-block">
-                        <span class="data-num negative">30°C+</span>
-                        <span class="data-label">Temperatura media en verano</span>
-                    </div>
-                    <div class="data-block">
-                        <span class="data-num">&gt; 80%</span>
-                        <span class="data-label">Humedad relativa</span>
-                    </div>
-                    <div class="data-block">
-                        <span class="data-num negative">-15%</span>
-                        <span class="data-label">Pérdida de eficiencia por calor</span>
-                    </div>
-                </div>
-
-                <p class="stat-context">Los datos satelitales confirman el recurso solar, pero el coeficiente de temperatura negativo degrada los semiconductores. <strong>Mueve el control:</strong></p>
-                <div class="climate-slider-container">
-                    <input type="range" id="month-slider" min="0" max="11" value="6">
-                    <div class="climate-readout">
-                        <span id="month-label">Julio</span>
-                        <span>Irradiancia: <strong id="irr-val">6.7</strong></span>
-                        <span>Temp: <strong id="temp-val-climate">28.4</strong> °C</span>
-                    </div>
-                </div>
-                <div class="chart-wrapper" style="height: 150px;"><canvas id="nasaChart"></canvas></div>
+<section class="scroll-section">
+    <div class="data-card border-warm">
+        <p class="data-font label-warm">// CAPA 3: LA TRAMPA TERMODINÁMICA (NASA)</p>
+        <h2>Sol de sobra, calor letal</h2>
+        
+        <div class="data-grid">
+            <div class="data-block">
+                <span class="data-num" style="color:var(--accent-warm)">6.7</span>
+                <span class="data-label">kWh/m²/día de Irradiancia Máxima</span>
             </div>
-        </section>
+            <div class="data-block">
+                <span class="data-num negative">30°C+</span>
+                <span class="data-label">Temperatura media en verano</span>
+            </div>
+            <div class="data-block">
+                <span class="data-num negative">-15%</span>
+                <span class="data-label">Pérdida de eficiencia por calor</span>
+            </div>
+        </div>
+
+        <p class="stat-context">Los datos satelitales confirman el recurso solar, pero el coeficiente de temperatura negativo degrada los semiconductores. <strong>Mueve el control para simular el año:</strong></p>
+        
+        <div class="climate-slider-container">
+            <input type="range" id="month-slider" min="0" max="11" value="6">
+            <div class="climate-readout">
+                <span id="month-label">Julio</span>
+                <span>Irradiancia: <strong id="irr-val">6.7</strong></span>
+                <span>Temp: <strong id="temp-val-climate">28.4</strong> °C</span>
+                <span>Pérdida: <strong id="eff-loss">-15%</strong></span>
+            </div>
+        </div>
+        <!-- Gráfico más alto y con los 12 meses restaurados -->
+        <div class="chart-wrapper" style="height: 250px;"><canvas id="nasaChart"></canvas></div>
+    </div>
+</section>        
 
         <!-- 5. GRAFO OSINT -->
         <section class="scroll-section">
