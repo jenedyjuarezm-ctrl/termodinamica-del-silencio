@@ -52,38 +52,71 @@ window.addEventListener('load', () => {
     }
 });
 
-// --- 4. VISUALIZACIONES ---
+// --- 4. CONFIGURACIÓN DE GRÁFICAS Y HOLOGRAMA ---
 gsap.registerPlugin(ScrollTrigger);
-Chart.defaults.color = '#88888c'; Chart.defaults.font.family = 'Space Mono'; Chart.defaults.font.size = 10;
+Chart.defaults.color = '#88888c'; 
+Chart.defaults.font.family = 'Space Mono';
+Chart.defaults.font.size = 10;
 
 function initVisuals() {
+    // A. Gráfica Paradoja (Arreglada con Gradientes)
     const ctxPara = document.getElementById('paradoxChart');
     if(ctxPara) {
+        const gradientBlue = ctxPara.getContext('2d').createLinearGradient(0, 0, 0, 300);
+        gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+        gradientBlue.addColorStop(1, 'rgba(59, 130, 246, 0)');
+
         new Chart(ctxPara, {
             type: 'line',
             data: {
                 labels: ['2020', '2021', '2022'],
                 datasets: [
-                    { label: 'Generación Total', data: [19070, 17950, 15732], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#fff', fill: true, tension: 0.4 },
+                    { label: 'Generación Total', data: [19070, 17950, 15732], borderColor: '#3b82f6', backgroundColor: gradientBlue, borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#fff', fill: true, tension: 0.4 },
                     { label: 'Generación FV', data: [260.8, 258.4, 241.5], borderColor: '#10b981', borderWidth: 3, pointRadius: 4, borderDash: [2, 2], tension: 0.4 },
                     { label: 'Potencia Instalada', data: [221.5, 240.0, 263.0], borderColor: '#ef4444', borderWidth: 3, pointRadius: 4, tension: 0.4 }
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)', borderDash: [5,5] } }, x: { grid: { display: false } } }, animation: { duration: 2000, easing: 'easeOutQuart' } }
+            options: { 
+                responsive: true, maintainAspectRatio: false,
+                plugins: { 
+                    legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true, color: '#ccc' } },
+                    tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', borderColor: '#00e5ff', borderWidth: 1 }
+                },
+                scales: { 
+                    y: { grid: { color: 'rgba(255,255,255,0.05)', borderDash: [5,5] }, ticks: { color: '#888' } }, 
+                    x: { grid: { display: false }, ticks: { color: '#888' } } 
+                },
+                animation: { duration: 2000, easing: 'easeOutQuart' }
+            }
         });
     }
 
+    // B. Gráfica Clima (Arreglada)
     const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     const irrData = [3.8, 4.8, 5.8, 6.5, 6.7, 6.2, 6.7, 6.1, 5.6, 4.6, 3.8, 3.3];
     const tempData = [23.2, 24.0, 25.1, 26.3, 27.5, 28.1, 28.4, 28.3, 27.8, 26.8, 25.4, 23.6];
+    
     const nasaChart = new Chart(document.getElementById('nasaChart'), {
         type: 'bar',
-        data: { labels: months, datasets: [
-            { type: 'bar', label: 'Irradiancia', data: irrData, backgroundColor: 'rgba(234, 179, 8, 0.3)', borderColor: '#eab308', borderWidth: 1 },
-            { type: 'line', label: 'Temperatura', data: tempData, borderColor: '#ec4899', borderWidth: 3, pointRadius: 3, yAxisID: 'y1' }
-        ]},
-        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 300 }, scales: { y: { position: 'left', grid: { color: 'rgba(255,255,255,0.05)' } }, y1: { position: 'right', grid: { display: false } }, x: { display: false } }, plugins: { legend: { display: false } } }
+        data: { 
+            labels: months, 
+            datasets: [
+                { type: 'bar', label: 'Irradiancia', data: irrData, backgroundColor: 'rgba(234, 179, 8, 0.4)', borderColor: '#eab308', borderWidth: 1, borderRadius: 4 },
+                { type: 'line', label: 'Temperatura', data: tempData, borderColor: '#ec4899', borderWidth: 3, pointRadius: 3, pointBackgroundColor: '#fff', yAxisID: 'y1', tension: 0.4 }
+            ]
+        },
+        options: { 
+            responsive: true, maintainAspectRatio: false, 
+            animation: { duration: 1000 }, 
+            scales: { 
+                y: { position: 'left', grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#eab308' } }, 
+                y1: { position: 'right', grid: { display: false }, ticks: { color: '#ec4899' } }, 
+                x: { grid: { display: false }, ticks: { color: '#888' } } 
+            }, 
+            plugins: { legend: { display: false } } 
+        }
     });
+    
     document.getElementById('month-slider').addEventListener('input', (e) => {
         const idx = parseInt(e.target.value);
         document.getElementById('month-label').textContent = months[idx];
@@ -91,10 +124,12 @@ function initVisuals() {
         document.getElementById('temp-val-climate').textContent = tempData[idx];
         const loss = tempData[idx] > 25 ? Math.round((tempData[idx] - 25) * 3) : 0;
         document.getElementById('eff-loss').textContent = `-${loss}%`;
-        nasaChart.data.datasets[0].backgroundColor = months.map((_, i) => i === idx ? '#eab308' : 'rgba(234, 179, 8, 0.1)');
+        
+        nasaChart.data.datasets[0].backgroundColor = months.map((_, i) => i === idx ? '#eab308' : 'rgba(234, 179, 8, 0.2)');
         nasaChart.update();
     });
 
+    // C. HOLOGRAMA OSINT
     const holoContainer = document.getElementById('hologram-container');
     const osintInfo = document.getElementById('osint-info');
     const osintData = [
@@ -104,31 +139,55 @@ function initVisuals() {
         { n: "Parque EXPOCUBA", t: "La Habana", kWp: 1000, src: "Cubadebate" },
         { n: "Hospital Calixto García", t: "La Habana", kWp: 50, src: "ACN" }
     ];
+
     if(holoContainer) {
         for(let i=0; i<20; i++) {
-            const node = document.createElement('div'); node.className = 'holo-node';
-            node.style.left = `${Math.random() * 85 + 5}%`; node.style.top = `${Math.random() * 85 + 5}%`; node.style.animationDelay = `${Math.random() * 2}s`;
+            const node = document.createElement('div');
+            node.className = 'holo-node';
+            node.style.left = `${Math.random() * 85 + 5}%`; 
+            node.style.top = `${Math.random() * 85 + 5}%`;
+            node.style.animationDelay = `${Math.random() * 2}s`;
+            
             const data = osintData[i % osintData.length];
-            node.addEventListener('mouseenter', () => { osintInfo.innerHTML = `<span style="color:var(--accent-cyan)">>> DATO ENCONTRADO:</span> <strong>${data.n}</strong> (${data.t}) | Potencia: ${data.kWp} kWp | Fuente: ${data.src}`; osintInfo.style.borderColor = 'var(--accent-warm)'; });
-            node.addEventListener('mouseleave', () => { osintInfo.style.borderColor = 'var(--accent-cyan)'; });
+            
+            node.addEventListener('mouseenter', () => {
+                osintInfo.innerHTML = `<span style="color:var(--accent-cyan)">>> DATO ENCONTRADO:</span> <strong>${data.n}</strong> (${data.t}) | Potencia: ${data.kWp} kWp | Fuente: ${data.src}`;
+                osintInfo.style.borderColor = 'var(--accent-warm)';
+            });
+            node.addEventListener('mouseleave', () => {
+                osintInfo.style.borderColor = 'var(--accent-cyan)';
+            });
             holoContainer.appendChild(node);
         }
     }
 
-    const kwpSlider = document.getElementById('sim-kwp'), batSlider = document.getElementById('sim-bat');
+    // D. SIMULADOR
+    const kwpSlider = document.getElementById('sim-kwp');
+    const batSlider = document.getElementById('sim-bat');
     const updateSim = () => {
-        const kwp = parseFloat(kwpSlider.value), bat = parseInt(batSlider.value);
-        document.getElementById('sim-kwp-text').textContent = `${kwp} kWp`; document.getElementById('sim-bat-text').textContent = `${bat} kWh`;
-        let status = document.getElementById('sim-status'), desc = document.getElementById('sim-desc');
-        if (bat >= 5 && kwp >= 2) { status.textContent = "SISTEMA RESILIENTE"; status.style.color = "var(--accent-cyan)"; desc.textContent = "Suficiente generación para pasar la noche sin perder alimentos."; }
-        else { status.textContent = "SISTEMA INSUFICIENTE"; status.style.color = "var(--accent-danger)"; desc.textContent = bat < 5 ? "Las baterías son muy pequeñas. La nevera se apagará." : "Los paneles son débiles para recargar las baterías."; }
+        const kwp = parseFloat(kwpSlider.value);
+        const bat = parseInt(batSlider.value);
+        document.getElementById('sim-kwp-text').textContent = `${kwp} kWp`;
+        document.getElementById('sim-bat-text').textContent = `${bat} kWh`;
+        let status = document.getElementById('sim-status');
+        let desc = document.getElementById('sim-desc');
+        if (bat >= 5 && kwp >= 2) {
+            status.textContent = "SISTEMA RESILIENTE"; status.style.color = "var(--accent-cyan)";
+            desc.textContent = "Suficiente generación para pasar la noche sin perder alimentos.";
+        } else {
+            status.textContent = "SISTEMA INSUFICIENTE"; status.style.color = "var(--accent-danger)";
+            desc.textContent = bat < 5 ? "Las baterías son muy pequeñas. La nevera se apagará." : "Los paneles son débiles para recargar las baterías.";
+        }
     };
     kwpSlider.addEventListener('input', updateSim); batSlider.addEventListener('input', updateSim); updateSim();
 
+    // E. TYPEWRITER
     const testimonials = ["“No lo compré por el medio ambiente. Lo compré para que no se me dañe la carne.”", "“El panel me costó más que mi sueldo de un año, pero al menos tengo un ventilador.”", "“El Estado dice que hay energía, pero mi casa pasa 12 horas a oscuras.”"];
-    const textEl = document.getElementById('typewriter-text'); let tIndex = 0, cIndex = 0, isDeleting = false;
+    const textEl = document.getElementById('typewriter-text');
+    let tIndex = 0, cIndex = 0, isDeleting = false;
     function typeWriter() {
-        if(!textEl) return; const currentText = testimonials[tIndex];
+        if(!textEl) return;
+        const currentText = testimonials[tIndex];
         if (isDeleting) { textEl.textContent = currentText.substring(0, cIndex - 1); cIndex--; } 
         else { textEl.textContent = currentText.substring(0, cIndex + 1); cIndex++; }
         let typeSpeed = isDeleting ? 30 : 50;
@@ -138,11 +197,15 @@ function initVisuals() {
     }
     ScrollTrigger.create({ trigger: "#testimonios-section", start: "top 80%", onEnter: () => { if(cIndex === 0 && !isDeleting) typeWriter(); }, once: true });
 }
+
 window.addEventListener('load', () => setTimeout(initVisuals, 300));
 
-// --- 5. TERMINAL ---
-const termInput = document.getElementById('terminal-input'), termOutput = document.getElementById('terminal-output');
-if (termOutput) termOutput.innerHTML = "SISTEMA OPERATIVO CUBA-SOLAR v2.0\nConexión con NASA establecida.\nEscribe 'help' para comenzar.\n\n";
+// --- 5. TERMINAL OSINT ---
+const termInput = document.getElementById('terminal-input');
+const termOutput = document.getElementById('terminal-output');
+if (termOutput) {
+    termOutput.innerHTML = "SISTEMA OPERATIVO CUBA-SOLAR v2.0\nConexión con NASA establecida.\nEscribe 'help' para comenzar.\n\n";
+}
 const commands = {
     help: "Comandos:\n- status: Red eléctrica.\n- desclasificar: Extraer datos.\n- nasa: Datos satelitales.\n- clear: Limpiar.",
     status: "<span class='terminal-error'>ALERTA: Generación nacional al 17.5%. Apagones de 12h activos.</span>",
@@ -153,7 +216,8 @@ const commands = {
 if (termInput) {
     termInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
-            const cmd = this.value.trim().toLowerCase(); this.value = '';
+            const cmd = this.value.trim().toLowerCase();
+            this.value = '';
             termOutput.innerHTML += `<div><span class="prompt">root@cuba-solar:~#</span> ${cmd}</div>`;
             if (cmd === 'clear') { termOutput.innerHTML = ''; } 
             else if (commands[cmd]) { termOutput.innerHTML += `<div>${commands[cmd]}</div><br>`; } 
@@ -164,22 +228,38 @@ if (termInput) {
 }
 
 // --- 6. APAGÓN ---
-const blackoutBtn = document.getElementById('blackout-btn'), blackoutOverlay = document.getElementById('blackout-overlay'), powerSwitch = document.getElementById('power-switch');
+const blackoutBtn = document.getElementById('blackout-btn');
+const blackoutOverlay = document.getElementById('blackout-overlay');
+const powerSwitch = document.getElementById('power-switch');
+
 if (blackoutBtn) {
     blackoutBtn.addEventListener('click', () => {
-        blackoutOverlay.classList.remove('hidden'); blackoutOverlay.classList.add('flicker');
+        blackoutOverlay.classList.remove('hidden');
+        blackoutOverlay.classList.add('flicker');
         if (audioCtx) {
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'square'; osc.frequency.setValueAtTime(200, audioCtx.currentTime); gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            osc.type = 'square'; osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
         }
-        setTimeout(() => { blackoutOverlay.classList.remove('flicker'); if (isPlaying) { audioCtx.suspend(); musicBtn.classList.remove('playing'); } }, 1000);
+        setTimeout(() => {
+            blackoutOverlay.classList.remove('flicker');
+            if (isPlaying) { audioCtx.suspend(); musicBtn.classList.remove('playing'); }
+        }, 1000);
     });
 }
+
 if (powerSwitch) {
     powerSwitch.addEventListener('click', () => {
-        blackoutOverlay.style.opacity = '0.8'; setTimeout(() => { blackoutOverlay.style.opacity = '1'; }, 100);
-        setTimeout(() => { blackoutOverlay.style.opacity = '0.2'; }, 200); setTimeout(() => { blackoutOverlay.style.opacity = '1'; }, 300);
-        setTimeout(() => { blackoutOverlay.classList.add('hidden'); blackoutOverlay.style.opacity = '1'; if (audioCtx && !isPlaying) { audioCtx.resume(); musicBtn.classList.add('playing'); isPlaying = true; } }, 600);
+        blackoutOverlay.style.opacity = '0.8';
+        setTimeout(() => { blackoutOverlay.style.opacity = '1'; }, 100);
+        setTimeout(() => { blackoutOverlay.style.opacity = '0.2'; }, 200);
+        setTimeout(() => { blackoutOverlay.style.opacity = '1'; }, 300);
+        setTimeout(() => {
+            blackoutOverlay.classList.add('hidden');
+            blackoutOverlay.style.opacity = '1';
+            if (audioCtx && !isPlaying) { audioCtx.resume(); musicBtn.classList.add('playing'); isPlaying = true; }
+        }, 600);
     });
-                }
+                                }
