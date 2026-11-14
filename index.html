@@ -47,7 +47,7 @@
             <div class="data-card border-danger">
                 <p class="data-font label-danger">// CAPA 2: EL COLAPSO SILENCIOSO</p>
                 <h2>12 horas al día sin electricidad.</h2>
-                <p class="stat-context">La matriz termoeléctrica de Cuba ha colapsado. Mientras el Estado reporta una caída del <strong>17.5%</strong> en la generación total, la vida cotidiana se paraliza. Pero hay una historia que los números macro no cuentan.</p>
+                <p class="stat-context">Los datos oficiales indican una contracción severa de la matriz termoeléctrica cubana. Mientras la generación total cae un <strong>17.5%</strong> , la vida cotidiana se paraliza.</p>
             </div>
         </section>
 
@@ -56,7 +56,7 @@
             <div class="data-card border-cyan">
                 <p class="data-font label-cyan">// CAPA 3: LA PARADOJA DE LA EFICIENCIA</p>
                 <h2>El Estado instala, pero no genera</h2>
-                <p class="stat-context">La potencia instalada creció un <strong>+18.7%</strong>, pero la generación real cayó un <strong>-7.4%</strong>. Una contradicción técnica documentada en los Anuarios de la ONEI.</p>
+                <p class="stat-context">Los registros de la ONEI (2020-2022) <strong>sugieren</strong> una posible ineficiencia operativa: la potencia instalada creció un <strong>+18.7%</strong>, pero la generación real cayó un <strong>-7.4%</strong>. Una divergencia documentada en los Anuarios Estadísticos.</p>
                 <!-- Gráfica 1 Corregida -->
                 <div class="chart-wrapper"><canvas id="paradoxChart"></canvas></div>
             </div>
@@ -67,7 +67,7 @@
             <div class="data-card border-warm">
                 <p class="data-font label-warm">// CAPA 4: LA TRAMPA TERMODINÁMICA (NASA)</p>
                 <h2>Sol de sobra, calor letal</h2>
-                <p class="stat-context">Cuba recibe hasta 6.7 kWh/m²/día. Pero el calor extremo degrada los semiconductores. <strong>Mueve el control para simular el año:</strong></p>
+                <p class="stat-context">Cuba recibe hasta 6.7 kWh/m²/día. Pero el calor extremo del verano <strong>puede degradar</strong> el rendimiento de los semiconductores. <strong>Mueve el control para simular el año:</strong></p>
                 
                 <div class="climate-slider-container">
                     <input type="range" id="month-slider" min="0" max="11" value="6">
@@ -88,7 +88,7 @@
             <div class="data-card border-cyan">
                 <p class="data-font label-cyan">// CAPA 5: LOS INVISIBLES (OSINT)</p>
                 <h2>El holograma de la resistencia</h2>
-                <p class="stat-context">Ante la negativa del Estado, la prensa reveló 64 puntos de generación. Toca los nodos brillantes para inspeccionar los datos:</p>
+                <p class="stat-context">Ante un sesgo de no respuesta institucional (90% de negativa estatal documentada), se pivotó a la Inteligencia de Fuentes Abiertas. La prensa permitió mapear 64 puntos de generación. Toca los nodos brillantes para inspeccionar los datos:</p>
                 
                 <div class="hologram-container" id="hologram-container">
                     <div class="hologram-lines"></div>
@@ -102,11 +102,31 @@
             <div class="data-card border-muted" style="text-align: center;">
                 <p class="data-font label-muted">// CAPA 6: EL FACTOR HUMANO (N=32)</p>
                 <h2>Las voces detrás del dato</h2>
-                <p class="stat-context">El 100% de los encuestados compró paneles solares para la supervivencia. Estas son sus palabras:</p>
+                <p class="stat-context">En los 32 casos analizados, la principal motivación reportada fue la supervivencia ante los apagones (32 menciones), frente a 5 de ahorro y 2 ambientales. <em style="font-size: 0.8rem; opacity: 0.7;">Nota metodológica: Muestra no probabilística por conveniencia (bola de nieve).</em></p>
                 
                 <div class="testimonial-carousel">
                     <div class="testimonial-text data-font" id="typewriter-text"></div>
                 </div>
+            </div>
+        </section>
+
+        <!-- 6.5 SECTORES (Gráfica 3 del informe) -->
+        <section class="scroll-section">
+            <div class="data-card border-cyan">
+                <p class="data-font label-cyan">// CAPA 6.5: INVERSIÓN POR SECTOR</p>
+                <h2>Residencias vs. Locales vs. Solineras</h2>
+                <p class="stat-context">El sector privado (4.5 kWp) invierte el doble que las casas (2.0 kWp) para proteger sus negocios, mientras las solineras estatales (40 kWp) intentan cubrir la red.</p>
+                <div class="chart-wrapper" style="height: 220px;"><canvas id="sectorChart"></canvas></div>
+            </div>
+        </section>
+
+        <!-- 6.6. MOTIVACIONES (Gráfica 5 del informe) -->
+        <section class="scroll-section">
+            <div class="data-card border-danger">
+                <p class="data-font label-danger">// CAPA 6.6: LA VERDADERA MOTIVACIÓN</p>
+                <h2>¿Por qué invierten los cubanos?</h2>
+                <p class="stat-context">En los 32 casos analizados, la principal motivación reportada fue la supervivencia ante los apagones (32 menciones), frente a 5 de ahorro y 2 ambientales. <em style="font-size: 0.8rem; opacity: 0.7;">Nota metodológica: Muestra no probabilística por conveniencia (bola de nieve).</em></p>
+                <div class="chart-wrapper" style="height: 220px;"><canvas id="motivationChart"></canvas></div>
             </div>
         </section>
 
@@ -192,8 +212,9 @@
                 <div class="data-vault">
                     <details><summary>📊 Datos Macro (ONEI & IRENA)</summary><p>Anuarios Estadísticos de Cuba (2023). Capítulo 10: Minería y Energía.</p></details>
                     <details><summary>🛰️ Datos Satelitales (NASA POWER)</summary><p>Parámetros: ALLSKY_SFC_SW_DWN, T2M, RH2M. Coordenadas: 23.13N, -82.38W.</p></details>
-                    <details><summary>📰 Fuentes OSINT (Prensa)</summary><p>CiberCuba, Trabajadores, Granma, EFE, pv magazine, ACN. 64 registros.</p></details>
+                    <details><summary>📰 Fuentes OSINT (Prensa)</summary><p>CiberCuba, Trabajadores, Granma, EFE, pv magazine, ACN. 64 registros.</p></details>                    
                     <details><summary>🛠️ Ingeniería de Datos</summary><p>Pipeline ETL en Python. Resolución de dependencias binarias.</p></details>
+                    <details><summary>⚠️ Limitaciones del Estudio</summary><p>Muestra primaria N=32 no probabilística (bola de nieve). Sesgo de no respuesta estatal del 90%. Los hallazgos presentados son indicativos y no deben interpretarse como generalizaciones absolutas de la población cubana.</p></details>             
                 </div>
             </div>
             
