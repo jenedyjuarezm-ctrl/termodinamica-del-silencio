@@ -1,3 +1,17 @@
+let currentWatts = 0;
+function addWatts(amount) {
+    try {
+        currentWatts += amount;
+        if (currentWatts > 100) currentWatts = 100;
+        const countEl = document.getElementById('watts-count');
+        const fillEl = document.getElementById('watts-fill');
+        if (countEl) countEl.textContent = currentWatts;
+        if (fillEl) fillEl.style.width = `${currentWatts}%`;
+    } catch (error) {
+        console.warn("Error en el HUD de vatios, pero la página sigue funcionando.", error);
+    }
+}
+
 const SUPABASE_URL = 'https://jntyotrddlrzccoauram.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_H8uhN5DbCWLslwo4uJlDuw_jdAjE67K';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
