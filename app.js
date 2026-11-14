@@ -18,7 +18,13 @@ function playLofi() {
     };
     loop(); setInterval(loop, 1500);
 }
-if (musicBtn) { musicBtn.addEventListener('click', () => { if (!audioCtx) { playLofi(); isPlaying = true; musicBtn.classList.add('playing'); } else if (isPlaying) { audioCtx.suspend(); isPlaying = false; musicBtn.classList.remove('playing'); } else { audioCtx.resume(); isPlaying = true; musicBtn.classList.add('playing'); } }); }
+if (musicBtn) { 
+    musicBtn.addEventListener('click', () => { 
+        if (!audioCtx) { playLofi(); isPlaying = true; musicBtn.classList.add('playing'); } 
+        else if (isPlaying) { audioCtx.suspend(); isPlaying = false; musicBtn.classList.remove('playing'); } 
+        else { audioCtx.resume(); isPlaying = true; musicBtn.classList.add('playing'); } 
+    }); 
+}
 
 // --- 2. CONTADOR VISITAS ---
 async function gestionarVisitas() {
@@ -59,7 +65,6 @@ Chart.defaults.font.family = 'Space Mono';
 Chart.defaults.font.size = 10;
 
 function initVisuals() {
-    // A. Gráfica Paradoja (Arreglada con Gradientes)
     const ctxPara = document.getElementById('paradoxChart');
     if(ctxPara) {
         const gradientBlue = ctxPara.getContext('2d').createLinearGradient(0, 0, 0, 300);
@@ -78,43 +83,24 @@ function initVisuals() {
             },
             options: { 
                 responsive: true, maintainAspectRatio: false,
-                plugins: { 
-                    legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true, color: '#ccc' } },
-                    tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', borderColor: '#00e5ff', borderWidth: 1 }
-                },
-                scales: { 
-                    y: { grid: { color: 'rgba(255,255,255,0.05)', borderDash: [5,5] }, ticks: { color: '#888' } }, 
-                    x: { grid: { display: false }, ticks: { color: '#888' } } 
-                },
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true, color: '#ccc' } } },
+                scales: { y: { grid: { color: 'rgba(255,255,255,0.05)', borderDash: [5,5] }, ticks: { color: '#888' } }, x: { grid: { display: false }, ticks: { color: '#888' } } },
                 animation: { duration: 2000, easing: 'easeOutQuart' }
             }
         });
     }
 
-    // B. Gráfica Clima (Arreglada)
     const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     const irrData = [3.8, 4.8, 5.8, 6.5, 6.7, 6.2, 6.7, 6.1, 5.6, 4.6, 3.8, 3.3];
     const tempData = [23.2, 24.0, 25.1, 26.3, 27.5, 28.1, 28.4, 28.3, 27.8, 26.8, 25.4, 23.6];
     
     const nasaChart = new Chart(document.getElementById('nasaChart'), {
         type: 'bar',
-        data: { 
-            labels: months, 
-            datasets: [
-                { type: 'bar', label: 'Irradiancia', data: irrData, backgroundColor: 'rgba(234, 179, 8, 0.4)', borderColor: '#eab308', borderWidth: 1, borderRadius: 4 },
-                { type: 'line', label: 'Temperatura', data: tempData, borderColor: '#ec4899', borderWidth: 3, pointRadius: 3, pointBackgroundColor: '#fff', yAxisID: 'y1', tension: 0.4 }
-            ]
-        },
-        options: { 
-            responsive: true, maintainAspectRatio: false, 
-            animation: { duration: 1000 }, 
-            scales: { 
-                y: { position: 'left', grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#eab308' } }, 
-                y1: { position: 'right', grid: { display: false }, ticks: { color: '#ec4899' } }, 
-                x: { grid: { display: false }, ticks: { color: '#888' } } 
-            }, 
-            plugins: { legend: { display: false } } 
-        }
+        data: { labels: months, datasets: [
+            { type: 'bar', label: 'Irradiancia', data: irrData, backgroundColor: 'rgba(234, 179, 8, 0.4)', borderColor: '#eab308', borderWidth: 1, borderRadius: 4 },
+            { type: 'line', label: 'Temperatura', data: tempData, borderColor: '#ec4899', borderWidth: 3, pointRadius: 3, pointBackgroundColor: '#fff', yAxisID: 'y1', tension: 0.4 }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1000 }, scales: { y: { position: 'left', grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#eab308' } }, y1: { position: 'right', grid: { display: false }, ticks: { color: '#ec4899' } }, x: { grid: { display: false }, ticks: { color: '#888' } } }, plugins: { legend: { display: false } } }
     });
     
     document.getElementById('month-slider').addEventListener('input', (e) => {
@@ -124,12 +110,10 @@ function initVisuals() {
         document.getElementById('temp-val-climate').textContent = tempData[idx];
         const loss = tempData[idx] > 25 ? Math.round((tempData[idx] - 25) * 3) : 0;
         document.getElementById('eff-loss').textContent = `-${loss}%`;
-        
         nasaChart.data.datasets[0].backgroundColor = months.map((_, i) => i === idx ? '#eab308' : 'rgba(234, 179, 8, 0.2)');
         nasaChart.update();
     });
 
-    // C. HOLOGRAMA OSINT
     const holoContainer = document.getElementById('hologram-container');
     const osintInfo = document.getElementById('osint-info');
     const osintData = [
@@ -147,21 +131,16 @@ function initVisuals() {
             node.style.left = `${Math.random() * 85 + 5}%`; 
             node.style.top = `${Math.random() * 85 + 5}%`;
             node.style.animationDelay = `${Math.random() * 2}s`;
-            
             const data = osintData[i % osintData.length];
-            
             node.addEventListener('mouseenter', () => {
                 osintInfo.innerHTML = `<span style="color:var(--accent-cyan)">>> DATO ENCONTRADO:</span> <strong>${data.n}</strong> (${data.t}) | Potencia: ${data.kWp} kWp | Fuente: ${data.src}`;
                 osintInfo.style.borderColor = 'var(--accent-warm)';
             });
-            node.addEventListener('mouseleave', () => {
-                osintInfo.style.borderColor = 'var(--accent-cyan)';
-            });
+            node.addEventListener('mouseleave', () => { osintInfo.style.borderColor = 'var(--accent-cyan)'; });
             holoContainer.appendChild(node);
         }
     }
 
-    // D. SIMULADOR
     const kwpSlider = document.getElementById('sim-kwp');
     const batSlider = document.getElementById('sim-bat');
     const updateSim = () => {
@@ -181,7 +160,6 @@ function initVisuals() {
     };
     kwpSlider.addEventListener('input', updateSim); batSlider.addEventListener('input', updateSim); updateSim();
 
-    // E. TYPEWRITER
     const testimonials = ["“No lo compré por el medio ambiente. Lo compré para que no se me dañe la carne.”", "“El panel me costó más que mi sueldo de un año, pero al menos tengo un ventilador.”", "“El Estado dice que hay energía, pero mi casa pasa 12 horas a oscuras.”"];
     const textEl = document.getElementById('typewriter-text');
     let tIndex = 0, cIndex = 0, isDeleting = false;
@@ -227,15 +205,17 @@ if (termInput) {
     });
 }
 
-// --- 6. APAGÓN ---
+// --- 6. APAGÓN (CORREGIDO) ---
 const blackoutBtn = document.getElementById('blackout-btn');
 const blackoutOverlay = document.getElementById('blackout-overlay');
 const powerSwitch = document.getElementById('power-switch');
 
 if (blackoutBtn) {
     blackoutBtn.addEventListener('click', () => {
+        // Mostrar overlay
         blackoutOverlay.classList.remove('hidden');
-        blackoutOverlay.classList.add('flicker');
+        
+        // Sonido de error
         if (audioCtx) {
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.type = 'square'; osc.frequency.setValueAtTime(200, audioCtx.currentTime);
@@ -243,23 +223,32 @@ if (blackoutBtn) {
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + 0.3);
         }
-        setTimeout(() => {
-            blackoutOverlay.classList.remove('flicker');
-            if (isPlaying) { audioCtx.suspend(); musicBtn.classList.remove('playing'); }
-        }, 1000);
+
+        // Pausar música
+        if (isPlaying) { audioCtx.suspend(); musicBtn.classList.remove('playing'); }
     });
 }
 
 if (powerSwitch) {
     powerSwitch.addEventListener('click', () => {
-        blackoutOverlay.style.opacity = '0.8';
-        setTimeout(() => { blackoutOverlay.style.opacity = '1'; }, 100);
-        setTimeout(() => { blackoutOverlay.style.opacity = '0.2'; }, 200);
-        setTimeout(() => { blackoutOverlay.style.opacity = '1'; }, 300);
-        setTimeout(() => {
-            blackoutOverlay.classList.add('hidden');
-            blackoutOverlay.style.opacity = '1';
-            if (audioCtx && !isPlaying) { audioCtx.resume(); musicBtn.classList.add('playing'); isPlaying = true; }
-        }, 600);
+        // Efecto de parpadeo al encender
+        let flickers = 0;
+        const flickerInterval = setInterval(() => {
+            blackoutOverlay.style.opacity = blackoutOverlay.style.opacity === '0' ? '1' : '0';
+            flickers++;
+            // Después de 4 parpadeos, ocultar definitivamente
+            if (flickers >= 4) {
+                clearInterval(flickerInterval);
+                blackoutOverlay.classList.add('hidden');
+                blackoutOverlay.style.opacity = ''; // Limpiar el estilo para que no interfiera
+                
+                // Reanudar música
+                if (audioCtx && !isPlaying) { 
+                    audioCtx.resume(); 
+                    musicBtn.classList.add('playing'); 
+                    isPlaying = true; 
+                }
+            }
+        }, 100);
     });
-                                }
+                      }
