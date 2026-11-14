@@ -192,15 +192,54 @@ window.addEventListener('load', () => {
                                 }
                             ]
                         },
-                        options: { 
+                        options: {
                             responsive: true, 
                             maintainAspectRatio: false,
                             onClick: () => { addWatts(5); logInteraction('click_grafica_clima'); },
+                            plugins: {
+                                legend: {
+                                    display: false // 1. Ocultamos la leyenda fea de arriba para ganar espacio
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                    titleFont: { family: 'Space Mono' },
+                                    bodyFont: { family: 'Space Mono' },
+                                    padding: 10,
+                                    cornerRadius: 4
+                                }
+                            },
                             scales: {
-                                y: { beginAtZero: true, title: { display: true, text: 'kWh/m²' } },
-                                y1: { position: 'right', title: { display: true, text: '°C' }, grid: { drawOnChartArea: false } }
+                                x: {
+                                    grid: { display: false }, // 2. Quitamos las líneas verticales
+                                    ticks: { 
+                                        color: '#888', 
+                                        font: { family: 'Space Mono', size: 10 } 
+                                    }
+                                },
+                                y: { 
+                                    beginAtZero: true, 
+                                    grid: { color: 'rgba(255, 255, 255, 0.05)' }, // 3. Hacemos la cuadrícula casi invisible
+                                    ticks: { color: '#888', font: { family: 'Space Mono', size: 10 } },
+                                    title: { 
+                                        display: true, 
+                                        text: 'kWh/m²', 
+                                        color: '#eab308', // Color amarillo para que haga match con las barras
+                                        font: { family: 'Space Mono', size: 10 } 
+                                    } 
+                                },
+                                y1: { 
+                                    position: 'right', 
+                                    grid: { drawOnChartArea: false }, // 4. Evitamos que se crucen las cuadrículas de Temp e Irradiancia
+                                    ticks: { color: '#888', font: { family: 'Space Mono', size: 10 } },
+                                    title: { 
+                                        display: true, 
+                                        text: '°C', 
+                                        color: '#ec4899', // Color rosa para que haga match con la línea
+                                        font: { family: 'Space Mono', size: 10 } 
+                                    } 
+                                }
                             }
-                        }
+                        }                
                     });
 
                     // Lógica del Slider
