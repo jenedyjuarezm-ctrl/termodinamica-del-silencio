@@ -2,25 +2,44 @@ const SUPABASE_URL = 'https://jntyotrddlrzccoauram.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_H8uhN5DbCWLslwo4uJlDuw_jdAjE67K';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// --- 1. AUDIO LOFI ---
+// --- 1. LÓGICA DE VATIOS ---
+let currentWatts = 0;
+const wattsCount = document.getElementById('watts-count');
+const wattsFill = document.getElementById('watts-fill');
+function addWatts(amount) {
+    currentWatts += amount;
+    if (currentWatts > 100) currentWatts = 100;
+    if(wattsCount) wattsCount.textContent = currentWatts;
+    if(wattsFill) wattsFill.style.width = `${currentWatts}%`;
+    if (currentWatts >= 100) {
+        const repo = document.getElementById('locked-repo');
+        if(repo) {
+            repo.classList.add('unlocked');
+            document.getElementById('repo-title').textContent = "ACCESO CONCEDIDO";
+            document.getElementById('repo-desc').textContent = "Has restaurado toda la información. Explora el pipeline de ingeniería.";
+            document.getElementById('repo-btn').style.display = 'inline-flex';
+        }
+    }
+}
+
+// --- 2. AUDIO ---
 const musicBtn = document.getElementById('music-toggle');
 let audioCtx, isPlaying = false;
 function playLofi() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 800; filter.connect(audioCtx.destination);
     const scale = [261.63, 293.66, 329.63, 392.00, 440.00];
-    const loop = () => {
+    setInterval(() => {
         const now = audioCtx.currentTime;
         const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
         osc.type = 'triangle'; osc.frequency.setValueAtTime(scale[Math.floor(Math.random()*5)], now);
         gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.03, now + 0.05); gain.gain.exponentialRampToValueAtTime(0.001, now + 2);
         osc.connect(gain); gain.connect(filter); osc.start(now); osc.stop(now + 2);
-    };
-    loop(); setInterval(loop, 1500);
+    }, 1500);
 }
-if (musicBtn) { musicBtn.addEventListener('click', () => { if (!audioCtx) { playLofi(); isPlaying = true; musicBtn.classList.add('playing'); } else if (isPlaying) { audioCtx.suspend(); isPlaying = false; musicBtn.classList.remove('playing'); } else { audioCtx.resume(); isPlaying = true; musicBtn.classList.add('playing'); } }); }
+if (musicBtn) { musicBtn.addEventListener('click', () => { if (!audioCtx) { playLofi(); isPlaying = true; musicBtn.classList.add('playing'); addWatts(5); } else if (isPlaying) { audioCtx.suspend(); isPlaying = false; musicBtn.classList.remove('playing'); } else { audioCtx.resume(); isPlaying = true; musicBtn.classList.add('playing'); } }); }
 
-// --- 2. CONTADOR VISITAS ---
+// --- 3. VISITAS ---
 async function gestionarVisitas() {
     const countElement = document.getElementById('view-count');
     if (!countElement) return;
@@ -33,9 +52,25 @@ async function gestionarVisitas() {
 }
 window.addEventListener('DOMContentLoaded', gestionarVisitas);
 
-// --- 3. FONDO 3D ---
+// --- 4. TELEMETRÍA ---
+let lastFrameTime = performance.now();
+setInterval(() => {
+    const pingEl = document.getElementById('tele-ping');
+    const nodesEl = document.getElementById('tele-nodes');
+    const fpsEl = document.getElementById('tele-fps');
+    if(pingEl) pingEl.textContent = `${Math.floor(Math.random() * 20) + 12}ms`;
+    if(nodesEl) { let nodes = parseInt(nodesEl.textContent) || 0; nodes = (nodes + Math.floor(Math.random() * 3) + 1) % 96; nodesEl.textContent = `${nodes}/96`; }
+    const now = performance.now();
+    if(fpsEl) fpsEl.textContent = Math.round(1000 / (now - lastFrameTime)) > 60 ? 60 : Math.round(1000 / (now - lastFrameTime));
+    lastFrameTime = now;
+}, 1000);
+
+// --- 5. SUPERVIVENCIA Y 3D ---
+const survivalBtn = document.getElementById('survival-btn');
+if (survivalBtn) { survivalBtn.addEventListener('click', () => { document.body.classList.toggle('survival-mode'); survivalBtn.textContent = document.body.classList.contains('survival-mode') ? "🔋 MODO NORMAL" : "🔋 MODO SUPERVIVENCIA"; addWatts(10); }); }
+
 window.addEventListener('load', () => {
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && !document.body.classList.contains('survival-mode')) {
         const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5)); renderer.setSize(innerWidth, innerHeight);
@@ -52,171 +87,226 @@ window.addEventListener('load', () => {
     }
 });
 
-// --- 4. VISUALIZACIONES ---
+// --- 6. GRÁFICAS Y VIS NETWORK ---
 gsap.registerPlugin(ScrollTrigger);
 Chart.defaults.color = '#88888c'; Chart.defaults.font.family = 'Space Mono'; Chart.defaults.font.size = 10;
 
 function initVisuals() {
+    // Gráfico Silencio
+    const ctxSilence = document.getElementById('silenceChart');
+    if (ctxSilence) {
+        new Chart(ctxSilence, {
+            type: 'bar',
+            data: { labels: ['Datos Oficiales', 'Datos OSINT', 'Datos Primarios'], datasets: [{ label: 'Transparencia (%)', data: [10, 100, 100], backgroundColor: ['rgba(255, 51, 51, 0.2)', 'rgba(0, 229, 255, 0.8)', 'rgba(16, 185, 129, 0.8)'], borderColor: ['#ff3333', '#00e5ff', '#10b981'], borderWidth: 2 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }, onClick: () => addWatts(10) }
+        });
+    }
+    // Gráfico Paradoja
     const ctxPara = document.getElementById('paradoxChart');
-    if(ctxPara) {
+    if (ctxPara) {
         new Chart(ctxPara, {
             type: 'line',
-            data: {
-                labels: ['2020', '2021', '2022'],
-                datasets: [
-                    { label: 'Generación Total', data: [19070, 17950, 15732], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#fff', fill: true, tension: 0.4 },
-                    { label: 'Generación FV', data: [260.8, 258.4, 241.5], borderColor: '#10b981', borderWidth: 3, pointRadius: 4, borderDash: [2, 2], tension: 0.4 },
-                    { label: 'Potencia Instalada', data: [221.5, 240.0, 263.0], borderColor: '#ef4444', borderWidth: 3, pointRadius: 4, tension: 0.4 }
-                ]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)', borderDash: [5,5] } }, x: { grid: { display: false } } }, animation: { duration: 2000, easing: 'easeOutQuart' } }
+            data: { labels: ['2020', '2021', '2022'], datasets: [
+                { label: 'Gen Total', data: [19070, 17950, 15732], borderColor: '#3b82f6', borderWidth: 3, tension: 0.4 },
+                { label: 'Gen FV', data: [260.8, 258.4, 241.5], borderColor: '#10b981', borderWidth: 3, tension: 0.4 },
+                { label: 'Potencia', data: [221.5, 240.0, 263.0], borderColor: '#ef4444', borderDash: [5,5], borderWidth: 3, tension: 0.4 }
+            ]},
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }, onClick: () => addWatts(10) }
+        });
+    }
+    // Gráfico Clima
+    const ctxNasa = document.getElementById('nasaChart');
+    let nasaChart;
+    if (ctxNasa) {
+        nasaChart = new Chart(ctxNasa, {
+            type: 'bar',
+            data: { labels: ['Ene', 'Jun', 'Dic'], datasets: [
+                { type: 'bar', label: 'Irradiancia', data: [3.8, 6.2, 3.3], backgroundColor: 'rgba(234, 179, 8, 0.5)' },
+                { type: 'line', label: 'Temp', data: [23.2, 28.1, 23.6], borderColor: '#ec4899', borderWidth: 3, yAxisID: 'y1' }
+            ]},
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { position: 'left' }, y1: { position: 'right', grid: { display: false } }, x: { display: false } }, plugins: { legend: { display: false } } }
+        });
+    }
+    const slider = document.getElementById('month-slider');
+    if(slider) {
+        slider.addEventListener('input', (e) => {
+            if(nasaChart) { nasaChart.data.datasets[0].data = [3.8, 6.7, 3.3].map(v => v + (Math.random() * 0.5)); nasaChart.update(); }
+            addWatts(1);
         });
     }
 
-    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    const irrData = [3.8, 4.8, 5.8, 6.5, 6.7, 6.2, 6.7, 6.1, 5.6, 4.6, 3.8, 3.3];
-    const tempData = [23.2, 24.0, 25.1, 26.3, 27.5, 28.1, 28.4, 28.3, 27.8, 26.8, 25.4, 23.6];
-    const nasaChart = new Chart(document.getElementById('nasaChart'), {
-        type: 'bar',
-        data: { labels: months, datasets: [
-            { type: 'bar', label: 'Irradiancia', data: irrData, backgroundColor: 'rgba(234, 179, 8, 0.3)', borderColor: '#eab308', borderWidth: 1 },
-            { type: 'line', label: 'Temperatura', data: tempData, borderColor: '#ec4899', borderWidth: 3, pointRadius: 3, yAxisID: 'y1' }
-        ]},
-        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 300 }, scales: { y: { position: 'left', grid: { color: 'rgba(255,255,255,0.05)' } }, y1: { position: 'right', grid: { display: false } }, x: { display: false } }, plugins: { legend: { display: false } } }
-    });
-    document.getElementById('month-slider').addEventListener('input', (e) => {
-        const idx = parseInt(e.target.value);
-        document.getElementById('month-label').textContent = months[idx];
-        document.getElementById('irr-val').textContent = irrData[idx];
-        document.getElementById('temp-val-climate').textContent = tempData[idx];
-        const loss = tempData[idx] > 25 ? Math.round((tempData[idx] - 25) * 3) : 0;
-        document.getElementById('eff-loss').textContent = `-${loss}%`;
-        nasaChart.data.datasets[0].backgroundColor = months.map((_, i) => i === idx ? '#eab308' : 'rgba(234, 179, 8, 0.1)');
-        nasaChart.update();
-    });
-
-    const holoContainer = document.getElementById('hologram-container');
-    const osintInfo = document.getElementById('osint-info');
-    const osintData = [
-        { n: "Solinera El Girasol", t: "Villa Clara", kWp: 30, src: "CiberCuba" },
-        { n: "Solinera Vedado", t: "La Habana", kWp: 20, src: "Trabajadores" },
-        { n: "Instituto Finlay", t: "La Habana", kWp: 300, src: "pv magazine" },
-        { n: "Parque EXPOCUBA", t: "La Habana", kWp: 1000, src: "Cubadebate" },
-        { n: "Hospital Calixto García", t: "La Habana", kWp: 50, src: "ACN" }
-    ];
-    if(holoContainer) {
-        for(let i=0; i<20; i++) {
-            const node = document.createElement('div'); node.className = 'holo-node';
-            node.style.left = `${Math.random() * 85 + 5}%`; node.style.top = `${Math.random() * 85 + 5}%`; node.style.animationDelay = `${Math.random() * 2}s`;
-            const data = osintData[i % osintData.length];
-            node.addEventListener('mouseenter', () => { osintInfo.innerHTML = `<span style="color:var(--accent-cyan)">>> DATO ENCONTRADO:</span> <strong>${data.n}</strong> (${data.t}) | Potencia: ${data.kWp} kWp | Fuente: ${data.src}`; osintInfo.style.borderColor = 'var(--accent-warm)'; });
-            node.addEventListener('mouseleave', () => { osintInfo.style.borderColor = 'var(--accent-cyan)'; });
-            holoContainer.appendChild(node);
-        }
+    // Grafo OSINT
+    const container = document.getElementById('network-graph');
+    if (container && typeof vis !== 'undefined') {
+        const nodes = new vis.DataSet([
+            { id: 1, label: 'Solinera El Girasol', title: 'Villa Clara', color: '#00e5ff' },
+            { id: 2, label: 'Solinera Vedado', title: 'La Habana', color: '#00e5ff' },
+            { id: 3, label: 'Instituto Finlay', title: 'La Habana', color: '#10b981' },
+            { id: 4, label: 'EXPOCUBA', title: 'La Habana', color: '#10b981' },
+            { id: 5, label: 'Hospital Calixto', title: 'La Habana', color: '#10b981' }
+        ]);
+        const edges = new vis.DataSet([
+            { from: 1, to: 2, label: 'CiberCuba' },
+            { from: 2, to: 3, label: 'pv magazine' },
+            { from: 3, to: 4, label: 'Cubadebate' },
+            { from: 4, to: 5, label: 'ACN' }
+        ]);
+        const options = { nodes: { shape: 'dot', size: 15, font: { color: '#fff', face: 'Space Mono' } }, edges: { color: 'rgba(255,255,255,0.2)', font: { color: '#888', size: 10 }, smooth: true }, physics: { stabilization: false }, interaction: { hover: true } };
+        const network = new vis.Network(container, { nodes, edges }, options);
+        network.on("click", function (params) {
+            if (params.nodes.length > 0) {
+                const node = nodes.get(params.nodes[0]);
+                document.getElementById('osint-info').innerHTML = `<strong>${node.label}</strong> (${node.title}) | Fuente OSINT verificada.`;
+                addWatts(5);
+            }
+        });
     }
 
-    const kwpSlider = document.getElementById('sim-kwp'), batSlider = document.getElementById('sim-bat');
+    // Simulador
+    const checkboxes = document.querySelectorAll('.device-check input');
     const updateSim = () => {
-        const kwp = parseFloat(kwpSlider.value), bat = parseInt(batSlider.value);
-        document.getElementById('sim-kwp-text').textContent = `${kwp} kWp`; document.getElementById('sim-bat-text').textContent = `${bat} kWh`;
-        let status = document.getElementById('sim-status'), desc = document.getElementById('sim-desc');
-        if (bat >= 5 && kwp >= 2) { status.textContent = "SISTEMA RESILIENTE"; status.style.color = "var(--accent-cyan)"; desc.textContent = "Suficiente generación para pasar la noche sin perder alimentos."; }
-        else { status.textContent = "SISTEMA INSUFICIENTE"; status.style.color = "var(--accent-danger)"; desc.textContent = bat < 5 ? "Las baterías son muy pequeñas. La nevera se apagará." : "Los paneles son débiles para recargar las baterías."; }
+        let totalLoad = 0;
+        if(document.getElementById('dev-fridge')?.checked) totalLoad += 2.0;
+        if(document.getElementById('dev-router')?.checked) totalLoad += 0.5;
+        if(document.getElementById('dev-water')?.checked) totalLoad += 1.0;
+        if(document.getElementById('dev-light')?.checked) totalLoad += 0.2;
+        const energyNeeded = totalLoad * 12;
+        const status = document.getElementById('sim-status'), desc = document.getElementById('sim-desc');
+        if(status && desc) {
+            if (energyNeeded > 5) { status.textContent = "COLAPSO ENERGÉTICO"; status.style.color = "var(--accent-danger)"; desc.textContent = `Necesitas ${energyNeeded.toFixed(1)} kWh, pero solo tienes 5 kWh.`; }
+            else { status.textContent = "SISTEMA ESTABLE"; status.style.color = "var(--accent-cyan)"; desc.textContent = `Consumo: ${energyNeeded.toFixed(1)} kWh. Resistirás las 12 horas.`; }
+        }
+        addWatts(2);
     };
-    kwpSlider.addEventListener('input', updateSim); batSlider.addEventListener('input', updateSim); updateSim();
+    checkboxes.forEach(cb => cb.addEventListener('change', updateSim));
 
-    const testimonials = ["“No lo compré por el medio ambiente. Lo compré para que no se me dañe la carne.”", "“El panel me costó más que mi sueldo de un año, pero al menos tengo un ventilador.”", "“El Estado dice que hay energía, pero mi casa pasa 12 horas a oscuras.”"];
-    const textEl = document.getElementById('typewriter-text'); let tIndex = 0, cIndex = 0, isDeleting = false;
+    // Typewriter
+    const textEl = document.getElementById('typewriter-text');
+    const testimonials = ["“No lo compré por ecología. Lo compré para que no se dañe la carne.”", "“El panel me costó un año de sueldo, pero tengo ventilador.”", "“12 horas a oscuras. El sol es lo único gratis.”"];
+    let tIndex = 0, cIndex = 0, isDeleting = false;
     function typeWriter() {
-        if(!textEl) return; const currentText = testimonials[tIndex];
-        if (isDeleting) { textEl.textContent = currentText.substring(0, cIndex - 1); cIndex--; } 
-        else { textEl.textContent = currentText.substring(0, cIndex + 1); cIndex++; }
-        let typeSpeed = isDeleting ? 30 : 50;
-        if (!isDeleting && cIndex === currentText.length) { typeSpeed = 3000; isDeleting = true; } 
-        else if (isDeleting && cIndex === 0) { isDeleting = false; tIndex = (tIndex + 1) % testimonials.length; typeSpeed = 500; }
-        setTimeout(typeWriter, typeSpeed);
+        if(!textEl) return; const txt = testimonials[tIndex];
+        if (isDeleting) { textEl.textContent = txt.substring(0, cIndex - 1); cIndex--; } 
+        else { textEl.textContent = txt.substring(0, cIndex + 1); cIndex++; }
+        let speed = isDeleting ? 30 : 50;
+        if (!isDeleting && cIndex === txt.length) { speed = 3000; isDeleting = true; } 
+        else if (isDeleting && cIndex === 0) { isDeleting = false; tIndex = (tIndex + 1) % testimonials.length; speed = 500; }
+        setTimeout(typeWriter, speed);
     }
-    ScrollTrigger.create({ trigger: "#testimonios-section", start: "top 80%", onEnter: () => { if(cIndex === 0 && !isDeleting) typeWriter(); }, once: true });
+    typeWriter();
 }
 window.addEventListener('load', () => setTimeout(initVisuals, 300));
 
-// --- 5. TERMINAL ---
+// --- 7. NLP (Análisis de Sentimiento) ---
+const palabrasPositivas = ['bien', 'bueno', 'sol', 'esperanza', 'gracias', 'excelente', 'increíble', 'ayuda', 'futuro', 'luz', 'solución', 'resiliencia', 'orgullo'];
+const palabrasNegativas = ['mal', 'apagón', 'triste', 'crisis', 'robo', 'pésimo', 'enfermo', 'comida', 'calor', 'mentira', 'problema', 'difícil', 'caos'];
+function analizarSentimiento() {
+    const texto = document.getElementById('comment-message').value.toLowerCase();
+    const badge = document.getElementById('sentiment-badge');
+    if(!badge) return;
+    let positivos = 0, negativos = 0;
+    palabrasPositivas.forEach(p => { if (texto.includes(p)) positivos++; });
+    palabrasNegativas.forEach(p => { if (texto.includes(p)) negativos++; });
+    if (texto.length < 3) { badge.textContent = "Analizando..."; badge.className = "sentiment-badge neutral"; return; }
+    if (positivos > negativos) { badge.textContent = "Positivo ☀️"; badge.className = "sentiment-badge positive"; }
+    else if (negativos > positivos) { badge.textContent = "Negativo ⚠️"; badge.className = "sentiment-badge negative"; }
+    else { badge.textContent = "Neutral 📊"; badge.className = "sentiment-badge neutral"; }
+}
+window.analizarSentimiento = analizarSentimiento;
+
+// --- 8. COMENTARIOS (SUPABASE) ---
+const commentForm = document.getElementById('comment-form');
+const commentsList = document.getElementById('comments-list');
+async function loadComments() {
+    if (!commentsList) return;
+    try {
+        const { data: comments, error } = await supabaseClient.from('comments').select('*').order('created_at', { ascending: false }).limit(20);
+        if (error) throw error;
+        if (comments.length === 0) { commentsList.innerHTML = '<p style="text-align:center; color: var(--text-muted); font-size: 0.9rem;">Sé el primero en reportar.</p>'; return; }
+        commentsList.innerHTML = '';
+        comments.forEach(c => {
+            const date = new Date(c.created_at);
+            const timeStr = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            const div = document.createElement('div');
+            div.className = 'comment-item';
+            div.innerHTML = `<div class="comment-header"><span class="comment-name">> ${c.name}</span><span class="comment-time">${timeStr}</span></div><div class="comment-text">${c.message}</div>`;
+            commentsList.appendChild(div);
+        });
+    } catch (error) { commentsList.innerHTML = '<p style="text-align:center; color: #ff3333; font-size: 0.9rem;">Error de conexión.</p>'; }
+}
+if (commentForm) {
+    commentForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit-comment');
+        const name = document.getElementById('comment-name').value.trim();
+        const message = document.getElementById('comment-message').value.trim();
+        if (!name || !message) return;
+        btn.textContent = "Transmitiendo..."; btn.disabled = true;
+        try {
+            const { error } = await supabaseClient.from('comments').insert([{ name, message }]);
+            if (error) throw error;
+            document.getElementById('comment-name').value = ''; document.getElementById('comment-message').value = '';
+            addWatts(15); await loadComments();
+        } catch (error) { alert("Error al transmitir."); } 
+        finally { btn.textContent = "Transmitir Mensaje 📡"; btn.disabled = false; }
+    });
+}
+supabaseClient.channel('comments-channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, () => { loadComments(); }).subscribe();
+window.addEventListener('load', () => { setTimeout(loadComments, 1000); });
+
+// --- 9. TERMINAL ---
 const termInput = document.getElementById('terminal-input'), termOutput = document.getElementById('terminal-output');
-if (termOutput) termOutput.innerHTML = "SISTEMA OPERATIVO CUBA-SOLAR v2.0\nConexión con NASA establecida.\nEscribe 'help' para comenzar.\n\n";
-const commands = {
-    help: "Comandos:\n- status: Red eléctrica.\n- desclasificar: Extraer datos.\n- nasa: Datos satelitales.\n- clear: Limpiar.",
-    status: "<span class='terminal-error'>ALERTA: Generación nacional al 17.5%. Apagones de 12h activos.</span>",
-    desclasificar: "Buscando en MINEM...\n<span class='terminal-success'>ACCESO CONCEDIDO.</span> 64 registros OSINT. Estado niega el 90%. Ciudadanía instala 2.0 kWp/hogar.",
-    nasa: "API NASA POWER...\nTemp: 30°C. Irradiancia: 6.7 kWh/m²/día.\n<span class='terminal-success'>Conclusión: Calor extremo reduce eficiencia un 15%.</span>",
-    clear: "CLEAR"
-};
+if (termOutput) termOutput.innerHTML = "SISTEMA v2.0\nEscribe 'help' para empezar.\n\n";
+const commands = { help: "Comandos:\n- status\n- desclasificar\n- nasa\n- clear", status: "ALERTA: Apagones de 12h.", desclasificar: "ACCESO CONCEDIDO. 64 registros OSINT.", nasa: "TEMP: 30°C. Irradiación: 6.7 kWh.", clear: "CLEAR" };
 if (termInput) {
     termInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             const cmd = this.value.trim().toLowerCase(); this.value = '';
-            termOutput.innerHTML += `<div><span class="prompt">root@cuba-solar:~#</span> ${cmd}</div>`;
+            termOutput.innerHTML += `<div>root@cuba-solar:~# ${cmd}</div>`;
             if (cmd === 'clear') { termOutput.innerHTML = ''; } 
-            else if (commands[cmd]) { termOutput.innerHTML += `<div>${commands[cmd]}</div><br>`; } 
-            else if (cmd !== '') { termOutput.innerHTML += `<div class="terminal-error">Comando no reconocido. Escribe 'help'.</div><br>`; }
+            else if (commands[cmd]) { termOutput.innerHTML += `<div>${commands[cmd]}</div><br>`; addWatts(5); } 
+            else if (cmd !== '') { termOutput.innerHTML += `<div>Comando no reconocido.</div><br>`; }
             document.querySelector('.terminal-container').scrollTop = document.querySelector('.terminal-container').scrollHeight;
         }
     });
 }
 
-// --- 6. APAGÓN (CORREGIDO) ---
-const blackoutBtn = document.getElementById('blackout-btn');
-const blackoutOverlay = document.getElementById('blackout-overlay');
-const powerSwitch = document.getElementById('power-switch');
-
+// --- 10. APAGÓN ---
+const blackoutBtn = document.getElementById('blackout-btn'), blackoutOverlay = document.getElementById('blackout-overlay'), powerSwitch = document.getElementById('power-switch');
 if (blackoutBtn) {
     blackoutBtn.addEventListener('click', () => {
-        // Mostrar la pantalla negra y activar el parpadeo
-        blackoutOverlay.classList.remove('hidden'); 
-        blackoutOverlay.classList.add('flicker');
-        
-        // Sonido de error (BEEP)
-        if (audioCtx) {
-            const osc = audioCtx.createOscillator(); 
-            const gain = audioCtx.createGain();
-            osc.type = 'square'; 
-            osc.frequency.setValueAtTime(200, audioCtx.currentTime); 
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            osc.connect(gain); 
-            gain.connect(audioCtx.destination); 
-            osc.start(); 
-            osc.stop(audioCtx.currentTime + 0.3);
-        }
-
-        // Quitar el parpadeo después de 1 segundo para que quede oscuro total
-        setTimeout(() => { 
-            blackoutOverlay.classList.remove('flicker'); 
-            // Apagar música
-            if (isPlaying) { 
-                audioCtx.suspend(); 
-                musicBtn.classList.remove('playing'); 
-            } 
-        }, 1000);
+        blackoutOverlay.classList.remove('hidden'); blackoutOverlay.classList.add('flicker');
+        if (audioCtx) { const osc = audioCtx.createOscillator(); osc.frequency.setValueAtTime(200, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.3); }
+        setTimeout(() => { blackoutOverlay.classList.remove('flicker'); if (isPlaying) { audioCtx.suspend(); musicBtn.classList.remove('playing'); } }, 1000);
     });
 }
-
 if (powerSwitch) {
     powerSwitch.addEventListener('click', () => {
-        // Efecto de encendido (parpadeo rápido)
-        blackoutOverlay.style.opacity = '0.5';
-        setTimeout(() => { blackoutOverlay.style.opacity = '1'; }, 150);
-        setTimeout(() => { blackoutOverlay.style.opacity = '0.3'; }, 300);
-        
-        // Desaparecer completamente
-        setTimeout(() => { 
-            blackoutOverlay.classList.add('hidden'); 
-            blackoutOverlay.style.opacity = '1'; // Restaurar opacidad por defecto
-            
-            // Reanudar música si el usuario la tenía activa
-            if (audioCtx && !isPlaying) { 
-                audioCtx.resume(); 
-                musicBtn.classList.add('playing'); 
-                isPlaying = true; 
-            } 
-        }, 500);
+        blackoutOverlay.classList.add('hidden'); 
+        if (audioCtx && !isPlaying) { audioCtx.resume(); musicBtn.classList.add('playing'); isPlaying = true; }
+        addWatts(5);
     });
 }
+
+// --- 11. EXPLORADOR DE DATOS ---
+const rawData = [
+    { id: 1, source: 'ONEI', var: 'Generación Total 2022', val: '15,732 GW·h' },
+    { id: 2, source: 'ONEI', var: 'Potencia Instalada FV', val: '263.0 MW' },
+    { id: 3, source: 'NASA', var: 'Irradiancia Máxima', val: '6.7 kWh/m²' },
+    { id: 4, source: 'NASA', var: 'Temperatura Promedio', val: '28.4 °C' },
+    { id: 5, source: 'OSINT', var: 'Solinera El Girasol', val: '30 kWp' },
+    { id: 6, source: 'OSINT', var: 'Parque EXPOCUBA', val: '1000 kWp' },
+    { id: 7, source: 'Encuesta', var: 'Motivo: Supervivencia', val: '32 menciones' },
+    { id: 8, source: 'Encuesta', var: 'Motivo: Ecología', val: '2 menciones' }
+];
+function renderTable(filter = 'all') {
+    const tbody = document.getElementById('data-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    const filtered = filter === 'all' ? rawData : rawData.filter(d => d.source === filter);
+    filtered.forEach(row => {
+        tbody.innerHTML += `<tr><td style="color: var(--accent-cyan);">#${row.id.toString().padStart(3, '0')}</td><td>${row.source}</td><td>${row.var}</td><td><strong>${row.val}</strong></td></tr>`;
+    });
+}
+const filterSelect = document.getElementById('filter-source');
+if (filterSelect) { filterSelect.addEventListener('change', (e) => renderTable(e.target.value)); renderTable(); }
