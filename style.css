@@ -133,3 +133,22 @@ details p { padding: 0 15px 15px; color: var(--text-muted); font-size: 0.9rem; }
     box-shadow: 0 0 40px var(--accent-cyan), inset 0 0 15px #fff; 
     border-color: #fff; 
 }
+
+#hud-watts {
+    position: fixed; 
+    bottom: 20px; 
+    right: 20px; /* Lo movemos a la derecha para no chocar con el apagón */
+    background: rgba(10, 10, 15, 0.9); 
+    border: 1px solid var(--accent-cyan);
+    padding: 10px 15px; 
+    border-radius: 8px; 
+    z-index: 999; /* Menor que el apagón (9999) pero mayor que el fondo */
+    font-size: 0.75rem; 
+    color: var(--text-main); 
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); 
+    backdrop-filter: blur(5px);
+}
+#watts-count { color: var(--accent-cyan); font-size: 0.9rem; }
+.watts-bar { width: 40px; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+#watts-fill { height: 100%; width: 0%; background: var(--accent-cyan); transition: width 0.3s; }
