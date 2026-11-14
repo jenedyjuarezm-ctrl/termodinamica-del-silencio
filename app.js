@@ -82,7 +82,7 @@ async function gestionarVisitas() {
 }
 
 // ==========================================================================
-// 4. INICIALIZACIÓN Y GRÁFICAS (DATOS REALES DEL INFORME)
+// 4. INICIALIZACIÓN
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
     gestionarVisitas();
@@ -109,11 +109,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch(e) { }
 
-    // --- Gráficas ---
+    // --- Gráficas y Textos ---
     setTimeout(() => {
         if (typeof Chart === 'undefined') return;
 
-        // 1. Gráfica Paradoja (ONEI)
+        // 1. Gráfica Paradoja
         const ctxPara = document.getElementById('paradoxChart');
         if(ctxPara) {
             new Chart(ctxPara, {
@@ -130,12 +130,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 2. Gráfica Clima (NASA) - DATOS REALES
+        // 2. Gráfica Clima (NASA)
         const ctxNasa = document.getElementById('nasaChart');
         let nasaChart;
         if(ctxNasa) {
             const labelsMeses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-            const dataIrradiancia = [3.55, 4.75, 5.60, 6.76, 7.21, 5.72, 6.84, 5.90, 5.74, 4.19, 3.94, 3.49]; // Año 2024
+            const dataIrradiancia = [3.55, 4.75, 5.60, 6.76, 7.21, 5.72, 6.84, 5.90, 5.74, 4.19, 3.94, 3.49]; 
             const dataTemperatura = [23.49, 21.70, 25.55, 25.77, 29.46, 28.08, 28.29, 28.63, 28.39, 26.71, 24.75, 23.12];
             
             let currentIndex = 6; // Julio por defecto
@@ -151,11 +151,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 options: { 
                     responsive: true, maintainAspectRatio: false,
-                    onClick: () => { addWatts(5); logInteraction('click_clima'); },
-                    plugins: { legend: { display: false } },
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: { 
+                            enabled: true, 
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)', 
+                            titleColor: '#eab308', 
+                            bodyColor: '#fff',
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.datasetIndex === 1) label += context.parsed.y + ' °C';
+                                    else label += context.parsed.y + ' kWh/m²';
+                                    return label;
+                                }
+                            }
+                        } 
+                    },
                     scales: {
                         x: { grid: { display: false }, ticks: { color: '#888', font: { family: 'Space Mono', size: 10 } } },
-                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' }, title: { display: true, text: 'kWh/m²', color: '#eab308' } },
+                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#888' }, title: { display: true, text: 'kWh/m²', color: '#eab308' } },
                         y1: { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#888' }, title: { display: true, text: '°C', color: '#ec4899' } }
                     }
                 }
@@ -187,66 +204,67 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // 3. Gráfica Sectores (NUEVA - Del informe)
+        // 3. Gráfica Sectores
         const ctxSector = document.getElementById('sectorChart');
         if (ctxSector) {
             new Chart(ctxSector, {
                 type: 'bar',
-                data: {
-                    labels: ['Residencias (Primarias)', 'Locales (Web)', 'Solineras (Web)'],
-                    datasets: [{
-                        label: 'Potencia Mediana (kWp)',
-                        data: [2.0, 4.5, 40.0],
-                        backgroundColor: ['#10b981', '#ef4444', '#a855f7'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'kWp' } }, x: { grid: { display: false } } }
-                }
+                data: { labels: ['Residencias (Primarias)', 'Locales (Web)', 'Solineras (Web)'], datasets: [{ label: 'Potencia Mediana (kWp)', data: [2.0, 4.5, 40.0], backgroundColor: ['#10b981', '#ef4444', '#a855f7'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'kWp' } }, x: { grid: { display: false } } } }
             });
         }
 
-        // 4. Gráfica Motivaciones (NUEVA - Del informe)
+        // 4. Gráfica Motivaciones
         const ctxMotive = document.getElementById('motivationChart');
         if (ctxMotive) {
             new Chart(ctxMotive, {
                 type: 'bar',
-                data: {
-                    labels: ['Cortes de Energía (Supervivencia)', 'Ahorro Económico', 'Conciencia Ambiental'],
-                    datasets: [{
-                        label: 'Menciones (N=32)',
-                        data: [32, 5, 2],
-                        backgroundColor: ['#ef4444', '#3b82f6', '#10b981'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    indexAxis: 'y', // Esto la hace horizontal
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'Votos' } }, y: { grid: { display: false } } }
-                }
+                data: { labels: ['Supervivencia (Apagones)', 'Ahorro Económico', 'Conciencia Ambiental'], datasets: [{ label: 'Menciones (Muestra N=32)', data: [32, 5, 2], backgroundColor: ['#ef4444', '#3b82f6', '#10b981'], borderWidth: 0 }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'Votos' } }, y: { grid: { display: false } } } }
             });
         }
 
-        // 5. Holograma OSINT
+        // 5. Holograma OSINT (CORREGIDO PARA MÓVILES)
         try {
             const holo = document.getElementById('hologram-container');
             const info = document.getElementById('osint-info');
-            if(holo) {
+            if(holo && info) {
+                info.innerHTML = "SISTEMA EN ESPERA..."; // Texto inicial
+                
+                // Array con datos reales de tu informe
+                const osintData = [
+                    "REGISTRO #14: Solinera Cienfuegos (Activa)",
+                    "REGISTRO #32: Mipyme La Habana (Respaldo)",
+                    "REGISTRO #05: Panel residencial (Villa Clara)",
+                    "REGISTRO #61: Solinera Matanzas (Mantenimiento)",
+                    "REGISTRO #22: Local privado (Holguín)"
+                ];
+
                 for(let i=0; i<20; i++) {
                     const node = document.createElement('div');
                     node.className = 'holo-node';
                     node.style.left = `${Math.random() * 85 + 5}%`; 
                     node.style.top = `${Math.random() * 85 + 5}%`;
-                    node.addEventListener('mouseenter', () => { if(info) info.innerHTML = `DATO ENCONTRADO (64 registros)`; addWatts(5); });
+                    // Aseguramos que sea clickeable
+                    node.style.pointerEvents = 'auto';
+                    node.style.cursor = 'pointer';
+
+                    const showData = (e) => {
+                        if (e) e.preventDefault(); // Evita el scroll en móvil
+                        const randomMsg = osintData[Math.floor(Math.random() * osintData.length)];
+                        info.innerHTML = `<span style="color: #00ff00; text-shadow: 0 0 5px #00ff00;">${randomMsg}</span>`;
+                        addWatts(5); 
+                    };
+
+                    // Eventos para PC y Móvil
+                    node.addEventListener('mouseenter', showData);
+                    node.addEventListener('click', showData);
+                    node.addEventListener('touchstart', showData, {passive: false});
+                    
                     holo.appendChild(node);
                 }
             }
-        } catch(e) {}
+        } catch(e) { console.error("Error holograma", e); }
 
         // 6. Typewriter Testimonios
         try {
@@ -269,72 +287,87 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================================================
-// 5. TERMINAL Y APAGÓN (CORREGIDOS)
+// 5. SIMULADOR DE RESILIENCIA (CAPA 8 - CORREGIDO)
+// ==========================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    const simKwp = document.getElementById('sim-kwp');
+    const simBat = document.getElementById('sim-bat');
+    const simKwpText = document.getElementById('sim-kwp-text');
+    const simBatText = document.getElementById('sim-bat-text');
+    const simStatus = document.getElementById('sim-status');
+    const simDesc = document.getElementById('sim-desc');
+
+    function updateSimulator() {
+        if(!simKwp || !simBat) return;
+        
+        const kwp = parseFloat(simKwp.value);
+        const bat = parseFloat(simBat.value);
+
+        // Actualizar textos
+        if(simKwpText) simKwpText.textContent = `${kwp.toFixed(1)} kWp`;
+        if(simBatText) simBatText.textContent = `${bat} kWh`;
+
+        // Lógica de simulación (Consumo promedio de una casa = 5 kWh noche)
+        if (bat < 3) {
+            simStatus.textContent = "SISTEMA INSUFICIENTE";
+            simStatus.style.color = "var(--accent-danger)";
+            simDesc.textContent = "No podrás mantener la nevera encendida durante la noche. Alto riesgo de pérdida de alimentos.";
+        } else if (bat >= 3 && bat < 8) {
+            simStatus.textContent = "SISTEMA DE RESPALDO BÁSICO";
+            simStatus.style.color = "#eab308"; // Amarillo
+            simDesc.textContent = "Podrás mantener la nevera y luces LED durante un apagón de 12 horas. Uso limitado de ventilación.";
+        } else {
+            simStatus.textContent = "SISTEMA RESILIENTE";
+            simStatus.style.color = "#10b981"; // Verde
+            simDesc.textContent = "Independencia energética total. Podrás mantener nevera, luces, ventilación e incluso internet durante el apagón.";
+        }
+
+        // Si la potencia solar es muy baja, alertar
+        if (kwp < 1.5 && bat > 5) {
+            simDesc.textContent += " (Advertencia: Tus paneles son pocos para recargar esa cantidad de baterías al día siguiente).";
+        }
+    }
+
+    if(simKwp) simKwp.addEventListener('input', updateSimulator);
+    if(simBat) simBat.addEventListener('input', updateSimulator);
+    
+    // Inicializar al cargar
+    updateSimulator();
+});
+
+// ==========================================================================
+// 6. TERMINAL Y APAGÓN (CAPA 9 - CORREGIDO)
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
     const termInput = document.getElementById('terminal-input');
     const termOutput = document.getElementById('terminal-output');
+    const terminalContainer = document.querySelector('.terminal-container');
     
-    if (termOutput) termOutput.innerHTML = "SISTEMA v2.0\nEscribe 'help' para comandos.\n\n";
+    if (termOutput) termOutput.innerHTML = "SISTEMA v2.0\nEscribe 'help' para ver comandos.\n\n";
     
-    if (termInput) {
-        // Enfocar la terminal al hacer clic
-        const terminalContainer = document.querySelector('.terminal-container');
+    if (termInput && termOutput) {
+        // Enfocar al tocar la caja en móvil
         if (terminalContainer) {
             terminalContainer.addEventListener('click', () => termInput.focus());
         }
 
         termInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
+            // En algunos móviles el Enter se registra como 'keyCode 13'
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                e.preventDefault(); // Evita que el formulario se recargue
+                
                 const cmd = this.value.trim().toLowerCase();
                 this.value = '';
                 
-                // Imprimir comando
+                // Imprimir el comando escrito
                 termOutput.innerHTML += `<div style="margin-top: 5px;">root@cuba-solar:~# ${cmd}</div>`;
                 
-                // Lógica de comandos
+                // Procesar comandos
                 if (cmd === 'clear') { 
                     termOutput.innerHTML = ''; 
                 } 
                 else if (cmd === 'help') { 
-                    termOutput.innerHTML += `<div style="color: #00ff00;">Comandos: help, status, desclasificar, clear</div>`; 
+                    termOutput.innerHTML += `<div style="color: #00ff00;">Comandos disponibles: help, status, desclasificar, clear</div>`; 
                 }
                 else if (cmd === 'status') { 
-                    termOutput.innerHTML += `<div style="color: #fbbf24;">[!] Servidores estatales bloqueados. Usando red OSINT.</div>`; 
-                    addWatts(5);
-                } 
-                else if (cmd === 'desclasificar') { 
-                    termOutput.innerHTML += `<div style="color: #f87171;">[!] ACCESO DENEGADO POR EL ESTADO. Pivotando a datos primarios (N=32)...</div>`; 
-                    addWatts(10);
-                    logInteraction('terminal_desclasificar');
-                } 
-                else if (cmd !== '') {
-                    termOutput.innerHTML += `<div style="color: #ef4444;">Comando no reconocido: ${cmd}</div>`;
-                }
-
-                // Auto-scroll
-                if (terminalContainer) terminalContainer.scrollTop = terminalContainer.scrollHeight;
-            }
-        });
-    }
-
-    const blackoutBtn = document.getElementById('blackout-btn');
-    const blackoutOverlay = document.getElementById('blackout-overlay');
-    const powerSwitch = document.getElementById('power-switch');
-
-    if (blackoutBtn) {
-        blackoutBtn.addEventListener('click', () => {
-            if(blackoutOverlay) blackoutOverlay.classList.remove('hidden');
-            if (isPlaying && audioCtx) { audioCtx.suspend(); if(musicBtn) musicBtn.classList.remove('playing'); isPlaying = false; }
-            addWatts(10);
-            logInteraction('apagon');
-        });
-    }
-    if (powerSwitch) {
-        powerSwitch.addEventListener('click', () => {
-            if(blackoutOverlay) blackoutOverlay.classList.add('hidden');
-            if (audioCtx && !isPlaying) { audioCtx.resume(); if(musicBtn) musicBtn.classList.add('playing'); isPlaying = true; }
-            logInteraction('apagon_restaurado');
-        });
-    }
-});
+                    termOutput.innerHTML += `<div style="color: #fbbf24;">[!] Sesgo de no respuesta estatal detectado (90%).<br>[!] Pivotando a datos primarios (N=32)
