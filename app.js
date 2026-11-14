@@ -1,3 +1,29 @@
+// --- LÓGICA DEL HUD DE VATIOS ---
+let currentWatts = 0;
+function addWatts(amount) {
+    try {
+        currentWatts += amount;
+        if (currentWatts > 100) currentWatts = 100;
+        
+        const countEl = document.getElementById('watts-count');
+        const fillEl = document.getElementById('watts-fill');
+        
+        if (countEl) countEl.textContent = currentWatts;
+        if (fillEl) fillEl.style.width = `${currentWatts}%`;
+
+        // Si llega a 50 vatios y no ha interactuado antes, se envía a Supabase
+        if (currentWatts >= 50 && !localStorage.getItem('interaccion_profunda')) {
+            localStorage.setItem('interaccion_profunda', 'true'); 
+            supabaseClient.from('interactions').insert([{}]).then(({ error }) => {
+                if (error) console.warn("No se pudo registrar:", error);
+                else console.log("✅ Interacción única registrada en Supabase");
+            });
+        }
+    } catch (error) {
+        console.warn("Error en el HUD de vatios.", error);
+    }
+}
+
 let currentWatts = 0;
 let interactionSent = false; // Bandera para no enviar múltiples veces
 
