@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Resistencia de los Vatios | Experiencia de Datos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    
-    <!-- Librerías -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -17,20 +16,12 @@
 </head>
 <body>
     <div id="scroll-progress"></div>
-    
-    <button id="music-toggle" aria-label="Activar sonido ambiental">
-        <span class="icon">🔊</span>
-        <div class="waves" aria-hidden="true"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>
-    </button>
-    
+    <button id="music-toggle" aria-label="Activar sonido"><span class="icon">🔊</span><div class="waves"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div></button>
     <button id="blackout-btn" class="data-font" title="Simular corte eléctrico">⚠️ SIMULAR APAGÓN</button>
-    
     <div id="canvas-container" aria-hidden="true"></div>
-    
-    <div id="visitor-counter" class="data-font" title="Analistas conectados">
-        <span class="radar-icon">📡</span> <span id="view-count">...</span> VISTAS
-    </div>
+    <div id="visitor-counter" class="data-font"><span class="radar-icon">📡</span> <span id="view-count">...</span> VISTAS</div>
 
+    <!-- OVERLAY DEL APAGÓN -->
     <div id="blackout-overlay" class="hidden">
         <div class="blackout-content">
             <h2 class="glitch-text" style="color: #333;">SISTEMA CAÍDO</h2>
@@ -48,7 +39,7 @@
                 <h1 class="hero-title glitch" data-text="DE LOS VATIOS">DE LOS VATIOS</h1>
             </div>
             <p class="hero-subtitle">Termodinámica del Silencio: Un viaje inmersivo por la crisis y la resiliencia energética en Cuba (2020-2026).</p>
-            <div class="scroll-hint data-font">[ INICIAR PROTOCOLO ]</div>
+            <div class="scroll-hint data-font">[ INICIAR PROTOCOLO DE EXPLORACIÓN ]</div>
         </section>
 
         <!-- 2. EL COLAPSO -->
@@ -65,7 +56,8 @@
             <div class="data-card border-cyan">
                 <p class="data-font label-cyan">// CAPA 3: LA PARADOJA DE LA EFICIENCIA</p>
                 <h2>El Estado instala, pero no genera</h2>
-                <p class="stat-context">La potencia instalada (paneles comprados) creció un <strong>+18.7%</strong>, pero la generación real cayó un <strong>-7.4%</strong>. Una contradicción técnica documentada en los Anuarios de la ONEI.</p>
+                <p class="stat-context">La potencia instalada creció un <strong>+18.7%</strong>, pero la generación real cayó un <strong>-7.4%</strong>. Una contradicción técnica documentada en los Anuarios de la ONEI.</p>
+                <!-- Gráfica 1 Corregida -->
                 <div class="chart-wrapper"><canvas id="paradoxChart"></canvas></div>
             </div>
         </section>
@@ -86,11 +78,12 @@
                         <span>Pérdida de eficiencia: <strong id="eff-loss" style="color: var(--accent-danger)">-15%</strong></span>
                     </div>
                 </div>
-                <div class="chart-wrapper" style="height: 150px; margin-top: 10px;"><canvas id="nasaChart"></canvas></div>
+                <!-- Gráfica 2 Corregida -->
+                <div class="chart-wrapper" style="height: 180px; margin-top: 15px;"><canvas id="nasaChart"></canvas></div>
             </div>
         </section>
 
-        <!-- 5. HOLOGRAMA OSINT (El original) -->
+        <!-- 5. CAPA 5: CONSTELACIÓN OSINT -->
         <section class="scroll-section">
             <div class="data-card border-cyan">
                 <p class="data-font label-cyan">// CAPA 5: LOS INVISIBLES (OSINT)</p>
@@ -143,13 +136,13 @@
                     <div class="timeline-item">
                         <div class="timeline-dot"></div>
                         <h3>Fase 4: Ingeniería de Software</h3>
-                        <p>Pipeline en Python. Resolución de conflictos de dependencias binarias garantizando la estabilidad.</p>
+                        <p>Pipeline en Python. Resolución de conflictos de dependencias binarias garantizando la estabilidad del entorno virtual.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 8. SIMULADOR ORIGINAL -->
+        <!-- 8. SIMULADOR -->
         <section class="scroll-section">
             <div class="data-card border-cyan">
                 <p class="data-font label-cyan">// CAPA 8: SIMULADOR DE RESILIENCIA</p>
@@ -209,8 +202,8 @@
             <div class="epic-footer reveal">
                 <p class="data-font" style="color: var(--accent-cyan); margin-bottom: 20px;">// PROYECTO FINALIZADO</p>
                 <h2>Explora el código fuente</h2>
-                <p>Esta experiencia web consume los datos procesados del repositorio original. Audita el pipeline de Python y la lógica de este sitio.</p>
-                <a href="https://github.com/jenedyjuarezm-ctrl/sistema-solar-cuba-mercado" target="_blank" class="btn-github">
+                <p>Esta experiencia web consume los datos procesados del repositorio original. Si eres un reclutador, profesor o analista, puedes auditar todo el pipeline de Python.</p>
+                <a href="https://github.com/jenedyjuarezm-ctrl/termodinamica-del-silencio" target="_blank" class="btn-github">
                     <span class="icon">📁</span> Ir al repositorio en GitHub
                 </a>
                 <div class="author-credits">
