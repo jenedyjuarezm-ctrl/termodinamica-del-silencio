@@ -7,42 +7,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     
-    <!-- Librerías -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Grafo de Red -->
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script defer src="app.js"></script>
 </head>
 <body>
-    <!-- UI GLOBAL (Barra superior organizada) -->
-    <div id="top-ui">
-        <div id="left-buttons">
-            <button id="blackout-btn" class="data-font" title="Simular corte eléctrico">⚠️ APAGÓN</button>
-            <button id="survival-btn" class="data-font" title="Modo Bajo Consumo">🔋 SUPERVIVENCIA</button>
+    <!-- BARRA SUPERIOR -->
+    <div id="top-bar">
+        <div id="left-controls">
+            <button id="blackout-btn" class="data-font">⚠️ APAGÓN</button>
+            <button id="survival-btn" class="data-font">🔋 SUPERVIVENCIA</button>
         </div>
-        <div id="hud-watts" class="data-font">
-            <span>⚡ <strong id="watts-count">0</strong> W</span>
-            <div class="watts-bar"><div id="watts-fill"></div></div>
+        <div id="center-controls">
+            <div id="hud-watts" class="data-font">
+                <span>⚡ DATOS: <strong id="watts-count">0</strong> W</span>
+                <div class="watts-bar"><div id="watts-fill"></div></div>
+            </div>
         </div>
-        <button id="music-toggle" aria-label="Sonido"><span class="icon">🔊</span></button>
+        <div id="right-controls">
+            <button id="music-toggle" aria-label="Sonido"><span class="icon">🔊</span></button>
+        </div>
     </div>
 
     <div id="scroll-progress"></div>
     <div id="canvas-container" aria-hidden="true"></div>
     
-    <!-- CONTADORES Y TELEMETRÍA -->
     <div id="visitor-counter" class="data-font"><span>📡</span> <span id="view-count">...</span> VISTAS</div>
     <div id="telemetry-hud" class="data-font">
-        <div class="tele-item"><span>SYS.PING:</span> <strong id="tele-ping">0ms</strong></div>
-        <div class="tele-item"><span>NODES.SCAN:</span> <strong id="tele-nodes">0/96</strong></div>
-        <div class="tele-item"><span>RENDER.FPS:</span> <strong id="tele-fps">60</strong></div>
+        <div class="tele-item"><span>PING:</span> <strong id="tele-ping">0ms</strong></div>
+        <div class="tele-item"><span>SCAN:</span> <strong id="tele-nodes">0/96</strong></div>
+        <div class="tele-item"><span>FPS:</span> <strong id="tele-fps">60</strong></div>
     </div>
 
-    <!-- OVERLAY DEL APAGÓN -->
     <div id="blackout-overlay" class="hidden">
         <div class="blackout-content">
             <h2 class="glitch-text" style="color: #333;">SISTEMA CAÍDO</h2>
@@ -52,70 +52,216 @@
     </div>
 
     <main class="container">
-        <!-- HERO -->
+        <!-- 1. HERO -->
         <section class="hero">
             <div class="glitch-wrapper">
                 <h1 class="hero-title glitch" data-text="LA RESISTENCIA">LA RESISTENCIA</h1>
                 <h1 class="hero-title glitch" data-text="DE LOS VATIOS">DE LOS VATIOS</h1>
             </div>
             <p class="hero-subtitle">Termodinámica del Silencio. Interactúa con los datos para restaurar la verdad.</p>
+            <!-- Ticker de datos rápidos -->
+            <div class="data-ticker data-font reveal">
+                <span>ONEI: 15,732 GWh (-17.5%)</span> | <span>NASA: 6.7 kWh/m²</span> | <span>OSINT: 64 Registros</span> | <span>N=32 Encuestas</span>
+            </div>
         </section>
 
-        <!-- GRÁFICAS ORIGINALES -->
+        <!-- 2. EL COLAPSO Y LA AUSENCIA (Lleno de datos) -->
         <section class="scroll-section">
             <div class="data-card border-danger">
-                <p class="data-font label-danger">// EL COLAPSO Y EL SILENCIO</p>
-                <h2>La generación cayó un 17.5%. La verdad, un 90%.</h2>
-                <p class="stat-context">Mientras la matriz termoeléctrica colapsa, el Estado niega la información. Esta es la visualización del silencio oficial:</p>
+                <p class="data-font label-danger">// CAPA 1: EL COLAPSO Y EL SILENCIO</p>
+                <h2>La caída del sistema y la opacidad estatal</h2>
+                
+                <div class="data-grid">
+                    <div class="data-block">
+                        <span class="data-num negative">-17.5%</span>
+                        <span class="data-label">Caída de Generación Total (2020-2022)</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num negative">19,070 → 15,732</span>
+                        <span class="data-label">GWh Generados (2020 vs 2022)</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num" style="color:var(--accent-danger)">90%</span>
+                        <span class="data-label">Solicitudes de información denegadas</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num">2 / 20</span>
+                        <span class="data-label">Centros estatales que colaboraron</span>
+                    </div>
+                </div>
+
+                <p class="stat-context">Para diagnosticar la crisis, se trianguló información macro (ONEI), satelital (NASA), documental (OSINT) y primaria ante la negativa del Estado.</p>
                 <div class="chart-wrapper"><canvas id="silenceChart"></canvas></div>
             </div>
         </section>
 
+        <!-- 3. LA PARADOJA -->
         <section class="scroll-section">
             <div class="data-card border-cyan">
-                <p class="data-font label-cyan">// LA PARADOJA DE LA EFICIENCIA</p>
+                <p class="data-font label-cyan">// CAPA 2: LA PARADOJA DE LA EFICIENCIA</p>
                 <h2>El Estado instala, pero no genera</h2>
-                <p class="stat-context">Potencia instalada +18.7%, pero generación real -7.4%.</p>
+                
+                <div class="data-grid">
+                    <div class="data-block">
+                        <span class="data-num">+18.7%</span>
+                        <span class="data-label">Aumento de Potencia Instalada</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num negative">-7.4%</span>
+                        <span class="data-label">Caída de Generación FV Real</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num">+41.5 MW</span>
+                        <span class="data-label">Potencia añadida (2020-2022)</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num negative">-19.3 GWh</span>
+                        <span class="data-label">Energía dejada de generar</span>
+                    </div>
+                </div>
+
+                <p class="stat-context">La infraestructura crece, pero el mantenimiento y la eficiencia caen. Esta es la prueba matemática documentada en los Anuarios de la ONEI:</p>
                 <div class="chart-wrapper"><canvas id="paradoxChart"></canvas></div>
             </div>
         </section>
 
+        <!-- 4. EL CLIMA -->
         <section class="scroll-section">
             <div class="data-card border-warm">
-                <p class="data-font label-warm">// LA TRAMPA TERMODINÁMICA</p>
+                <p class="data-font label-warm">// CAPA 3: LA TRAMPA TERMODINÁMICA (NASA)</p>
                 <h2>Sol de sobra, calor letal</h2>
-                <p class="stat-context"><strong>Mueve el control</strong> para simular el año y ver la pérdida de eficiencia:</p>
+                
+                <div class="data-grid">
+                    <div class="data-block">
+                        <span class="data-num" style="color:var(--accent-warm)">6.7</span>
+                        <span class="data-label">kWh/m²/día de Irradiancia Máxima</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num negative">30°C+</span>
+                        <span class="data-label">Temperatura media en verano</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num">&gt; 80%</span>
+                        <span class="data-label">Humedad relativa</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num negative">-15%</span>
+                        <span class="data-label">Pérdida de eficiencia por calor</span>
+                    </div>
+                </div>
+
+                <p class="stat-context">Los datos satelitales confirman el recurso solar, pero el coeficiente de temperatura negativo degrada los semiconductores. <strong>Mueve el control:</strong></p>
                 <div class="climate-slider-container">
                     <input type="range" id="month-slider" min="0" max="11" value="6">
                     <div class="climate-readout">
                         <span id="month-label">Julio</span>
                         <span>Irradiancia: <strong id="irr-val">6.7</strong></span>
                         <span>Temp: <strong id="temp-val-climate">28.4</strong> °C</span>
-                        <span>Pérdida: <strong id="eff-loss">-15%</strong></span>
                     </div>
                 </div>
                 <div class="chart-wrapper" style="height: 150px;"><canvas id="nasaChart"></canvas></div>
             </div>
         </section>
 
-        <!-- GRAFO OSINT -->
+        <!-- 5. GRAFO OSINT -->
         <section class="scroll-section">
             <div class="data-card border-cyan">
-                <p class="data-font label-cyan">// LOS INVISIBLES (OSINT)</p>
-                <h2>El mapa de la resistencia</h2>
-                <p class="stat-context">64 puntos de generación reportados por la prensa. <strong>Arrastra y haz clic:</strong></p>
+                <p class="data-font label-cyan">// CAPA 4: LOS INVISIBLES (OSINT)</p>
+                <h2>El mapa de la resiliencia</h2>
+                
+                <div class="data-grid">
+                    <div class="data-block">
+                        <span class="data-num">64</span>
+                        <span class="data-label">Registros extraídos de prensa</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num">40 kWp</span>
+                        <span class="data-label">Potencia media en Solineras</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num">4.5 kWp</span>
+                        <span class="data-label">Potencia media en Centros Privados</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num">2.0 kWp</span>
+                        <span class="data-label">Potencia media en Residencias</span>
+                    </div>
+                </div>
+
+                <p class="stat-context">Haz clic en los nodos del grafo para explorar las solineras documentadas (El Girasol, Vedado, EXPOCUBA, Finlay) y sus fuentes.</p>
                 <div id="network-graph"></div>
                 <div id="osint-info" class="osint-info data-font">Esperando interacción...</div>
             </div>
         </section>
 
-        <!-- COMENTARIOS Y NLP -->
+        <!-- 6. TESTIMONIOS -->
+        <section class="scroll-section" id="testimonios-section">
+            <div class="data-card border-muted" style="text-align: center;">
+                <p class="data-font label-muted">// CAPA 5: EL FACTOR HUMANO (N=32)</p>
+                <h2>La verdadera motivación</h2>
+                
+                <div class="data-grid" style="margin-bottom: 20px;">
+                    <div class="data-block">
+                        <span class="data-num" style="color:var(--accent-cyan)">100%</span>
+                        <span class="data-label">Compró paneles por supervivencia</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num">5</span>
+                        <span class="data-label">Menciones de ahorro económico</span>
+                    </div>
+                    <div class="data-block">
+                        <span class="data-num">2</span>
+                        <span class="data-label">Menciones de conciencia ambiental</span>
+                    </div>
+                </div>
+
+                <div class="testimonial-carousel">
+                    <div class="testimonial-text data-font" id="typewriter-text"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. SIMULADOR 2.0 -->
+        <section class="scroll-section">
+            <div class="data-card border-cyan">
+                <p class="data-font label-cyan">// CAPA 6: SIMULADOR DE SUPERVIVENCIA</p>
+                <h2>El costo termodinámico de tus decisiones</h2>
+                <p class="stat-context">Basado en el consumo promedio de una vivienda cubana. Tienes 5 kWh de batería. ¿Qué vas a mantener encendido durante 12 horas?</p>
+                <div class="device-priorities">
+                    <label class="device-check"><input type="checkbox" id="dev-fridge" checked> Nevera (2.0 kW) <span>Evita pérdida de alimentos</span></label>
+                    <label class="device-check"><input type="checkbox" id="dev-router"> Router (0.5 kW) <span>Conectividad</span></label>
+                    <label class="device-check"><input type="checkbox" id="dev-water"> Bomba de agua (1.0 kW) <span>Higiene</span></label>
+                    <label class="device-check"><input type="checkbox" id="dev-light"> Luces LED (0.2 kW) <span>Iluminación básica</span></label>
+                </div>
+                <div class="sim-result-panel" id="sim-panel">
+                    <h3 id="sim-status" style="color: var(--accent-cyan);">SISTEMA ESTABLE</h3>
+                    <p id="sim-desc">Calculando...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. TERMINAL OSINT -->
+        <section class="scroll-section">
+            <div class="data-card border-muted" style="background: #000; border-left: 4px solid #00ff00;">
+                <p class="data-font" style="color: #00ff00;">// CAPA 7: TERMINAL DE ACCESO</p>
+                <h2 style="font-family: monospace; color: #00ff00;">root@cuba-solar:~#</h2>
+                <p class="stat-context" style="color: #888;">Escribe <strong style="color: #00ff00;">help</strong> para extraer datos del sistema.</p>
+                <div class="terminal-container" onclick="document.getElementById('terminal-input').focus()">
+                    <div id="terminal-output"></div>
+                    <div class="terminal-input-line">
+                        <span class="prompt">root@cuba-solar:~#</span>
+                        <input type="text" id="terminal-input" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. TRANSMISIONES Y NLP -->
         <section class="scroll-section" id="comments-section">
             <div class="data-card border-cyan">
-                <p class="data-font label-cyan">// TRANSMISIONES EN VIVO & NLP</p>
+                <p class="data-font label-cyan">// CAPA 8: TRANSMISIONES & NLP</p>
                 <h2>El muro de la resistencia</h2>
-                <p class="stat-context">El sistema procesará tu texto con <strong>Análisis de Sentimiento</strong>.</p>
-                
+                <p class="stat-context">Deja tu mensaje. El sistema procesará tu texto con <strong>Análisis de Sentimiento</strong> en tiempo real.</p>
                 <form id="comment-form" class="comment-form">
                     <div class="input-row">
                         <input type="text" id="comment-name" placeholder="Tu alias" required maxlength="20">
@@ -124,22 +270,25 @@
                     <textarea id="comment-message" placeholder="Tu testimonio..." required maxlength="200" rows="3" onkeyup="analizarSentimiento()"></textarea>
                     <button type="submit" class="btn-primary" id="btn-submit-comment">Transmitir Mensaje 📡</button>
                 </form>
-                <div id="comments-list" class="comments-list"></div>
+                <div id="comments-list" class="comments-list">
+                    <p style="text-align:center; color: var(--text-muted); font-size: 0.9rem;">Sincronizando...</p>
+                </div>
             </div>
         </section>
 
-        <!-- EXPLORADOR DE DATOS -->
+        <!-- 10. EXPLORADOR DE DATOS (Con MUCHOS más datos reales) -->
         <section class="scroll-section">
             <div class="data-card border-muted">
-                <p class="data-font label-muted">// RAW DATA EXPLORER</p>
+                <p class="data-font label-muted">// CAPA 9: RAW DATA EXPLORER</p>
                 <h2>El ADN de la investigación</h2>
+                <p class="stat-context">96 registros consolidados. Filtra la tabla para auditar la materia prima.</p>
                 <div class="table-controls">
                     <select id="filter-source" class="data-font">
                         <option value="all">Todas las fuentes</option>
-                        <option value="ONEI">Solo ONEI</option>
-                        <option value="NASA">Solo NASA</option>
-                        <option value="OSINT">Solo OSINT</option>
-                        <option value="Encuesta">Solo Encuesta</option>
+                        <option value="ONEI">Solo ONEI (Macro)</option>
+                        <option value="NASA">Solo NASA (Clima)</option>
+                        <option value="OSINT">Solo OSINT (Prensa)</option>
+                        <option value="Encuesta">Solo Encuesta (N=32)</option>
                     </select>
                 </div>
                 <div class="table-wrapper">
@@ -151,8 +300,19 @@
             </div>
         </section>
 
-        <!-- FOOTER CON ENLACE DIRECTO -->
+        <!-- 11. BÓVEDA Y FOOTER -->
         <section class="scroll-section">
+            <div class="data-card border-muted">
+                <p class="data-font label-muted">// CAPA 10: BÓVEDA DE DATOS Y METODOLOGÍA</p>
+                <h2>Trazabilidad Absoluta</h2>
+                <div class="data-vault">
+                    <details><summary>📊 Datos Macro (ONEI & IRENA)</summary><p>Anuarios Estadísticos de Cuba (Edición 2023). Capítulo 10: Minería y Energía. Archivos utilizados: 10.15, 10.16, 10.18, 10.19.</p></details>
+                    <details><summary>🛰️ Datos Satelitales (NASA POWER)</summary><p>Parámetros: ALLSKY_SFC_SW_DWN, T2M, RH2M. Coordenadas: Lat 23.13, Lon -82.38. Periodo: 2020-2024.</p></details>
+                    <details><summary>📰 Fuentes OSINT (Prensa)</summary><p>64 registros extraídos de: CiberCuba, Trabajadores, Granma, EFE, pv magazine, ACN, Juventud Rebelde, Cubadebate.</p></details>
+                    <details><summary>🛠️ Stack e Ingeniería de Datos</summary><p>Python 3.12, Pandas, Matplotlib. Resolución de conflictos binarios (migración de pyarrow a CSV) para garantizar estabilidad del entorno virtual.</p></details>
+                </div>
+            </div>
+            
             <div class="epic-footer reveal">
                 <p class="data-font" style="color: var(--accent-cyan); margin-bottom: 20px;">// PROYECTO FINALIZADO</p>
                 <h2>Explora el código fuente</h2>
