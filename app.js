@@ -87,7 +87,58 @@ window.addEventListener('load', () => {
 
         const ctx3 = document.getElementById('nasaChart');
         if(ctx3) new Chart(ctx3, { type: 'bar', data: { labels: ['Ene', 'Jun', 'Dic'], datasets: [{ type: 'bar', label: 'Irradiancia kWh/m2', data: [3.8, 6.2, 3.3], backgroundColor: 'rgba(234,179,8,0.5)' }, { type: 'line', label: 'Temperatura °C', data: [23.2, 28.1, 23.6], borderColor: '#ec4899', borderWidth: 3, yAxisID: 'y1' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y1: { position: 'right' } }, plugins: { legend: { display: false } } } });
+        // Gráfico 3: Clima NASA (Restaurado con los 12 meses)
+const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const irrData = [3.8, 4.8, 5.8, 6.5, 6.7, 6.2, 6.7, 6.1, 5.6, 4.6, 3.8, 3.3];
+const tempData = [23.2, 24.0, 25.1, 26.3, 27.5, 28.1, 28.4, 28.3, 27.8, 26.8, 25.4, 23.6];
 
+const ctx3 = document.getElementById('nasaChart');
+let nasaChart;
+if(ctx3) {
+    nasaChart = new Chart(ctx3, { 
+        type: 'bar', 
+        data: { 
+            labels: months, 
+            datasets: [
+                { type: 'bar', label: 'Irradiancia (kWh/m²)', data: irrData, backgroundColor: 'rgba(234,179,8,0.5)', borderColor: '#eab308', borderWidth: 1 },
+                { type: 'line', label: 'Temperatura (°C)', data: tempData, borderColor: '#ec4899', borderWidth: 3, tension: 0.4, yAxisID: 'y1' }
+            ] 
+        }, 
+        options: { 
+            responsive: true, maintainAspectRatio: false, 
+            scales: { 
+                y: { position: 'left', grid: { color: 'rgba(255,255,255,0.05)' } }, 
+                y1: { position: 'right', grid: { display: false } } 
+            }, 
+            plugins: { legend: { display: false } } 
+        } 
+    });
+}
+
+// Lógica del Slider para actualizar el gráfico mes a mes
+const slider = document.getElementById('month-slider');
+if(slider) {
+    slider.addEventListener('input', (e) => {
+        const idx = parseInt(e.target.value);
+        
+        // Actualizar textos
+        document.getElementById('month-label').textContent = months[idx];
+        document.getElementById('irr-val').textContent = irrData[idx];
+        document.getElementById('temp-val-climate').textContent = tempData[idx];
+        
+        // Calcular pérdida de eficiencia (si pasa de 25°C)
+        const loss = tempData[idx] > 25 ? Math.round((tempData[idx] - 25) * 3) : 0;
+        document.getElementById('eff-loss').textContent = `-${loss}%`;
+
+        // Iluminar solo el mes seleccionado en el gráfico
+        if(nasaChart) {
+            nasaChart.data.datasets[0].backgroundColor = months.map((_, i) => i === idx ? '#eab308' : 'rgba(234,179,8,0.1)');
+            nasaChart.update();
+        }
+        addWatts(1); // Ganar vatios por interactuar
+    });
+}
+        
         // Grafo OSINT
         const container = document.getElementById('network-graph');
         if (container && typeof vis !== 'undefined') {
