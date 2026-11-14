@@ -165,6 +165,7 @@ function initVisuals() {
         document.getElementById('eff-loss').textContent = `-${loss}%`;
         nasaChart.data.datasets[0].backgroundColor = months.map((_, i) => i === idx ? '#eab308' : 'rgba(234, 179, 8, 0.2)');
         nasaChart.update();
+        addWatts(2); //Interacción 
     });
 
     const holoContainer = document.getElementById('hologram-container');
@@ -188,6 +189,7 @@ function initVisuals() {
             node.addEventListener('mouseenter', () => {
                 osintInfo.innerHTML = `<span style="color:var(--accent-cyan)">>> DATO ENCONTRADO:</span> <strong>${data.n}</strong> (${data.t}) | Potencia: ${data.kWp} kWp | Fuente: ${data.src}`;
                 osintInfo.style.borderColor = 'var(--accent-warm)';
+                addWatts(5); // Interacción 
             });
             node.addEventListener('mouseleave', () => { osintInfo.style.borderColor = 'var(--accent-cyan)'; });
             holoContainer.appendChild(node);
@@ -210,6 +212,7 @@ function initVisuals() {
             status.textContent = "SISTEMA INSUFICIENTE"; status.style.color = "var(--accent-danger)";
             desc.textContent = bat < 5 ? "Las baterías son muy pequeñas. La nevera se apagará." : "Los paneles son débiles para recargar las baterías.";
         }
+        addWatts(2); //Interacción 
     };
     kwpSlider.addEventListener('input', updateSim); batSlider.addEventListener('input', updateSim); updateSim();
 
@@ -251,7 +254,7 @@ if (termInput) {
             this.value = '';
             termOutput.innerHTML += `<div><span class="prompt">root@cuba-solar:~#</span> ${cmd}</div>`;
             if (cmd === 'clear') { termOutput.innerHTML = ''; } 
-            else if (commands[cmd]) { termOutput.innerHTML += `<div>${commands[cmd]}</div><br>`; } 
+            else if (commands[cmd]) { termOutput.innerHTML += `<div>${commands[cmd]}</div><br>`; addWatts(5); } 
             else if (cmd !== '') { termOutput.innerHTML += `<div class="terminal-error">Comando no reconocido. Escribe 'help'.</div><br>`; }
             document.querySelector('.terminal-container').scrollTop = document.querySelector('.terminal-container').scrollHeight;
         }
@@ -279,6 +282,7 @@ if (blackoutBtn) {
 
         // Pausar música
         if (isPlaying) { audioCtx.suspend(); musicBtn.classList.remove('playing'); }
+        addWatts(10); // Interacción 
     });
 }
 
