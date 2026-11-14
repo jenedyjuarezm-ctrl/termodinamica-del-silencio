@@ -112,21 +112,72 @@ document.addEventListener('DOMContentLoaded', () => {
             const temp = [23.49, 21.70, 25.55, 25.77, 29.46, 28.08, 28.29, 28.63, 28.39, 26.71, 24.75, 23.12];
             let index = 6;
 
+            // Inicializamos la gráfica
             let nasaChart = new Chart(ctxNasa, {
                 type: 'bar',
-                data: { labels: meses, datasets: [
-                    { type: 'bar', label: 'Irradiancia', data: irr, backgroundColor: irr.map((_, i) => i === index ? '#eab308' : 'rgba(234, 179, 8, 0.3)') },
-                    { type: 'line', label: 'Temp', data: temp, borderColor: '#ec4899', borderWidth: 3, yAxisID: 'y1', tension: 0.4 }
-                ]},
+                data: { 
+                    labels: meses, 
+                    datasets: [
+                        { type: 'bar', label: 'Irradiancia', data: irr, backgroundColor: irr.map((_, i) => i === index ? '#eab308' : 'rgba(234, 179, 8, 0.3)') },
+                        { type: 'line', label: 'Temp', data: temp, borderColor: '#ec4899', borderWidth: 3, yAxisID: 'y1', tension: 0.4 }
+                    ]
+                },
                 options: { 
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false }, // Permite que el tooltip salte al tocar
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleColor: '#eab308',
+                            bodyColor: '#fff'
+                        }
+                    },
                     scales: {
                         y: { title: { display: true, text: 'kWh/m²', color: '#eab308' } },
                         y1: { position: 'right', title: { display: true, text: '°C', color: '#ec4899' }, grid: { drawOnChartArea: false } }
                     }
                 }
             });
+
+            // Lógica para actualizar los textos y la gráfica
+            const actualizarClima = (val) => {
+                const i = parseInt(val);
+                // 1. Resaltar la barra correspondiente
+                nasaChart.data.datasets[0].backgroundColor = irr.map((_, idx) => idx === i ? '#eab308' : 'rgba(234, 179, 8, 0.3)');
+                
+                // 2. Actualizar textos HTML
+                const irrEl = document.getElementById('irradiancia-val');
+                const tempEl = document.getElementById('temp-val');
+                const monthEl = document.getElementById('month-name');
+                const lossEl = document.getElementById('loss-percent');
+
+                if(irrEl) irrEl.textContent = irr[i].toFixed(1);
+                if(tempEl) tempEl.textContent = temp[i].toFixed(1);
+                if(monthEl) monthEl.textContent = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'][i];
+                
+                let perdida = 0;
+                if (temp[i] > 25) perdida = -((temp[i] - 25) * 1.5).toFixed(0);
+                if(lossEl) lossEl.textContent = `${perdida}%`;
+
+                // 3. Refrescar gráfica SIN ANIMACIÓN (Para que no se sienta "congelada")
+                nasaChart.update('none'); 
+                addWatts(2);
+            };
+
+            // Escuchamos tanto 'input' como 'change' (crucial para móviles)
+            const slider = document.getElementById('month-slider');
+            if(slider) {
+                slider.addEventListener('input', (e) => actualizarClima(e.target.value));
+                slider.addEventListener('change', (e) => actualizarClima(e.target.value));
+                
+                // Forzamos la actualización inicial al cargar la página
+                actualizarClima(slider.value); 
+            }
+        }
+        
 
             const slider = document.getElementById('month-slider');
             if(slider) {
@@ -156,27 +207,103 @@ document.addEventListener('DOMContentLoaded', () => {
         // Texto inicial
         info.innerHTML = "SISTEMA EN ESPERA..."; 
         
-        const datosReales = [
-            "REGISTRO #14: Solinera Cienfuegos",
-            "REGISTRO #32: Mipyme La Habana",
-            "REGISTRO #05: Panel residencial Villa Clara",
-            "REGISTRO #61: Solinera Matanzas",
-            "REGISTRO #22: Local privado Holguín"
+        const osintRecords = [
+            // --- SOLINERAS (32) ---
+            { nombre: "El Girasol", ubicacion: "Holguín", url: "https://www.trabajadores.cu/" },
+            { nombre: "Virginia (Gomate)", ubicacion: "Santa Clara", url: "https://www.granma.cu/" },
+            { nombre: "El Rampeño (PDL Rampeando)", ubicacion: "Vedado, La Habana", url: "https://www.acn.cu/" },
+            { nombre: "Solinera Comunitaria Cerro", ubicacion: "Cerro, La Habana", url: "https://oncubanews.com/" },
+            { nombre: "Playa Mégano", ubicacion: "Playa, La Habana", url: "https://www.efe.com/" },
+            { nombre: "Leos Sandino", ubicacion: "Sandino, Pinar del Río", url: "https://okdiario.com/" },
+            { nombre: "Alemanes Express", ubicacion: "José Martí, Santa Clara", url: "https://www.cibercuba.com/" },
+            { nombre: "Ciro Redondo", ubicacion: "Ciego de Ávila", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Comunitaria Maisí", ubicacion: "Maisí, Guantánamo", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Comunitaria Imías", ubicacion: "Imías, Guantánamo", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Comunitaria San Justo", ubicacion: "Guantánamo", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Comunitaria Crombet", ubicacion: "Guantánamo", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Comunitaria Guantánamo", ubicacion: "Guantánamo Capital", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 1", ubicacion: "Santa Clara", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 2", ubicacion: "Camajuaní", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 3", ubicacion: "Sagua la Grande", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 4", ubicacion: "Placetas", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 5", ubicacion: "Manicaragua", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 6", ubicacion: "Ranchuelo", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 7", ubicacion: "Remedios", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 8", ubicacion: "Caibarién", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 9", ubicacion: "Quemado de Güines", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 10", ubicacion: "Encrucijada", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 11", ubicacion: "Santo Domingo", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 12", ubicacion: "Cifuentes", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Villa Clara 13", ubicacion: "Santa Clara (Centro)", url: "https://www.cibercuba.com/" },
+            { nombre: "Solinera Holguín 2", ubicacion: "Holguín (Capital)", url: "https://www.trabajadores.cu/" },
+            { nombre: "Solinera Holguín 3", ubicacion: "Banes", url: "https://www.trabajadores.cu/" },
+            { nombre: "Solinera Holguín 4", ubicacion: "Antilla", url: "https://www.trabajadores.cu/" },
+            { nombre: "Solinera Holguín 5", ubicacion: "Mayarí", url: "https://www.trabajadores.cu/" },
+            { nombre: "Solinera Holguín 6", ubicacion: "Moa", url: "https://www.trabajadores.cu/" },
+            { nombre: "Solinera Holguín 7", ubicacion: "Gibara", url: "https://www.trabajadores.cu/" },
+
+            // --- INSTITUCIONES (32) ---
+            { nombre: "Escuela Latinoamericana de Medicina (ELAM)", ubicacion: "La Habana", url: "https://www.pv-magazine-latam.com/" },
+            { nombre: "Aguas de La Habana", ubicacion: "La Habana", url: "https://www.acn.cu/" },
+            { nombre: "Cubaenergia", ubicacion: "La Habana", url: "https://www.pv-magazine-latam.com/" },
+            { nombre: "Ktech Energy", ubicacion: "La Habana", url: "https://ktechsolar.com/" },
+            { nombre: "RENOVA (Sistema Trifásico)", ubicacion: "La Habana", url: "https://renova.cu/" },
+            { nombre: "RENOVA (Vivienda Playa)", ubicacion: "Playa, La Habana", url: "https://renova.cu/" },
+            { nombre: "Estación de Carga 5ta. Avenida Motores", ubicacion: "Guanabo, La Habana", url: "https://www.granma.cu/" },
+            { nombre: "Etecsa", ubicacion: "Pinar del Río", url: "https://www.trabajadores.cu/" },
+            { nombre: "Escuela Primaria Vo Thi Thang", ubicacion: "Playa, La Habana", url: "https://vietnam.vn/" },
+            { nombre: "Círculo Infantil Vietnam Heroico", ubicacion: "La Habana", url: "https://vietnam.vn/" },
+            { nombre: "Círculo Infantil Le Van Tam", ubicacion: "La Habana", url: "https://vietnam.vn/" },
+            { nombre: "Escuela Primaria Nguyen Van Troi", ubicacion: "Cerro, La Habana", url: "https://vietnam.vn/" },
+            { nombre: "Politécnico Ho Chi Minh", ubicacion: "La Habana", url: "https://vietnam.vn/" },
+            { nombre: "Instituto Finlay de Vacunas", ubicacion: "La Habana", url: "https://www.pv-magazine-latam.com/" },
+            { nombre: "Hospital Pediátrico (UCI)", ubicacion: "La Habana", url: "https://www.pv-magazine-latam.com/" },
+            { nombre: "Bluesafe", ubicacion: "La Habana", url: "https://bluesafe.biz/" },
+            { nombre: "Universidad Tecnológica de La Habana (Cujae)", ubicacion: "Cotorro, La Habana", url: "https://www.mindus.gob.cu/" },
+            { nombre: "Parque Solar Cujae", ubicacion: "Cotorro, La Habana", url: "https://www.pv-magazine-latam.com/" },
+            { nombre: "Universidad Agraria de La Habana (UNAH)", ubicacion: "Mayabeque", url: "https://www.acn.cu/" },
+            { nombre: "Policlínico Carlos M. Portuondo", ubicacion: "Marianao, La Habana", url: "https://www.radiometropolitana.icrt.cu/" },
+            { nombre: "Mipyme Jolyni", ubicacion: "La Habana", url: "https://www.efe.com/" },
+            { nombre: "Escuela Primaria Cesáreo Fernández", ubicacion: "Playa, La Habana", url: "https://vietnam.vn/" },
+            { nombre: "Escuela Nguyen Van Troi (10 de Octubre)", ubicacion: "10 de Octubre, La Habana", url: "https://vietnam.vn/" },
+            { nombre: "RENOVA (Sistema Híbrido Comercial)", ubicacion: "La Habana", url: "https://renova.cu/" },
+            { nombre: "RENOVA (Marquesina Carga VE)", ubicacion: "La Habana", url: "https://renova.cu/" },
+            { nombre: "RENOVA (Sistema Off-Grid)", ubicacion: "La Habana", url: "https://renova.cu/" },
+            { nombre: "EXPOCUBA", ubicacion: "Boyeros, La Habana", url: "https://www.cubadebate.cu/" },
+            { nombre: "Parque Solar Naranjito", ubicacion: "Boyeros, La Habana", url: "https://www.cubahora.cu/" },
+            { nombre: "Parque Solar Guanabo Viejo", ubicacion: "Habana del Este", url: "https://www.radioreloj.cu/" },
+            { nombre: "RENOVA (Sistema 60 kW Empresarial)", ubicacion: "La Habana", url: "https://renova.cu/" },
+            { nombre: "Ktech Energy (Sistema 36 kW)", ubicacion: "La Habana", url: "https://ktechsolar.com/" },
+            { nombre: "Estación de Carga Vía Blanca", ubicacion: "Vía Blanca, La Habana", url: "https://www.granma.cu/" }
         ];
 
-        for(let i=0; i<25; i++) {
+        // Generamos 40 nodos visuales
+        for(let i=0; i<40; i++) {
             const node = document.createElement('div');
             node.className = 'holo-node';
             node.style.left = `${Math.random() * 85 + 5}%`; 
             node.style.top = `${Math.random() * 85 + 5}%`;
             node.style.cursor = 'pointer';
             
-            // Esto es lo que hace que funcione en móviles
+            // Función interactiva
             const interactuar = (e) => {
                 if (e) e.preventDefault();
-                const msg = datosReales[Math.floor(Math.random() * datosReales.length)];
-                info.innerHTML = `<span style="color: #00ff00;">${msg}</span>`;
-                addWatts(3);
+                
+                // Seleccionamos un registro aleatorio de los 64
+                const randomRecord = osintRecords[Math.floor(Math.random() * osintRecords.length)];
+                
+                // Mostramos los datos con el enlace
+                info.innerHTML = `
+                    <div style="text-align: left; padding: 5px; line-height: 1.4;">
+                        <div style="color: #00ff00; font-weight: bold; margin-bottom: 5px;">⚡ ${randomRecord.nombre}</div>
+                        <div style="color: #aaa; font-size: 0.85em; margin-bottom: 8px;">📍 ${randomRecord.ubicacion}</div>
+                        <a href="${randomRecord.url}" target="_blank" rel="noopener noreferrer" style="color: #00bfff; text-decoration: none; border-bottom: 1px dashed #00bfff; font-size: 0.85em; display: inline-block;">
+                            [ 🔗 VERIFICAR FUENTE ]
+                        </a>
+                    </div>
+                `;
+                addWatts(3); // Suma vatios al HUD
+                logInteraction('osint_node_click'); // Guarda en Supabase
             };
 
             node.addEventListener('mouseenter', interactuar);
@@ -186,46 +313,69 @@ document.addEventListener('DOMContentLoaded', () => {
             holo.appendChild(node);
         }
     }
+            
 
-    // --- CAPA 8: SIMULADOR DE RESILIENCIA ---
+            node.addEventListener('mouseenter', interactuar);
+            node.addEventListener('touchstart', interactuar, {passive: false});
+            node.addEventListener('click', interactuar);
+            
+            holo.appendChild(node);
+        }
+    }
+
+    // --- CAPA 8: SIMULADOR DE RESILIENCIA (BLINDADO) ---
     const simKwp = document.getElementById('sim-kwp');
     const simBat = document.getElementById('sim-bat');
     const simStatus = document.getElementById('sim-status');
     const simDesc = document.getElementById('sim-desc');
+    const simKwpText = document.getElementById('sim-kwp-text');
+    const simBatText = document.getElementById('sim-bat-text');
 
     function actualizarSimulador() {
+        // Si no encontramos los elementos, no hacemos nada para evitar errores
         if(!simKwp || !simBat || !simStatus || !simDesc) return;
         
+        // Leer valores actuales de los sliders
         const kwp = parseFloat(simKwp.value);
         const bat = parseFloat(simBat.value);
 
-        // Actualizar textos de los sliders
-        if(document.getElementById('sim-kwp-text')) document.getElementById('sim-kwp-text').textContent = `${kwp.toFixed(1)} kWp`;
-        if(document.getElementById('sim-bat-text')) document.getElementById('sim-bat-text').textContent = `${bat} kWh`;
+        // 1. Actualizar los textos de los sliders (Ej: "2.0 kWp" y "5 kWh")
+        if(simKwpText) simKwpText.textContent = `${kwp.toFixed(1)} kWp`;
+        if(simBatText) simBatText.textContent = `${bat.toFixed(0)} kWh`;
 
-        // Lógica del simulador
+        // 2. Lógica del simulador (Cambia el cartel)
         if (bat < 3) {
             simStatus.textContent = "SISTEMA INSUFICIENTE";
-            simStatus.style.color = "var(--accent-danger)";
+            simStatus.style.color = "var(--accent-danger, #ef4444)";
             simDesc.textContent = "No podrás mantener la nevera encendida durante la noche. Alto riesgo de pérdida de alimentos.";
         } else if (bat >= 3 && bat < 8) {
             simStatus.textContent = "SISTEMA DE RESPALDO BÁSICO";
-            simStatus.style.color = "#eab308";
+            simStatus.style.color = "#eab308"; // Amarillo
             simDesc.textContent = "Podrás mantener la nevera y luces LED durante un apagón de 12 horas. Uso limitado de ventilación.";
         } else {
             simStatus.textContent = "SISTEMA RESILIENTE";
-            simStatus.style.color = "#10b981";
-            simDesc.textContent = "Independencia energética total. Podrás mantener nevera, luces, ventilación e incluso internet durante el apagón.";
+            simStatus.style.color = "#10b981"; // Verde
+            simDesc.textContent = "Independencia energética total. Podrás mantener nevera, luces, ventilación e incluso internet.";
         }
 
+        // Advertencia extra si hay muchas baterías pero pocos paneles
         if (kwp < 1.5 && bat > 5) {
-            simDesc.textContent += " (Advertencia: Tus paneles son pocos para recargar esa cantidad de baterías).";
+            simDesc.textContent += " (Advertencia: Tus paneles son insuficientes para recargar esas baterías).";
         }
     }
 
-    if(simKwp) simKwp.addEventListener('input', actualizarSimulador);
-    if(simBat) simBat.addEventListener('input', actualizarSimulador);
-    actualizarSimulador(); // Ejecutar al cargar la página
+    // Escuchamos tanto 'input' (mientras arrastras) como 'change' (al soltar el dedo)
+    if(simKwp) {
+        simKwp.addEventListener('input', actualizarSimulador);
+        simKwp.addEventListener('change', actualizarSimulador);
+    }
+    if(simBat) {
+        simBat.addEventListener('input', actualizarSimulador);
+        simBat.addEventListener('change', actualizarSimulador);
+    }
+    
+    // Ejecutamos la función una vez al cargar la página para que todo cuadre desde el inicio
+    actualizarSimulador();
 
     // --- CAPA 9: TERMINAL ---
     const termInput = document.getElementById('terminal-input');
