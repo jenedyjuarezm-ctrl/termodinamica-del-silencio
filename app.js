@@ -74,33 +74,79 @@ window.addEventListener('load', () => {
     }
 });
 
-// --- 5. INICIALIZACIÓN DE GRÁFICAS (Asegurada con timeout) ---
+// --- 5. INICIALIZACIÓN DE GRÁFICAS Y GRAFO ---
 window.addEventListener('load', () => {
     setTimeout(() => {
-        // Gráfico 1
-        const ctx1 = document.getElementById('silenceChart');
-        if(ctx1) new Chart(ctx1, { type: 'bar', data: { labels: ['Oficial', 'OSINT', 'Encuestas'], datasets: [{ data: [10, 100, 100], backgroundColor: ['#ff3333', '#00e5ff', '#10b981'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-        
-        // Gráfico 2
-        const ctx2 = document.getElementById('paradoxChart');
-        if(ctx2) new Chart(ctx2, { type: 'line', data: { labels: ['2020', '2021', '2022'], datasets: [{ label: 'Gen Total', data: [19070, 17950, 15732], borderColor: '#3b82f6', tension: 0.4 }, { label: 'Gen FV', data: [260.8, 258.4, 241.5], borderColor: '#10b981', tension: 0.4 }, { label: 'Potencia', data: [221.5, 240.0, 263.0], borderColor: '#ef4444', borderDash: [5,5], tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+        Chart.defaults.color = '#88888c'; Chart.defaults.font.family = 'Space Mono';
 
-        // Gráfico 3
+        const ctx1 = document.getElementById('silenceChart');
+        if(ctx1) new Chart(ctx1, { type: 'bar', data: { labels: ['Oficial (ONEI)', 'OSINT (Prensa)', 'Encuestas (N=32)'], datasets: [{ data: [10, 100, 100], backgroundColor: ['#ff3333', '#00e5ff', '#10b981'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false } } } });
+        
+        const ctx2 = document.getElementById('paradoxChart');
+        if(ctx2) new Chart(ctx2, { type: 'line', data: { labels: ['2020', '2021', '2022'], datasets: [{ label: 'Generación Total (GWh)', data: [19070, 17950, 15732], borderColor: '#3b82f6', tension: 0.4 }, { label: 'Generación FV (GWh)', data: [260.8, 258.4, 241.5], borderColor: '#10b981', tension: 0.4 }, { label: 'Potencia Instalada (MW)', data: [221.5, 240.0, 263.0], borderColor: '#ef4444', borderDash: [5,5], tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+
         const ctx3 = document.getElementById('nasaChart');
-        if(ctx3) new Chart(ctx3, { type: 'bar', data: { labels: ['Ene', 'Jun', 'Dic'], datasets: [{ type: 'bar', data: [3.8, 6.2, 3.3], backgroundColor: 'rgba(234,179,8,0.5)' }, { type: 'line', data: [23.2, 28.1, 23.6], borderColor: '#ec4899', borderWidth: 3, yAxisID: 'y1' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y1: { position: 'right' } }, plugins: { legend: { display: false } } } });
+        if(ctx3) new Chart(ctx3, { type: 'bar', data: { labels: ['Ene', 'Jun', 'Dic'], datasets: [{ type: 'bar', label: 'Irradiancia kWh/m2', data: [3.8, 6.2, 3.3], backgroundColor: 'rgba(234,179,8,0.5)' }, { type: 'line', label: 'Temperatura °C', data: [23.2, 28.1, 23.6], borderColor: '#ec4899', borderWidth: 3, yAxisID: 'y1' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y1: { position: 'right' } }, plugins: { legend: { display: false } } } });
 
         // Grafo OSINT
         const container = document.getElementById('network-graph');
         if (container && typeof vis !== 'undefined') {
-            const nodes = new vis.DataSet([{ id: 1, label: 'Girasol', color: '#00e5ff' }, { id: 2, label: 'Vedado', color: '#00e5ff' }, { id: 3, label: 'Finlay', color: '#10b981' }]);
-            const edges = new vis.DataSet([{ from: 1, to: 2 }, { from: 2, to: 3 }]);
-            new vis.Network(container, { nodes, edges }, { nodes: { shape: 'dot', size: 15, font: { color: '#fff' } }, edges: { color: 'rgba(255,255,255,0.2)' }, physics: { stabilization: false } });
+            const nodes = new vis.DataSet([
+                { id: 1, label: 'El Girasol', title: 'Villa Clara (30 kWp)', color: '#00e5ff' }, 
+                { id: 2, label: 'Vedado', title: 'La Habana (20 kWp)', color: '#00e5ff' }, 
+                { id: 3, label: 'Instituto Finlay', title: 'La Habana (300 kWp)', color: '#10b981' }, 
+                { id: 4, label: 'EXPOCUBA', title: 'La Habana (1000 kWp)', color: '#10b981' },
+                { id: 5, label: 'Hospital Calixto', title: 'La Habana (50 kWp)', color: '#10b981' }
+            ]);
+            const edges = new vis.DataSet([{ from: 1, to: 2 }, { from: 2, to: 3 }, { from: 3, to: 4 }, { from: 4, to: 5 }]);
+            const network = new vis.Network(container, { nodes, edges }, { nodes: { shape: 'dot', size: 15, font: { color: '#fff' } }, edges: { color: 'rgba(255,255,255,0.2)' }, physics: { stabilization: false } });
+            
+            network.on("click", function (params) {
+                if (params.nodes.length > 0) {
+                    const node = nodes.get(params.nodes[0]);
+                    document.getElementById('osint-info').innerHTML = `<strong>${node.label}</strong> | ${node.title} | Fuente: Prensa/OSINT`;
+                    addWatts(5);
+                }
+            });
         }
-    }, 500);
+
+        // Simulador
+        const checkboxes = document.querySelectorAll('.device-check input');
+        const updateSim = () => {
+            let totalLoad = 0;
+            if(document.getElementById('dev-fridge')?.checked) totalLoad += 2.0;
+            if(document.getElementById('dev-router')?.checked) totalLoad += 0.5;
+            if(document.getElementById('dev-water')?.checked) totalLoad += 1.0;
+            if(document.getElementById('dev-light')?.checked) totalLoad += 0.2;
+            const energyNeeded = totalLoad * 12;
+            const status = document.getElementById('sim-status'), desc = document.getElementById('sim-desc');
+            if(status && desc) {
+                if (energyNeeded > 5) { status.textContent = "COLAPSO ENERGÉTICO"; status.style.color = "var(--accent-danger)"; desc.textContent = `Consumo: ${energyNeeded.toFixed(1)} kWh. Supera tus 5 kWh.`; }
+                else { status.textContent = "SISTEMA ESTABLE"; status.style.color = "var(--accent-cyan)"; desc.textContent = `Consumo: ${energyNeeded.toFixed(1)} kWh. Resistirás las 12 horas.`; }
+            }
+            addWatts(2);
+        };
+        checkboxes.forEach(cb => cb.addEventListener('change', updateSim));
+
+        // Typewriter
+        const textEl = document.getElementById('typewriter-text');
+        const testimonials = ["“No lo compré por ecología. Lo compré para que no se dañe la carne.”", "“El panel me costó un año de sueldo, pero tengo ventilador.”", "“12 horas a oscuras. El sol es lo único gratis.”"];
+        let tIndex = 0, cIndex = 0, isDeleting = false;
+        function typeWriter() {
+            if(!textEl) return; const txt = testimonials[tIndex];
+            if (isDeleting) { textEl.textContent = txt.substring(0, cIndex - 1); cIndex--; } 
+            else { textEl.textContent = txt.substring(0, cIndex + 1); cIndex++; }
+            let speed = isDeleting ? 30 : 50;
+            if (!isDeleting && cIndex === txt.length) { speed = 3000; isDeleting = true; } 
+            else if (isDeleting && cIndex === 0) { isDeleting = false; tIndex = (tIndex + 1) % testimonials.length; speed = 500; }
+            setTimeout(typeWriter, speed);
+        }
+        typeWriter();
+
+    }, 1000); 
 });
 
 // --- 6. COMENTARIOS, NLP Y TABLA ---
-// (Lógica idéntica a la anterior, está funcionando bien)
 const commentForm = document.getElementById('comment-form');
 const commentsList = document.getElementById('comments-list');
 async function loadComments() {
@@ -124,7 +170,7 @@ if (commentForm) {
     });
 }
 supabaseClient.channel('comments-channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, () => { loadComments(); }).subscribe();
-window.addEventListener('load', () => setTimeout(loadComments, 1000));
+window.addEventListener('load', () => setTimeout(loadComments, 1500));
 
 function analizarSentimiento() {
     const texto = document.getElementById('comment-message').value.toLowerCase();
@@ -136,13 +182,23 @@ function analizarSentimiento() {
 }
 window.analizarSentimiento = analizarSentimiento;
 
-// Tabla Datos
-const rawData = [{ id: 1, source: 'ONEI', var: 'Generación Total', val: '15,732 GW·h' }, { id: 2, source: 'NASA', var: 'Irradiancia', val: '6.7 kWh/m²' }, { id: 3, source: 'OSINT', var: 'Solinera Girasol', val: '30 kWp' }];
+// Tabla Datos (Llena de información)
+const rawData = [
+    { id: 1, source: 'ONEI', var: 'Generación Total 2020', val: '19,070 GW·h' },
+    { id: 2, source: 'ONEI', var: 'Generación Total 2022', val: '15,732 GW·h' },
+    { id: 3, source: 'ONEI', var: 'Potencia Instalada 2022', val: '263.0 MW' },
+    { id: 4, source: 'NASA', var: 'Irradiancia Máxima', val: '6.7 kWh/m²' },
+    { id: 5, source: 'NASA', var: 'Temperatura Promedio', val: '28.4 °C' },
+    { id: 6, source: 'OSINT', var: 'Solinera El Girasol', val: '30 kWp' },
+    { id: 7, source: 'OSINT', var: 'Parque EXPOCUBA', val: '1000 kWp' },
+    { id: 8, source: 'Encuesta', var: 'Motivo: Supervivencia', val: '32 menciones' },
+    { id: 9, source: 'Encuesta', var: 'Motivo: Ecología', val: '2 menciones' }
+];
 function renderTable(filter = 'all') {
     const tbody = document.getElementById('data-table-body');
     if (!tbody) return;
     const filtered = filter === 'all' ? rawData : rawData.filter(d => d.source === filter);
-    tbody.innerHTML = filtered.map(r => `<tr><td>#${r.id}</td><td>${r.source}</td><td>${r.var}</td><td><strong>${r.val}</strong></td></tr>`).join('');
+    tbody.innerHTML = filtered.map(r => `<tr><td>#${r.id.toString().padStart(3, '0')}</td><td>${r.source}</td><td>${r.var}</td><td><strong>${r.val}</strong></td></tr>`).join('');
 }
 const filterSelect = document.getElementById('filter-source');
 if (filterSelect) { filterSelect.addEventListener('change', (e) => renderTable(e.target.value)); renderTable(); }
