@@ -1,14 +1,27 @@
 let currentWatts = 0;
+let interactionSent = false; // Bandera para no enviar múltiples veces
+
 function addWatts(amount) {
     try {
         currentWatts += amount;
         if (currentWatts > 100) currentWatts = 100;
+        
         const countEl = document.getElementById('watts-count');
         const fillEl = document.getElementById('watts-fill');
+        
         if (countEl) countEl.textContent = currentWatts;
         if (fillEl) fillEl.style.width = `${currentWatts}%`;
+
+        // Si llega a 50 vatios y no ha enviado la señal, la enviamos a Supabase
+        if (currentWatts >= 50 && !interactionSent) {
+            interactionSent = true;
+            supabaseClient.from('interactions').insert([{}]).then(({ error }) => {
+                if (error) console.warn("No se pudo registrar la interacción:", error);
+                else console.log("✅ Interacción profunda registrada en Supabase");
+            });
+        }
     } catch (error) {
-        console.warn("Error en el HUD de vatios, pero la página sigue funcionando.", error);
+        console.warn("Error en el HUD de vatios.", error);
     }
 }
 
