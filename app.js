@@ -6,10 +6,26 @@ const SUPABASE_KEY = 'sb_publishable_H8uhN5DbCWLslwo4uJlDuw_jdAjE67K';
 let supabaseClient = null;
 try {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-} catch(e) { console.warn("Supabase no cargó."); }
+} catch(e) { console.warn("Supabase no cargó correctamente."); }
 
 // ==========================================================================
-// 2. HUD VATIOS
+// 2. FUNCIÓN DE REGISTRO DE INTERACCIONES (NUEVO)
+// ==========================================================================
+async function logInteraction(type) {
+    if (!supabaseClient) return;
+    try {
+        // Enviamos el tipo de evento a la base de datos
+        const { error } = await supabaseClient.from('interactions').insert([
+            { event_type: type, created_at: new Date().toISOString() }
+        ]);
+        if (error) console.warn("Error al guardar en Supabase:", error.message);
+    } catch (e) {
+        console.warn("Fallo de red al registrar interacción.");
+    }
+}
+
+// ==========================================================================
+// 3. HUD VATIOS
 // ==========================================================================
 let currentWatts = 0;
 function addWatts(amount) {
@@ -23,13 +39,13 @@ function addWatts(amount) {
         
         if (currentWatts >= 50 && !localStorage.getItem('interaccion_profunda') && supabaseClient) {
             localStorage.setItem('interaccion_profunda', 'true'); 
-            supabaseClient.from('interactions').insert([{}]).catch(() => {});
+            logInteraction('interaccion_profunda');
         }
     } catch(e) {}
 }
 
 // ==========================================================================
-// 3. AUDIO LOFI
+// 4. AUDIO LOFI
 // ==========================================================================
 const musicBtn = document.getElementById('music-toggle');
 let audioCtx, isPlaying = false;
@@ -51,15 +67,21 @@ function playLofi() {
 if (musicBtn) { 
     musicBtn.addEventListener('click', () => { 
         try {
-            if (!audioCtx) { playLofi(); isPlaying = true; musicBtn.classList.add('playing'); addWatts(5); } 
-            else if (isPlaying) { audioCtx.suspend(); isPlaying = false; musicBtn.classList.remove('playing'); } 
-            else { audioCtx.resume(); isPlaying = true; musicBtn.classList.add('playing'); } 
+            if (!audioCtx) { 
+                playLofi(); isPlaying = true; musicBtn.classList.add('playing'); addWatts(5); logInteraction('audio_on'); 
+            } 
+            else if (isPlaying) { 
+                audioCtx.suspend(); isPlaying = false; musicBtn.classList.remove('playing'); 
+            } 
+            else { 
+                audioCtx.resume(); isPlaying = true; musicBtn.classList.add('playing'); 
+            } 
         } catch(e) {}
     }); 
 }
 
 // ==========================================================================
-// 4. CONTADOR VISITAS
+// 5. CONTADOR VISITAS
 // ==========================================================================
 async function gestionarVisitas() {
     const countElement = document.getElementById('view-count');
@@ -80,7 +102,7 @@ async function gestionarVisitas() {
 }
 
 // ==========================================================================
-// 5. INICIALIZACIÓN A PRUEBA DE BALAS
+// 6. INICIALIZACIÓN A PRUEBA DE BALAS
 // ==========================================================================
 window.addEventListener('load', () => {
     // 1. Iniciar Contador
@@ -108,8 +130,9 @@ window.addEventListener('load', () => {
         }
     } catch(e) { console.warn("3D falló."); }
 
-    // 3. Iniciar Gráficas y Textos (Damos 1.5 segundos para red lenta)
+    // 3. Iniciar Gráficas y Textos (Esperamos 1.5 segundos para que cargue Chart.js)
     setTimeout(() => {
+        
         // A. Gráfica Paradoja
         try {
             if (typeof Chart !== 'undefined') {
@@ -125,26 +148,95 @@ window.addEventListener('load', () => {
                                 { label: 'Potencia Instalada', data: [221.5, 240.0, 263.0], borderColor: '#ef4444', borderDash: [5,5], borderWidth: 3, tension: 0.4 }
                             ]
                         },
-                        options: { responsive: true, maintainAspectRatio: false, onClick: () => addWatts(10) }
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false, 
+                            onClick: () => { addWatts(10); logInteraction('click_paradoja'); } 
+                        }
                     });
                 }
 
-                // B. Gráfica Clima
+                // B. Gráfica Clima (REACTIVA Y CORREGIDA)
                 const ctxNasa = document.getElementById('nasaChart');
                 let nasaChart;
                 if(ctxNasa) {
+                    // Datos de los 12 meses (ajústalos si tienes datos exactos)
+                    const labelsMeses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                    const dataIrradiancia = [3.8, 4.2, 5.0, 5.8, 6.1, 6.2, 6.7, 6.4, 5.5, 4.8, 4.0, 3.3];
+                    const dataTemperatura = [23.2, 23.5, 24.5, 26.0, 27.5, 28.1, 28.4, 28.5, 27.8, 26.5, 25.0, 23.6];
+                    
+                    // Índice inicial: 6 (Julio)
+                    let currentIndex = 6;
+
                     nasaChart = new Chart(ctxNasa, {
                         type: 'bar',
-                        data: { labels: ['Ene','Jun','Dic'], datasets: [
-                            { type: 'bar', label: 'Irradiancia', data: [3.8, 6.2, 3.3], backgroundColor: '#eab308' },
-                            { type: 'line', label: 'Temp', data: [23.2, 28.1, 23.6], borderColor: '#ec4899', borderWidth: 3, yAxisID: 'y1' }
-                        ]},
-                        options: { responsive: true, maintainAspectRatio: false }
+                        data: { 
+                            labels: labelsMeses, 
+                            datasets: [
+                                { 
+                                    type: 'bar', 
+                                    label: 'Irradiancia', 
+                                    data: dataIrradiancia, 
+                                    backgroundColor: dataIrradiancia.map((_, i) => i === currentIndex ? '#eab308' : 'rgba(234, 179, 8, 0.3)'),
+                                    borderColor: '#eab308',
+                                    borderWidth: 1
+                                },
+                                { 
+                                    type: 'line', 
+                                    label: 'Temp', 
+                                    data: dataTemperatura, 
+                                    borderColor: '#ec4899', 
+                                    borderWidth: 3, 
+                                    yAxisID: 'y1',
+                                    tension: 0.4
+                                }
+                            ]
+                        },
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            onClick: () => { addWatts(5); logInteraction('click_grafica_clima'); },
+                            scales: {
+                                y: { beginAtZero: true, title: { display: true, text: 'kWh/m²' } },
+                                y1: { position: 'right', title: { display: true, text: '°C' }, grid: { drawOnChartArea: false } }
+                            }
+                        }
                     });
-                }
-                const slider = document.getElementById('month-slider');
-                if(slider && nasaChart) {
-                    slider.addEventListener('input', () => { addWatts(2); nasaChart.update(); });
+
+                    // Lógica del Slider
+                    const slider = document.getElementById('month-slider');
+                    const lossText = document.getElementById('loss-percent'); 
+                    const irrEl = document.getElementById('irradiancia-val');
+                    const tempEl = document.getElementById('temp-val');
+                    const monthNameEl = document.getElementById('month-name'); // Si tienes un texto para el mes
+
+                    if(slider) {
+                        slider.addEventListener('input', (e) => {
+                            const mesIndex = parseInt(e.target.value);
+                            addWatts(2);
+                            
+                            // 1. Actualizar color de las barras
+                            nasaChart.data.datasets[0].backgroundColor = dataIrradiancia.map((_, i) => i === mesIndex ? '#eab308' : 'rgba(234, 179, 8, 0.3)');
+                            
+                            // 2. Actualizar textos del DOM si existen en tu HTML
+                            if(irrEl) irrEl.textContent = dataIrradiancia[mesIndex].toFixed(1);
+                            if(tempEl) tempEl.textContent = dataTemperatura[mesIndex].toFixed(1);
+                            if(monthNameEl) monthNameEl.textContent = labelsMeses[mesIndex];
+                            
+                            // 3. Calcular pérdida de eficiencia (Fórmula termodinámica simulada)
+                            let perdida = 0;
+                            if (dataTemperatura[mesIndex] > 25) {
+                                perdida = -((dataTemperatura[mesIndex] - 25) * 1.5).toFixed(0);
+                            }
+                            if(lossText) lossText.textContent = `${perdida}%`;
+
+                            // 4. Refrescar gráfica
+                            nasaChart.update();
+                            
+                            // 5. Registrar interacción en Supabase (Solo cada 3 movimientos para no saturar)
+                            if (mesIndex % 3 === 0) logInteraction(`slider_mes_${mesIndex}`);
+                        });
+                    }
                 }
             }
         } catch(e) { console.error("Error gráficas:", e); }
@@ -159,7 +251,11 @@ window.addEventListener('load', () => {
                     node.className = 'holo-node';
                     node.style.left = `${Math.random() * 85 + 5}%`; 
                     node.style.top = `${Math.random() * 85 + 5}%`;
-                    node.addEventListener('mouseenter', () => { if(info) info.innerHTML = `DATO ENCONTRADO`; addWatts(5); });
+                    node.addEventListener('mouseenter', () => { 
+                        if(info) info.innerHTML = `DATO ENCONTRADO`; 
+                        addWatts(5); 
+                        logInteraction('hover_holograma');
+                    });
                     holo.appendChild(node);
                 }
             }
@@ -182,11 +278,11 @@ window.addEventListener('load', () => {
             }
             typeWriter();
         } catch(e) {}
-    }, 1500); // Espera de 1.5s para que cargue Chart.js
+    }, 1500); 
 });
 
 // ==========================================================================
-// 6. TERMINAL Y APAGÓN
+// 7. TERMINAL Y APAGÓN
 // ==========================================================================
 try {
     const termInput = document.getElementById('terminal-input');
@@ -202,8 +298,10 @@ try {
                 else if (cmd === 'help' || cmd === 'status' || cmd === 'desclasificar') { 
                     termOutput.innerHTML += `<div>Comando ejecutado. 64 registros encontrados.</div><br>`; 
                     addWatts(5); 
+                    logInteraction('terminal_comando');
                 } 
-                document.querySelector('.terminal-container').scrollTop = document.querySelector('.terminal-container').scrollHeight;
+                const termContainer = document.querySelector('.terminal-container');
+                if (termContainer) termContainer.scrollTop = termContainer.scrollHeight;
             }
         });
     }
@@ -214,15 +312,17 @@ try {
 
     if (blackoutBtn) {
         blackoutBtn.addEventListener('click', () => {
-            blackoutOverlay.classList.remove('hidden');
-            if (isPlaying && audioCtx) { audioCtx.suspend(); musicBtn.classList.remove('playing'); }
+            if(blackoutOverlay) blackoutOverlay.classList.remove('hidden');
+            if (isPlaying && audioCtx) { audioCtx.suspend(); if(musicBtn) musicBtn.classList.remove('playing'); isPlaying = false; }
             addWatts(10);
+            logInteraction('apagon_activado');
         });
     }
     if (powerSwitch) {
         powerSwitch.addEventListener('click', () => {
-            blackoutOverlay.classList.add('hidden');
-            if (audioCtx && !isPlaying) { audioCtx.resume(); musicBtn.classList.add('playing'); isPlaying = true; }
+            if(blackoutOverlay) blackoutOverlay.classList.add('hidden');
+            if (audioCtx && !isPlaying) { audioCtx.resume(); if(musicBtn) musicBtn.classList.add('playing'); isPlaying = true; }
+            logInteraction('apagon_restaurado');
         });
     }
-} catch(e) {}
+} catch(e) { console.warn("Error en terminal/apagón:", e); }
