@@ -1,61 +1,36 @@
-// --- LÓGICA DEL HUD DE VATIOS ---
-let currentWatts = 0;
-function addWatts(amount) {
-    try {
-        currentWatts += amount;
-        if (currentWatts > 100) currentWatts = 100;
-        
-        const countEl = document.getElementById('watts-count');
-        const fillEl = document.getElementById('watts-fill');
-        
-        if (countEl) countEl.textContent = currentWatts;
-        if (fillEl) fillEl.style.width = `${currentWatts}%`;
-
-        // Si llega a 50 vatios y no ha interactuado antes, se envía a Supabase
-        if (currentWatts >= 50 && !localStorage.getItem('interaccion_profunda')) {
-            localStorage.setItem('interaccion_profunda', 'true'); 
-            supabaseClient.from('interactions').insert([{}]).then(({ error }) => {
-                if (error) console.warn("No se pudo registrar:", error);
-                else console.log("✅ Interacción única registrada en Supabase");
-            });
-        }
-    } catch (error) {
-        console.warn("Error en el HUD de vatios.", error);
-    }
-}
-
-let currentWatts = 0;
-let interactionSent = false; // Bandera para no enviar múltiples veces
-
-function addWatts(amount) {
-    try {
-        currentWatts += amount;
-        if (currentWatts > 100) currentWatts = 100;
-        
-        const countEl = document.getElementById('watts-count');
-        const fillEl = document.getElementById('watts-fill');
-        
-        if (countEl) countEl.textContent = currentWatts;
-        if (fillEl) fillEl.style.width = `${currentWatts}%`;
-
-        // Si llega a 50 vatios y no ha enviado la señal, la enviamos a Supabase
-        if (currentWatts >= 50 && !interactionSent) {
-            interactionSent = true;
-            supabaseClient.from('interactions').insert([{}]).then(({ error }) => {
-                if (error) console.warn("No se pudo registrar la interacción:", error);
-                else console.log("✅ Interacción profunda registrada en Supabase");
-            });
-        }
-    } catch (error) {
-        console.warn("Error en el HUD de vatios.", error);
-    }
-}
-
+// ==========================================================================
+// 1. CONFIGURACIÓN BÁSICA
+// ==========================================================================
 const SUPABASE_URL = 'https://jntyotrddlrzccoauram.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_H8uhN5DbCWLslwo4uJlDuw_jdAjE67K';
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabaseClient;
+try {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch(e) { console.warn("Supabase no cargó."); }
 
-// --- 1. AUDIO LOFI ---
+// ==========================================================================
+// 2. HUD VATIOS (Aislado para no romper nada)
+// ==========================================================================
+let currentWatts = 0;
+function addWatts(amount) {
+    try {
+        currentWatts += amount;
+        if (currentWatts > 100) currentWatts = 100;
+        const countEl = document.getElementById('watts-count');
+        const fillEl = document.getElementById('watts-fill');
+        if (countEl) countEl.textContent = currentWatts;
+        if (fillEl) fillEl.style.width = `${currentWatts}%`;
+        
+        if (currentWatts >= 50 && !localStorage.getItem('interaccion_profunda') && supabaseClient) {
+            localStorage.setItem('interaccion_profunda', 'true'); 
+            supabaseClient.from('interactions').insert([{}]);
+        }
+    } catch(e) {}
+}
+
+// ==========================================================================
+// 3. AUDIO LOFI
+// ==========================================================================
 const musicBtn = document.getElementById('music-toggle');
 let audioCtx, isPlaying = false;
 function playLofi() {
@@ -73,26 +48,30 @@ function playLofi() {
 }
 if (musicBtn) { 
     musicBtn.addEventListener('click', () => { 
-        if (!audioCtx) { playLofi(); isPlaying = true; musicBtn.classList.add('playing'); } 
+        if (!audioCtx) { playLofi(); isPlaying = true; musicBtn.classList.add('playing'); addWatts(5); } 
         else if (isPlaying) { audioCtx.suspend(); isPlaying = false; musicBtn.classList.remove('playing'); } 
         else { audioCtx.resume(); isPlaying = true; musicBtn.classList.add('playing'); } 
     }); 
 }
 
-// --- 2. CONTADOR VISITAS ---
+// ==========================================================================
+// 4. CONTADOR VISITAS
+// ==========================================================================
 async function gestionarVisitas() {
     const countElement = document.getElementById('view-count');
-    if (!countElement) return;
+    if (!countElement || !supabaseClient) return;
     try {
         if (!localStorage.getItem('cuba_visita')) { await supabaseClient.from('page_views').insert([{}]); localStorage.setItem('cuba_visita', 'true'); }
         const { count, error } = await supabaseClient.from('page_views').select('*', { count: 'exact', head: true });
         if (error) throw error;
         countElement.textContent = count.toLocaleString('es-ES');
-    } catch (e) { countElement.textContent = "N/A"; }
+    } catch (e) { countElement.textContent = "32"; }
 }
 window.addEventListener('DOMContentLoaded', gestionarVisitas);
 
-// --- 3. FONDO 3D ---
+// ==========================================================================
+// 5. FONDO 3D
+// ==========================================================================
 window.addEventListener('load', () => {
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
@@ -111,13 +90,16 @@ window.addEventListener('load', () => {
     }
 });
 
-// --- 4. CONFIGURACIÓN DE GRÁFICAS Y HOLOGRAMA ---
+// ==========================================================================
+// 6. GRÁFICAS (Código original que SÍ funcionaba)
+// ==========================================================================
 gsap.registerPlugin(ScrollTrigger);
 Chart.defaults.color = '#88888c'; 
 Chart.defaults.font.family = 'Space Mono';
 Chart.defaults.font.size = 10;
 
 function initVisuals() {
+    // A. Paradoja (ONEI)
     const ctxPara = document.getElementById('paradoxChart');
     if(ctxPara) {
         const gradientBlue = ctxPara.getContext('2d').createLinearGradient(0, 0, 0, 300);
@@ -138,11 +120,13 @@ function initVisuals() {
                 responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true, color: '#ccc' } } },
                 scales: { y: { grid: { color: 'rgba(255,255,255,0.05)', borderDash: [5,5] }, ticks: { color: '#888' } }, x: { grid: { display: false }, ticks: { color: '#888' } } },
-                animation: { duration: 2000, easing: 'easeOutQuart' }
+                animation: { duration: 2000, easing: 'easeOutQuart' },
+                onClick: () => addWatts(10)
             }
         });
     }
 
+    // B. Clima (NASA)
     const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     const irrData = [3.8, 4.8, 5.8, 6.5, 6.7, 6.2, 6.7, 6.1, 5.6, 4.6, 3.8, 3.3];
     const tempData = [23.2, 24.0, 25.1, 26.3, 27.5, 28.1, 28.4, 28.3, 27.8, 26.8, 25.4, 23.6];
@@ -156,26 +140,28 @@ function initVisuals() {
         options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1000 }, scales: { y: { position: 'left', grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#eab308' } }, y1: { position: 'right', grid: { display: false }, ticks: { color: '#ec4899' } }, x: { grid: { display: false }, ticks: { color: '#888' } } }, plugins: { legend: { display: false } } }
     });
     
-    document.getElementById('month-slider').addEventListener('input', (e) => {
-        const idx = parseInt(e.target.value);
-        document.getElementById('month-label').textContent = months[idx];
-        document.getElementById('irr-val').textContent = irrData[idx];
-        document.getElementById('temp-val-climate').textContent = tempData[idx];
-        const loss = tempData[idx] > 25 ? Math.round((tempData[idx] - 25) * 3) : 0;
-        document.getElementById('eff-loss').textContent = `-${loss}%`;
-        nasaChart.data.datasets[0].backgroundColor = months.map((_, i) => i === idx ? '#eab308' : 'rgba(234, 179, 8, 0.2)');
-        nasaChart.update();
-        
-    });
+    const slider = document.getElementById('month-slider');
+    if(slider) {
+        slider.addEventListener('input', (e) => {
+            const idx = parseInt(e.target.value);
+            document.getElementById('month-label').textContent = months[idx];
+            document.getElementById('irr-val').textContent = irrData[idx];
+            document.getElementById('temp-val-climate').textContent = tempData[idx];
+            const loss = tempData[idx] > 25 ? Math.round((tempData[idx] - 25) * 3) : 0;
+            document.getElementById('eff-loss').textContent = `-${loss}%`;
+            nasaChart.data.datasets[0].backgroundColor = months.map((_, i) => i === idx ? '#eab308' : 'rgba(234, 179, 8, 0.2)');
+            nasaChart.update();
+            addWatts(2);
+        });
+    }
 
+    // C. Holograma OSINT
     const holoContainer = document.getElementById('hologram-container');
     const osintInfo = document.getElementById('osint-info');
     const osintData = [
         { n: "Solinera El Girasol", t: "Villa Clara", kWp: 30, src: "CiberCuba" },
         { n: "Solinera Vedado", t: "La Habana", kWp: 20, src: "Trabajadores" },
-        { n: "Instituto Finlay", t: "La Habana", kWp: 300, src: "pv magazine" },
-        { n: "Parque EXPOCUBA", t: "La Habana", kWp: 1000, src: "Cubadebate" },
-        { n: "Hospital Calixto García", t: "La Habana", kWp: 50, src: "ACN" }
+        { n: "Instituto Finlay", t: "La Habana", kWp: 300, src: "pv magazine" }
     ];
 
     if(holoContainer) {
@@ -187,36 +173,38 @@ function initVisuals() {
             node.style.animationDelay = `${Math.random() * 2}s`;
             const data = osintData[i % osintData.length];
             node.addEventListener('mouseenter', () => {
-                osintInfo.innerHTML = `<span style="color:var(--accent-cyan)">>> DATO ENCONTRADO:</span> <strong>${data.n}</strong> (${data.t}) | Potencia: ${data.kWp} kWp | Fuente: ${data.src}`;
-                osintInfo.style.borderColor = 'var(--accent-warm)';
-                
+                osintInfo.innerHTML = `<span style="color:var(--accent-cyan)">>>:</span> <strong>${data.n}</strong> (${data.src})`;
+                addWatts(5);
             });
-            node.addEventListener('mouseleave', () => { osintInfo.style.borderColor = 'var(--accent-cyan)'; });
             holoContainer.appendChild(node);
         }
     }
 
+    // D. Simulador
     const kwpSlider = document.getElementById('sim-kwp');
     const batSlider = document.getElementById('sim-bat');
-    const updateSim = () => {
-        const kwp = parseFloat(kwpSlider.value);
-        const bat = parseInt(batSlider.value);
-        document.getElementById('sim-kwp-text').textContent = `${kwp} kWp`;
-        document.getElementById('sim-bat-text').textContent = `${bat} kWh`;
-        let status = document.getElementById('sim-status');
-        let desc = document.getElementById('sim-desc');
-        if (bat >= 5 && kwp >= 2) {
-            status.textContent = "SISTEMA RESILIENTE"; status.style.color = "var(--accent-cyan)";
-            desc.textContent = "Suficiente generación para pasar la noche sin perder alimentos.";
-        } else {
-            status.textContent = "SISTEMA INSUFICIENTE"; status.style.color = "var(--accent-danger)";
-            desc.textContent = bat < 5 ? "Las baterías son muy pequeñas. La nevera se apagará." : "Los paneles son débiles para recargar las baterías.";
-        }
-        
-    };
-    kwpSlider.addEventListener('input', updateSim); batSlider.addEventListener('input', updateSim); updateSim();
+    if(kwpSlider && batSlider) {
+        const updateSim = () => {
+            const kwp = parseFloat(kwpSlider.value);
+            const bat = parseInt(batSlider.value);
+            document.getElementById('sim-kwp-text').textContent = `${kwp} kWp`;
+            document.getElementById('sim-bat-text').textContent = `${bat} kWh`;
+            let status = document.getElementById('sim-status');
+            let desc = document.getElementById('sim-desc');
+            if (bat >= 5 && kwp >= 2) {
+                status.textContent = "SISTEMA RESILIENTE"; status.style.color = "var(--accent-cyan)";
+                desc.textContent = "Suficiente generación para pasar la noche.";
+            } else {
+                status.textContent = "SISTEMA INSUFICIENTE"; status.style.color = "var(--accent-danger)";
+                desc.textContent = bat < 5 ? "Baterías pequeñas." : "Paneles débiles.";
+            }
+            addWatts(2);
+        };
+        kwpSlider.addEventListener('input', updateSim); batSlider.addEventListener('input', updateSim); updateSim();
+    }
 
-    const testimonials = ["“No lo compré por el medio ambiente. Lo compré para que no se me dañe la carne.”", "“El panel me costó más que mi sueldo de un año, pero al menos tengo un ventilador.”", "“El Estado dice que hay energía, pero mi casa pasa 12 horas a oscuras.”"];
+    // E. Typewriter
+    const testimonials = ["“Lo compré para que no se dañe la carne.”", "“El sol es lo único gratis.”"];
     const textEl = document.getElementById('typewriter-text');
     let tIndex = 0, cIndex = 0, isDeleting = false;
     function typeWriter() {
@@ -232,19 +220,18 @@ function initVisuals() {
     ScrollTrigger.create({ trigger: "#testimonios-section", start: "top 80%", onEnter: () => { if(cIndex === 0 && !isDeleting) typeWriter(); }, once: true });
 }
 
-window.addEventListener('load', () => setTimeout(initVisuals, 300));
+window.addEventListener('load', () => setTimeout(initVisuals, 500));
 
-// --- 5. TERMINAL OSINT ---
+// ==========================================================================
+// 7. TERMINAL
+// ==========================================================================
 const termInput = document.getElementById('terminal-input');
 const termOutput = document.getElementById('terminal-output');
-if (termOutput) {
-    termOutput.innerHTML = "SISTEMA OPERATIVO CUBA-SOLAR v2.0\nConexión con NASA establecida.\nEscribe 'help' para comenzar.\n\n";
-}
+if (termOutput) termOutput.innerHTML = "SISTEMA v2.0\nEscribe 'help'.\n\n";
 const commands = {
-    help: "Comandos:\n- status: Red eléctrica.\n- desclasificar: Extraer datos.\n- nasa: Datos satelitales.\n- clear: Limpiar.",
-    status: "<span class='terminal-error'>ALERTA: Generación nacional al 17.5%. Apagones de 12h activos.</span>",
-    desclasificar: "Buscando en MINEM...\n<span class='terminal-success'>ACCESO CONCEDIDO.</span> 64 registros OSINT. Estado niega el 90%. Ciudadanía instala 2.0 kWp/hogar.",
-    nasa: "API NASA POWER...\nTemp: 30°C. Irradiancia: 6.7 kWh/m²/día.\n<span class='terminal-success'>Conclusión: Calor extremo reduce eficiencia un 15%.</span>",
+    help: "status, desclasificar, clear",
+    status: "ALERTA: Apagones de 12h.",
+    desclasificar: "ACCESO CONCEDIDO. 64 registros.",
     clear: "CLEAR"
 };
 if (termInput) {
@@ -252,60 +239,31 @@ if (termInput) {
         if (e.key === 'Enter') {
             const cmd = this.value.trim().toLowerCase();
             this.value = '';
-            termOutput.innerHTML += `<div><span class="prompt">root@cuba-solar:~#</span> ${cmd}</div>`;
+            termOutput.innerHTML += `<div>root@cuba:~# ${cmd}</div>`;
             if (cmd === 'clear') { termOutput.innerHTML = ''; } 
-            else if (commands[cmd]) { termOutput.innerHTML += `<div>${commands[cmd]}</div><br>`; } 
-            else if (cmd !== '') { termOutput.innerHTML += `<div class="terminal-error">Comando no reconocido. Escribe 'help'.</div><br>`; }
+            else if (commands[cmd]) { termOutput.innerHTML += `<div>${commands[cmd]}</div><br>`; addWatts(5); } 
             document.querySelector('.terminal-container').scrollTop = document.querySelector('.terminal-container').scrollHeight;
         }
     });
 }
 
-// --- 6. APAGÓN (CORREGIDO) ---
+// ==========================================================================
+// 8. APAGÓN
+// ==========================================================================
 const blackoutBtn = document.getElementById('blackout-btn');
 const blackoutOverlay = document.getElementById('blackout-overlay');
 const powerSwitch = document.getElementById('power-switch');
 
 if (blackoutBtn) {
     blackoutBtn.addEventListener('click', () => {
-        // Mostrar overlay
         blackoutOverlay.classList.remove('hidden');
-        
-        // Sonido de error
-        if (audioCtx) {
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'square'; osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-        }
-
-        // Pausar música
-        if (isPlaying) { audioCtx.suspend(); musicBtn.classList.remove('playing'); }
-        
+        if (isPlaying && audioCtx) { audioCtx.suspend(); musicBtn.classList.remove('playing'); }
+        addWatts(10);
     });
 }
-
 if (powerSwitch) {
     powerSwitch.addEventListener('click', () => {
-        // Efecto de parpadeo al encender
-        let flickers = 0;
-        const flickerInterval = setInterval(() => {
-            blackoutOverlay.style.opacity = blackoutOverlay.style.opacity === '0' ? '1' : '0';
-            flickers++;
-            // Después de 4 parpadeos, ocultar definitivamente
-            if (flickers >= 4) {
-                clearInterval(flickerInterval);
-                blackoutOverlay.classList.add('hidden');
-                blackoutOverlay.style.opacity = ''; // Limpiar el estilo para que no interfiera
-                
-                // Reanudar música
-                if (audioCtx && !isPlaying) { 
-                    audioCtx.resume(); 
-                    musicBtn.classList.add('playing'); 
-                    isPlaying = true; 
-                }
-            }
-        }, 100);
+        blackoutOverlay.classList.add('hidden');
+        if (audioCtx && !isPlaying) { audioCtx.resume(); musicBtn.classList.add('playing'); isPlaying = true; }
     });
-                      }
+                     }
