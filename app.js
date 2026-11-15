@@ -131,63 +131,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if(simK && simB) { simK.addEventListener('input', updateSim); simB.addEventListener('input', updateSim); updateSim(); }
 
     // TERMINAL
-const tIn = document.getElementById('terminal-input');
-const tOut = document.getElementById('terminal-output');
-if(tOut) tOut.innerHTML = "SISTEMA v2.0\nEscribe 'help' para ver los comandos.\n\n";
-if(tIn && tOut) {
-    const tCont = document.querySelector('.terminal-container');
-    if(tCont) tCont.addEventListener('click', () => tIn.focus());
-    tIn.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.keyCode === 13) {
-            e.preventDefault(); 
-            const cmd = this.value.trim().toLowerCase(); 
-            this.value = '';
-            tOut.innerHTML += '<div style="margin-top: 5px;">root@cuba-solar:~# ' + cmd + '</div>';
-            const datosNasa = { ene: { irr: 3.55, temp: 23.49 }, feb: { irr: 4.75, temp: 21.70 }, mar: { irr: 5.60, temp: 25.55 }, abr: { irr: 6.76, temp: 25.77 }, may: { irr: 7.21, temp: 29.46 }, jun: { irr: 5.72, temp: 28.08 }, jul: { irr: 6.84, temp: 28.29 }, ago: { irr: 5.90, temp: 28.63 }, sep: { irr: 5.74, temp: 28.39 }, oct: { irr: 4.19, temp: 26.71 }, nov: { irr: 3.94, temp: 24.75 }, dic: { irr: 3.49, temp: 23.12 } };
-            if (cmd === 'clear') { 
-                tOut.innerHTML = ''; 
-            } else if (cmd === 'help') { 
-                tOut.innerHTML += '<div style="color: #00ff00; margin-bottom: 5px;">[ COMANDOS ]</div><div>- help: Lista.</div><div>- status: Sesgo.</div><div>- desclasificar: Datos.</div><div>- clima [mes]: NASA.</div><div>- onei: Paradoja.</div><div>- clear: Limpiar.</div><br>';
-            } else if (cmd === 'status') { 
-                tOut.innerHTML += '<div style="color: #fbbf24;">[!] Sesgo de no respuesta (90%).<br>[!] Pivotando a N=32 y OSINT N=64.</div><br>'; 
-            } else if (cmd === 'desclasificar') { 
-                tOut.innerHTML += '<div style="color: #f87171;">[!] ACCESO DENEGADO.<br>[OK] 32 registros primarios cargados.</div><br>'; 
-            } else if (cmd === 'onei') {
-                tOut.innerHTML += '<div style="color: #3b82f6;">[ PARADOJA ONEI ]</div><div>- Gen Total: -17.5%</div><div>- Potencia FV: +18.7%</div><div>- Gen FV Real: -7.4%</div><br>';
-            } else if (cmd.startsWith('clima')) {
-    // Limpiamos y separamos las palabras
-    const partes = cmd.split(' ').filter(p => p.length > 0);
-    let mesInput = partes[1]; // Tomamos lo que escribió el usuario
-
-    // Diccionario para aceptar mes completo o abreviado
-    const mesesValidos = {
-        'ene': 'ene', 'enero': 'ene', 'feb': 'feb', 'febrero': 'feb',
-        'mar': 'mar', 'marzo': 'mar', 'abr': 'abr', 'abril': 'abr',
-        'may': 'may', 'mayo': 'may', 'jun': 'jun', 'junio': 'jun',
-        'jul': 'jul', 'julio': 'jul', 'ago': 'ago', 'agosto': 'ago',
-        'sep': 'sep', 'septiembre': 'sep', 'oct': 'oct', 'octubre': 'oct',
-        'nov': 'nov', 'noviembre': 'nov', 'dic': 'dic', 'diciembre': 'dic'
-    };
-
-    // Convertimos lo que escribió a la clave corta (ej: "julio" -> "jul")
-    const mesClave = mesesValidos[mesInput];
-
-    if (mesClave && datosNasa[mesClave]) {
-        const d = datosNasa[mesClave];
-        let p = d.temp > 25 ? -((d.temp - 25) * 1.5).toFixed(0) : 0;
-        
-        tOut.innerHTML += '<div style="color: #eab308;">[ NASA: ' + mesClave.toUpperCase() + ' ]</div>' +
-                          '<div>- Irradiancia: ' + d.irr + ' kWh/m²</div>' +
-                          '<div>- Temperatura: ' + d.temp + ' °C</div>' +
-                          '<div>- Pérdida estimada: <span style="color: #ef4444;">' + p + '%</span></div><br>';
-    } else if (!mesInput) {
-        tOut.innerHTML += '<div style="color: #ef4444;">[!] Debes indicar un mes. Ejemplo: clima jul</div><br>';
-    } else {
-        tOut.innerHTML += '<div style="color: #ef4444;">[!] Mes no válido. Usa: ene, feb, mar... o el nombre completo.</div><br>';
-    }
+    const tIn = document.getElementById('terminal-input'), tOut = document.getElementById('terminal-output');
+    if(tOut) tOut.innerHTML = "SISTEMA v2.0\nEscribe 'help'.\n\n";
+    if(tIn && tOut) {
+        const tCont = document.querySelector('.terminal-container');
+        if(tCont) tCont.addEventListener('click', () => tIn.focus());
+        tIn.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                e.preventDefault(); const cmd = this.value.trim().toLowerCase(); this.value = '';
+                tOut.innerHTML += '<div style="margin-top: 5px;">root@cuba-solar:~# ' + cmd + '</div>';
+                const datosNasa = { ene: { irr: 3.55, temp: 23.49 }, feb: { irr: 4.75, temp: 21.70 }, mar: { irr: 5.60, temp: 25.55 }, abr: { irr: 6.76, temp: 25.77 }, may: { irr: 7.21, temp: 29.46 }, jun: { irr: 5.72, temp: 28.08 }, jul: { irr: 6.84, temp: 28.29 }, ago: { irr: 5.90, temp: 28.63 }, sep: { irr: 5.74, temp: 28.39 }, oct: { irr: 4.19, temp: 26.71 }, nov: { irr: 3.94, temp: 24.75 }, dic: { irr: 3.49, temp: 23.12 } };
+                if (cmd === 'clear') { tOut.innerHTML = ''; } 
+                else if (cmd === 'help') { tOut.innerHTML += '<div style="color: #00ff00; margin-bottom: 5px;">[ COMANDOS ]</div><div>- help: Lista.</div><div>- status: Sesgo.</div><div>- desclasificar: Datos.</div><div>- clima [mes]: NASA.</div><div>- onei: Paradoja.</div><div>- clear: Limpiar.</div><br>'; } 
+                else if (cmd === 'status') { tOut.innerHTML += '<div style="color: #fbbf24;">[!] Sesgo de no respuesta (90%).<br>[!] Pivotando a N=32 y OSINT N=64.</div><br>'; } 
+                else if (cmd === 'desclasificar') { tOut.innerHTML += '<div style="color: #f87171;">[!] ACCESO DENEGADO.<br>[OK] 32 registros primarios cargados.</div><br>'; } 
+                else if (cmd === 'onei') { tOut.innerHTML += '<div style="color: #3b82f6;">[ PARADOJA ONEI ]</div><div>- Gen Total: -17.5%</div><div>- Potencia FV: +18.7%</div><div>- Gen FV Real: -7.4%</div><br>'; } 
+                else if (cmd.startsWith('clima')) {
+                    const partes = cmd.split(' ').filter(p => p.length > 0); let mesInput = partes[1];
+                    const mesesValidos = { 'ene': 'ene', 'enero': 'ene', 'feb': 'feb', 'febrero': 'feb', 'mar': 'mar', 'marzo': 'mar', 'abr': 'abr', 'abril': 'abr', 'may': 'may', 'mayo': 'may', 'jun': 'jun', 'junio': 'jun', 'jul': 'jul', 'julio': 'jul', 'ago': 'ago', 'agosto': 'ago', 'sep': 'sep', 'septiembre': 'sep', 'oct': 'oct', 'octubre': 'oct', 'nov': 'nov', 'noviembre': 'nov', 'dic': 'dic', 'diciembre': 'dic' };
+                    const mesClave = mesesValidos[mesInput];
+                    if (mesClave && datosNasa[mesClave]) {
+                        const d = datosNasa[mesClave]; let p = d.temp > 25 ? -((d.temp - 25) * 1.5).toFixed(0) : 0;
+                        tOut.innerHTML += '<div style="color: #eab308;">[ NASA: ' + mesClave.toUpperCase() + ' ]</div><div>- Irradiancia: ' + d.irr + ' kWh/m²</div><div>- Temperatura: ' + d.temp + ' °C</div><div>- Pérdida: ' + p + '%</div><br>';
+                    } else { tOut.innerHTML += '<div style="color: #ef4444;">[!] Mes no válido o no especificado.</div><br>'; }
+                } 
+                else if (cmd !== '') { tOut.innerHTML += '<div style="color: #ef4444;">No reconocido: ' + cmd + '</div><br>'; }
+                if (tCont) tCont.scrollTop = tCont.scrollHeight;
             }
-    });
-}
+        });
+    }
 
     // TYPEWRITER Y APAGÓN
     const tEl = document.getElementById('typewriter-text');
