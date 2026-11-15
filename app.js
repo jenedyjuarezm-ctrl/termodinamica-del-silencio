@@ -131,24 +131,45 @@ document.addEventListener('DOMContentLoaded', () => {
     if(simK && simB) { simK.addEventListener('input', updateSim); simB.addEventListener('input', updateSim); updateSim(); }
 
     // TERMINAL
-    const tIn = document.getElementById('terminal-input'), tOut = document.getElementById('terminal-output');
-    if(tOut) tOut.innerHTML = "SISTEMA v2.0\nEscribe 'help'.\n\n";
-    if(tIn && tOut) {
-        const tCont = document.querySelector('.terminal-container');
-        if(tCont) tCont.addEventListener('click', () => tIn.focus());
-        tIn.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.keyCode === 13) {
-                e.preventDefault(); const cmd = this.value.trim().toLowerCase(); this.value = '';
-                tOut.innerHTML += `<div>root@cuba-solar:~# ${cmd}</div>`;
-                if (cmd === 'clear') tOut.innerHTML = '';
-                else if (cmd === 'help') tOut.innerHTML += `<div style="color: #00ff00;">Comandos: help, status, desclasificar, clear</div>`;
-                else if (cmd === 'status') tOut.innerHTML += `<div style="color: #fbbf24;">[!] Sesgo de no respuesta (90%).<br>[!] Pivotando a N=32 y OSINT N=64.</div>`;
-                else if (cmd === 'desclasificar') tOut.innerHTML += `<div style="color: #f87171;">[!] ACCESO DENEGADO.<br>[OK] 32 registros cargados.</div>`;
-                else if (cmd !== '') tOut.innerHTML += `<div style="color: #ef4444;">No reconocido: '${cmd}'</div>`;
-                if (tCont) tCont.scrollTop = tCont.scrollHeight;
+const tIn = document.getElementById('terminal-input');
+const tOut = document.getElementById('terminal-output');
+if(tOut) tOut.innerHTML = "SISTEMA v2.0\nEscribe 'help' para ver los comandos.\n\n";
+if(tIn && tOut) {
+    const tCont = document.querySelector('.terminal-container');
+    if(tCont) tCont.addEventListener('click', () => tIn.focus());
+    tIn.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            e.preventDefault(); 
+            const cmd = this.value.trim().toLowerCase(); 
+            this.value = '';
+            tOut.innerHTML += '<div style="margin-top: 5px;">root@cuba-solar:~# ' + cmd + '</div>';
+            const datosNasa = { ene: { irr: 3.55, temp: 23.49 }, feb: { irr: 4.75, temp: 21.70 }, mar: { irr: 5.60, temp: 25.55 }, abr: { irr: 6.76, temp: 25.77 }, may: { irr: 7.21, temp: 29.46 }, jun: { irr: 5.72, temp: 28.08 }, jul: { irr: 6.84, temp: 28.29 }, ago: { irr: 5.90, temp: 28.63 }, sep: { irr: 5.74, temp: 28.39 }, oct: { irr: 4.19, temp: 26.71 }, nov: { irr: 3.94, temp: 24.75 }, dic: { irr: 3.49, temp: 23.12 } };
+            if (cmd === 'clear') { 
+                tOut.innerHTML = ''; 
+            } else if (cmd === 'help') { 
+                tOut.innerHTML += '<div style="color: #00ff00; margin-bottom: 5px;">[ COMANDOS ]</div><div>- help: Lista.</div><div>- status: Sesgo.</div><div>- desclasificar: Datos.</div><div>- clima [mes]: NASA.</div><div>- onei: Paradoja.</div><div>- clear: Limpiar.</div><br>';
+            } else if (cmd === 'status') { 
+                tOut.innerHTML += '<div style="color: #fbbf24;">[!] Sesgo de no respuesta (90%).<br>[!] Pivotando a N=32 y OSINT N=64.</div><br>'; 
+            } else if (cmd === 'desclasificar') { 
+                tOut.innerHTML += '<div style="color: #f87171;">[!] ACCESO DENEGADO.<br>[OK] 32 registros primarios cargados.</div><br>'; 
+            } else if (cmd === 'onei') {
+                tOut.innerHTML += '<div style="color: #3b82f6;">[ PARADOJA ONEI ]</div><div>- Gen Total: -17.5%</div><div>- Potencia FV: +18.7%</div><div>- Gen FV Real: -7.4%</div><br>';
+            } else if (cmd.indexOf('clima ') === 0) {
+                const mes = cmd.split(' ')[1];
+                if (datosNasa[mes]) {
+                    const d = datosNasa[mes];
+                    let p = d.temp > 25 ? -((d.temp - 25) * 1.5).toFixed(0) : 0;
+                    tOut.innerHTML += '<div style="color: #eab308;">[ NASA: ' + mes.toUpperCase() + ' ]</div><div>- Irr: ' + d.irr + ' kWh/m²</div><div>- Temp: ' + d.temp + ' °C</div><div>- Pérdida: ' + p + '%</div><br>';
+                } else {
+                    tOut.innerHTML += '<div style="color: #ef4444;">Mes no válido.</div><br>';
+                }
+            } else if (cmd !== '') {
+                tOut.innerHTML += '<div style="color: #ef4444;">No reconocido: ' + cmd + '</div><br>';
             }
-        });
-    }
+            if (tCont) tCont.scrollTop = tCont.scrollHeight;
+        }
+    });
+}
 
     // TYPEWRITER Y APAGÓN
     const tEl = document.getElementById('typewriter-text');
