@@ -155,21 +155,35 @@ if(tIn && tOut) {
             } else if (cmd === 'onei') {
                 tOut.innerHTML += '<div style="color: #3b82f6;">[ PARADOJA ONEI ]</div><div>- Gen Total: -17.5%</div><div>- Potencia FV: +18.7%</div><div>- Gen FV Real: -7.4%</div><br>';
             } else if (cmd.startsWith('clima')) {
-    // Limpiamos los espacios extra y separamos las palabras
+    // Limpiamos y separamos las palabras
     const partes = cmd.split(' ').filter(p => p.length > 0);
-    const mes = partes[1]; // Tomamos la segunda palabra (ej: "jul")
-    
-    if (mes && datosNasa[mes]) {
-        const d = datosNasa[mes];
+    let mesInput = partes[1]; // Tomamos lo que escribió el usuario
+
+    // Diccionario para aceptar mes completo o abreviado
+    const mesesValidos = {
+        'ene': 'ene', 'enero': 'ene', 'feb': 'feb', 'febrero': 'feb',
+        'mar': 'mar', 'marzo': 'mar', 'abr': 'abr', 'abril': 'abr',
+        'may': 'may', 'mayo': 'may', 'jun': 'jun', 'junio': 'jun',
+        'jul': 'jul', 'julio': 'jul', 'ago': 'ago', 'agosto': 'ago',
+        'sep': 'sep', 'septiembre': 'sep', 'oct': 'oct', 'octubre': 'oct',
+        'nov': 'nov', 'noviembre': 'nov', 'dic': 'dic', 'diciembre': 'dic'
+    };
+
+    // Convertimos lo que escribió a la clave corta (ej: "julio" -> "jul")
+    const mesClave = mesesValidos[mesInput];
+
+    if (mesClave && datosNasa[mesClave]) {
+        const d = datosNasa[mesClave];
         let p = d.temp > 25 ? -((d.temp - 25) * 1.5).toFixed(0) : 0;
-        tOut.innerHTML += '<div style="color: #eab308;">[ NASA: ' + mes.toUpperCase() + ' ]</div>' +
+        
+        tOut.innerHTML += '<div style="color: #eab308;">[ NASA: ' + mesClave.toUpperCase() + ' ]</div>' +
                           '<div>- Irradiancia: ' + d.irr + ' kWh/m²</div>' +
                           '<div>- Temperatura: ' + d.temp + ' °C</div>' +
                           '<div>- Pérdida estimada: <span style="color: #ef4444;">' + p + '%</span></div><br>';
-    } else if (!mes) {
+    } else if (!mesInput) {
         tOut.innerHTML += '<div style="color: #ef4444;">[!] Debes indicar un mes. Ejemplo: clima jul</div><br>';
     } else {
-        tOut.innerHTML += '<div style="color: #ef4444;">[!] Mes no válido. Usa: ene, feb, mar, abr, may, jun, jul, ago, sep, oct, nov, dic.</div><br>';
+        tOut.innerHTML += '<div style="color: #ef4444;">[!] Mes no válido. Usa: ene, feb, mar... o el nombre completo.</div><br>';
     }
             }
     });
