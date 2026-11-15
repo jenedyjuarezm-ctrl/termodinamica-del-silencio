@@ -154,20 +154,24 @@ if(tIn && tOut) {
                 tOut.innerHTML += '<div style="color: #f87171;">[!] ACCESO DENEGADO.<br>[OK] 32 registros primarios cargados.</div><br>'; 
             } else if (cmd === 'onei') {
                 tOut.innerHTML += '<div style="color: #3b82f6;">[ PARADOJA ONEI ]</div><div>- Gen Total: -17.5%</div><div>- Potencia FV: +18.7%</div><div>- Gen FV Real: -7.4%</div><br>';
-            } else if (cmd.indexOf('clima ') === 0) {
-                const mes = cmd.split(' ')[1];
-                if (datosNasa[mes]) {
-                    const d = datosNasa[mes];
-                    let p = d.temp > 25 ? -((d.temp - 25) * 1.5).toFixed(0) : 0;
-                    tOut.innerHTML += '<div style="color: #eab308;">[ NASA: ' + mes.toUpperCase() + ' ]</div><div>- Irr: ' + d.irr + ' kWh/m²</div><div>- Temp: ' + d.temp + ' °C</div><div>- Pérdida: ' + p + '%</div><br>';
-                } else {
-                    tOut.innerHTML += '<div style="color: #ef4444;">Mes no válido.</div><br>';
-                }
-            } else if (cmd !== '') {
-                tOut.innerHTML += '<div style="color: #ef4444;">No reconocido: ' + cmd + '</div><br>';
+            } else if (cmd.startsWith('clima')) {
+    // Limpiamos los espacios extra y separamos las palabras
+    const partes = cmd.split(' ').filter(p => p.length > 0);
+    const mes = partes[1]; // Tomamos la segunda palabra (ej: "jul")
+    
+    if (mes && datosNasa[mes]) {
+        const d = datosNasa[mes];
+        let p = d.temp > 25 ? -((d.temp - 25) * 1.5).toFixed(0) : 0;
+        tOut.innerHTML += '<div style="color: #eab308;">[ NASA: ' + mes.toUpperCase() + ' ]</div>' +
+                          '<div>- Irradiancia: ' + d.irr + ' kWh/m²</div>' +
+                          '<div>- Temperatura: ' + d.temp + ' °C</div>' +
+                          '<div>- Pérdida estimada: <span style="color: #ef4444;">' + p + '%</span></div><br>';
+    } else if (!mes) {
+        tOut.innerHTML += '<div style="color: #ef4444;">[!] Debes indicar un mes. Ejemplo: clima jul</div><br>';
+    } else {
+        tOut.innerHTML += '<div style="color: #ef4444;">[!] Mes no válido. Usa: ene, feb, mar, abr, may, jun, jul, ago, sep, oct, nov, dic.</div><br>';
+    }
             }
-            if (tCont) tCont.scrollTop = tCont.scrollHeight;
-        }
     });
 }
 
